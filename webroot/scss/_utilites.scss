@@ -1,0 +1,456 @@
+/** @format */
+
+body {
+  font-family: "Open Sans", sans-serif;
+  font-size: 0.8rem;
+  line-height: 1.6;
+  color: $dark-color;
+  font-weight: 400;
+  letter-spacing: 1px;
+  height: 100vh;
+}
+
+a {
+  text-decoration: none;
+  color: $primary-color;
+
+  &:hover {
+    text-decoration: none;
+  }
+}
+
+ul {
+  list-style: none;
+}
+p {
+  font-size: 0.8rem;
+  margin-bottom: 0.2rem;
+}
+
+img {
+  width: 100%;
+  &-round {
+    border-radius: 50%;
+  }
+}
+
+hr {
+  margin: 1rem 0;
+  &.acent {
+    border-color: $acent-color;
+  }
+  &.primary {
+    border-color: $primary-color;
+  }
+  &.base {
+    border-color: $base-color;
+  }
+}
+
+.fw {
+  &-light {
+    font-weight: 300;
+  }
+  &-normal {
+    font-weight: 400;
+  }
+  &-bold {
+    font-weight: 600;
+  }
+  &-xl-bold {
+    font-weight: 700;
+  }
+}
+
+// HEADINGS & TITLS
+.heading {
+  font-size: 1.2rem;
+  margin-bottom: 0.5rem;
+  font-weight: 100;
+  color: $primary-color;
+}
+
+.title {
+  font-size: 0.9rem;
+  text-transform: uppercase;
+  font-weight: 600;
+  margin-bottom: 0.2rem;
+  color: $primary-color;
+}
+
+.sub-title {
+  font-size: 0.8rem;
+  margin-bottom: 0.3rem;
+  font-weight: 600;
+}
+
+.lead {
+  font-size: 0.8rem;
+  font-weight: 300;
+  color: darken($base-color, 20%);
+}
+
+.ft {
+  &-primary {
+    color: $primary-color;
+  }
+  &-secondary {
+    color: $secondary-color;
+  }
+  &-acent {
+    color: $acent-color;
+  }
+  &-light {
+    color: $light-color;
+  }
+  &-dark {
+    color: $dark-color;
+  }
+  &-base {
+    color: $base-color;
+  }
+  &-success {
+    color: $success-color;
+  }
+  &-danger {
+    color: $danger-color;
+  }
+}
+
+// BACKGORUNDS COLOR
+.skin {
+  &-primary {
+    @include set-background($primary-color);
+  }
+  &-secondary {
+    @include set-background($secondary-color);
+  }
+  &-light {
+    @include set-background($light-color);
+  }
+  &-dark {
+    @include set-background($dark-color);
+  }
+  &-base {
+    @include set-background($base-color);
+  }
+  &-success {
+    @include set-background($success-color);
+  }
+  &-danger {
+    @include set-background($danger-color);
+  }
+}
+
+// Buttons
+.v-btn {
+  display: inline-block;
+  color: $primary-color;
+  padding: 0 0.7rem;
+  border: none;
+  cursor: pointer;
+  font-size: 0.8rem;
+  white-space: nowrap;
+  outline: none;
+  transition: all 0.2s ease-in;
+  border-radius: 3px;
+  line-height: 35px;
+  &:focus {
+    outline: none;
+  }
+  &:hover {
+    text-decoration: none;
+  }
+  &.btn-block {
+    text-align: center;
+  }
+  span {
+    margin-left: 0.5rem;
+  }
+  &.btn-sm {
+    line-height: 25px;
+  }
+  &.btn-lg {
+    padding: 0.6rem;
+  }
+  &.v-btn-primary {
+    @include set-background($primary-color);
+  }
+  &.v-btn-secondary {
+    @include set-background($secondary-color);
+  }
+  &.v-btn-base {
+    @include set-background($base-color);
+  }
+  &.v-btn-dark {
+    @include set-background($dark-color);
+  }
+  &.v-btn-light {
+    @include set-background($light-color);
+  }
+  &.v-btn-acent {
+    @include set-background($acent-color);
+  }
+  &.v-btn-success {
+    @include set-background($success-color);
+  }
+  &.v-btn-danger {
+    @include set-background($danger-color);
+  }
+}
+
+// Icons
+.icon {
+  display: inline-block;
+  text-align: center;
+  border-radius: 3px;
+  height: 35px;
+  width: 35px;
+  i {
+    line-height: 35px;
+  }
+  .round {
+    border-radius: 50%;
+  }
+  &.icon-xs {
+    width: 15px;
+    height: 15px;
+    i {
+      line-height: 15px;
+    }
+  }
+  &.icon-sm {
+    width: 25px;
+    height: 25px;
+    i {
+      line-height: 25px;
+    }
+  }
+  &.icon-md {
+    width: 35px;
+    height: 35px;
+    i {
+      line-height: 35px;
+    }
+  }
+  &.icon-base {
+    @include set-background($base-color);
+  }
+  &.icon-base {
+    @include set-background($base-color);
+  }
+  &.icon-acent {
+    @include set-background($acent-color);
+  }
+  &.icon-primary {
+    @include set-background($primary-color);
+  }
+  &.icon-secondary {
+    @include set-background($secondary-color);
+  }
+  &.icon-danger {
+    @include set-background($danger-color);
+  }
+  &.icon-light {
+    @include set-background($light-color);
+  }
+}
+
+// Switch Button
+.tgl {
+  display: none;
+
+  // add default box-sizing for this scope
+  &,
+  &:after,
+  &:before,
+  & *,
+  & *:after,
+  & *:before,
+  & + .tgl-btn {
+    box-sizing: border-box;
+    &::selection {
+      background: none;
+    }
+  }
+
+  + .tgl-btn {
+    outline: 0;
+    display: block;
+    width: 4em;
+    height: 2em;
+    position: relative;
+    cursor: pointer;
+    user-select: none;
+    &:after,
+    &:before {
+      position: relative;
+      display: block;
+      content: "";
+      width: 50%;
+      height: 100%;
+    }
+
+    &:after {
+      left: 0;
+    }
+
+    &:before {
+      display: none;
+    }
+  }
+
+  &:checked + .tgl-btn:after {
+    left: 50%;
+  }
+}
+
+.tgl-light {
+  + .tgl-btn {
+    background: #f0f0f0;
+    border-radius: 2em;
+    padding: 2px;
+    transition: all 0.4s ease;
+    &:after {
+      border-radius: 50%;
+      background: #fff;
+      transition: all 0.2s ease;
+    }
+  }
+
+  &:checked + .tgl-btn {
+    background: $primary-color;
+  }
+}
+
+.dropdown-menu {
+  box-shadow: none;
+  border-radius: 0;
+}
+
+.pagination {
+  .page-item {
+    .page-link {
+      color: $primary-color;
+      border: 0;
+    }
+    &.active {
+      .page-link {
+        background-color: $primary-color;
+        color: $light-color;
+        border-color: $base-color;
+      }
+    }
+  }
+}
+
+// File upload
+.file-upload {
+  background-color: #ffffff;
+  width: 100%;
+  margin: 0 auto;
+}
+
+.file-upload-btn {
+  width: 100%;
+  margin: 0;
+  color: #fff;
+  background: #1fb264;
+  border: none;
+  padding: 10px;
+  border-radius: 4px;
+  border-bottom: 4px solid #15824b;
+  transition: all 0.2s ease;
+  outline: none;
+  text-transform: uppercase;
+  font-weight: 700;
+}
+
+.file-upload-btn:hover {
+  background: #1aa059;
+  color: #ffffff;
+  transition: all 0.2s ease;
+  cursor: pointer;
+}
+
+.file-upload-btn:active {
+  border: 0;
+  transition: all 0.2s ease;
+}
+
+.file-upload-content {
+  display: none;
+  text-align: center;
+}
+
+.file-upload-input {
+  position: absolute;
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  height: 100%;
+  outline: none;
+  opacity: 0;
+  cursor: pointer;
+}
+
+.image-upload-wrap {
+  border: 3px dashed lighten($dark-color, 60%);
+  position: relative;
+}
+
+.image-dropping,
+.image-upload-wrap:hover {
+  background-color: $base-color;
+  border: 3px dashed $primary-color;
+}
+
+.image-title-wrap {
+  padding: 0 15px 15px 15px;
+  color: #222;
+}
+
+.drag-text {
+  text-align: center;
+}
+
+.drag-text h3 {
+  font-weight: 100;
+  text-transform: uppercase;
+  color: #15824b;
+  padding: 60px 0;
+}
+
+.file-upload-image {
+  max-height: 200px;
+  max-width: 200px;
+  margin: auto;
+  padding: 20px;
+}
+
+.remove-image {
+  width: 200px;
+  margin: 0;
+  color: #fff;
+  background: #cd4535;
+  border: none;
+  padding: 10px;
+  border-radius: 4px;
+  border-bottom: 4px solid #b02818;
+  transition: all 0.2s ease;
+  outline: none;
+  text-transform: uppercase;
+  font-weight: 700;
+}
+
+.remove-image:hover {
+  background: #c13b2a;
+  color: #ffffff;
+  transition: all 0.2s ease;
+  cursor: pointer;
+}
+
+.remove-image:active {
+  border: 0;
+  transition: all 0.2s ease;
+}

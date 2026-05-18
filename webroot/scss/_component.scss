@@ -1,0 +1,201 @@
+/** @format */
+
+.logo {
+  text-align: center;
+  .tagline {
+    margin-top: 0.5rem;
+  }
+  span {
+    background-color: $light-color;
+    display: inline-block;
+    color: $primary-color;
+    border-radius: 50%;
+  }
+  &-sm {
+    span {
+      width: 50px;
+      height: 50px;
+      line-height: 50px;
+      font-size: 0.8rem;
+    }
+  }
+  &-md {
+    span {
+      width: 80px;
+      height: 80px;
+      line-height: 80px;
+      font-size: 1.5rem;
+    }
+  }
+  &-primary {
+    span {
+      background-color: $primary-color;
+      color: $light-color;
+    }
+  }
+  &-light {
+    span {
+      background-color: $light-color;
+      color: $primary-color;
+    }
+  }
+}
+
+.block {
+  margin-bottom: 1rem;
+  @include set-background($light-color);
+
+  &.base {
+    @include set-background($base-color);
+    border: 1px solid darken($base-color, 4%);
+    &.bdr-0 {
+      border: 0;
+    }
+  }
+  &.acent {
+    @include set-background($acent-color);
+  }
+  &.primary {
+    @include set-background($primary-color);
+    .title {
+      color: $light-color;
+    }
+  }
+  &.secondary {
+    @include set-background($secondary-color);
+  }
+  &.light {
+    @include set-background($light-color);
+  }
+  &.dark {
+    @include set-background($dark-color);
+  }
+  &.no-padding {
+    .header,
+    .content,
+    .footer {
+      padding: 0;
+    }
+  }
+  .header,
+  .content,
+  .footer {
+    padding: 1rem;
+  }
+
+  .header {
+    padding-bottom: 0;
+    font-weight: 400;
+  }
+  .content {
+    font-size: 0.9rem;
+  }
+}
+
+.page-tab {
+  .v-tab {
+    display: flex;
+    border-bottom: 1px solid darken($base-color, 10%);
+    a {
+      display: inline-block;
+      padding: 1rem;
+      text-decoration: none;
+      border-bottom: 2px solid transparent;
+      color: darken($base-color, 40%);
+    }
+    li {
+      &:first-child {
+        a {
+          padding-left: 0;
+        }
+      }
+      &.active {
+        a {
+          color: $primary-color;
+          border-color: $primary-color;
+        }
+      }
+    }
+  }
+}
+
+.project-info {
+  li {
+    padding: 0.5rem 0;
+    border-bottom: 1px dotted darken($base-color, 10%);
+    font-size: 0.8rem;
+    span {
+      float: right;
+    }
+    label {
+      margin-bottom: 0.7rem;
+    }
+    &:last-child {
+      border-bottom: 0;
+    }
+  }
+}
+
+.accordion {
+  .card {
+    border: 0;
+    margin-bottom: 1rem;
+    .card-header {
+      padding: 0.7rem;
+      background-color: $light-color;
+      border-color: $base-color;
+    }
+    .card-body {
+      padding: 0;
+    }
+  }
+}
+
+.status {
+  font-weight: 600;
+  font-size: 0.7rem;
+  &.active {
+    color: $primary-color;
+  }
+  &.pending {
+    color: $warning-color;
+  }
+  &.completed {
+    color: $secondary-color;
+  }
+}
+
+.modal {
+  .modal-header {
+    background-color: $base-color;
+    .modal-title {
+      font-size: 18px;
+      text-transform: uppercase;
+    }
+  }
+}
+
+.pagination {
+  margin-top: 1rem !important;
+}
+
+#filedrag
+{
+	/*display: none;*/
+	font-weight: bold;
+	text-align: center;
+	padding: 1em 0;
+	margin: 1em 0;
+	color: #555;
+	border: 2px dashed #555;
+	border-radius: 7px;
+	cursor: default;
+}
+
+#filedrag.hover
+{
+	color: #f00;
+	border-color: #f00;
+	border-style: solid;
+	box-shadow: inset 0 3px 4px #888;
+}

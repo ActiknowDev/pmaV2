@@ -1,0 +1,192 @@
+.table thead th, table thead th
+    {
+        background: #333333;
+        color: #dee2e6 !important;
+    }
+     #chartdiv {
+            width: 100%;
+            /* height: 300px; */
+        }
+    ul{
+        margin-bottom: unset !important;
+    }
+    .dropdown-menu a{
+        color: #3fd5db !important;
+    }
+        body {
+            font-family: 'poppins';
+            background-color: #f7f7f7;
+        }
+
+        .fs-14 {
+            font-size: 14px;
+        }
+
+        .fs-13 {
+            font-size: 13px;
+        }
+
+        .fs-12 {
+            font-size: 12px;
+        }
+
+        .fs-11 {
+            font-size: 11px;
+        }
+
+        .fs-10 {
+            font-size: 10px;
+        }
+
+        .fs_color {
+            color: #3fd5db;
+        }
+
+        a {
+            text-decoration: none;
+        }
+
+        .ss_card:hover {
+            box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;
+            background-color: #3fd5db;
+            color: #FFF;
+        }
+
+        .ss_card:hover .card-icon {
+            background-color: #333333;
+        }
+
+        .fw_500 {
+            font-weight: 500 !important;
+        }
+
+        .bdrright {
+            border-top-right-radius: 10px;
+            border-bottom-right-radius: 10px;
+        }
+
+        .ss-title {
+            width: 100%;
+            height: 50px;
+            font-size: 12px;
+            font-weight: 500;
+            margin-bottom: 15px;
+        }
+
+        .border_radius {
+            border-radius: 10px;
+        }
+
+        .card_shadow {
+            box-shadow: rgba(0, 0, 0, 0.16) 0px 1px 4px;
+        }
+
+        .card_icon {
+            /* width: 40px; */
+            /* height: 40px; */
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            /* justify-content: center; */
+            border-radius: 50%;
+        }
+
+        .bg_faebd769 {
+            background-color: #EEFCFD;
+            /* background-color: #faebd769; */
+        }
+
+        .bg_f1f5ff {
+            background-color: #FCFCD4;
+            /* background-color: #f1f5ff; */
+        }
+
+        .bg_f5f6fa {
+            background-color: #E6F4F1;
+            /* background-color: #f5f6fa; */
+        }
+
+        .bg_fef8fc {
+            background-color: #E9FDFE;
+            /* background-color: #fef8fc; */
+        }
+
+        .bg_cddbfa9e {
+            background-color: #cddbfa9e;
+        }
+
+        .bg_f9e2ca8a {
+            background-color: #f9e2ca8a;
+        }
+
+        .bg_fddff8 {
+            background-color: #fddff8;
+        }
+
+        .bg_c2f4e68f {
+            background-color: #c2f4e68f;
+        }
+
+        .fs_success {
+            color: #25cf8b;
+        }
+
+        .fs_danger {
+            color: #fb5c5c;
+        }
+
+        #current_revenue_table table {
+            border: 0;
+        }
+
+        #current_revenue_table tr {
+            vertical-align: middle;
+            border: none !important;
+            border-color: transparent !important;
+        }
+
+        table.dataTable.no-footer,
+        table.dataTable thead th {
+            border: none;
+        }
+
+        #current_revenue_table .form-check-input {
+            width: 16px;
+            height: 16px;
+            box-shadow: none;
+            border-radius: 50%;
+        }
+
+        #current_revenue_table .form-check-input:checked {
+            background-color: #5cdbe0;
+            border-color: #5cdbe0;
+            box-shadow: none;
+        }
+        .dataTables_wrapper {
+            font-size: 12px;
+        }
+
+        #current_revenue_table_filter {
+            margin-bottom: 5px !important;
+        }
+
+        .dataTables_wrapper .dataTables_paginate .paginate_button.current,
+        .dataTables_wrapper .dataTables_paginate .paginate_button.current:hover {
+            color: #fff !important;
+            background-color: #5cdbe0 !important;
+            border-color: #5cdbe0 !important;
+            border-radius: 7px;
+        }
+
+        td .form-check-label {
+            font-size: 13px !important;
+            margin-left: 5px !important;
+            margin-top: 2px !important;
+        }
+
+        .tr-borderleft {
+            border-left: 5px solid #00d27a;
+        }
+        .mt-25{
+            margin-top: -25px;
+        }

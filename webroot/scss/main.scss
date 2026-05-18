@@ -1,0 +1,343 @@
+/** @format */
+
+@import "./config";
+@import "./reset";
+@import "./layout";
+@import "./auth";
+@import "./form";
+@import "./table";
+@import "./utilites";
+@import "./component";
+
+.action-dropdown {
+  .dropdown-toggle {
+    &::after {
+      display: none;
+    }
+  }
+  .dropdown-menu {
+    .dropdown-item {
+      font-size: 0.8rem;
+      &:last-child {
+        color: $danger-color;
+        font-weight: bold;
+      }
+    }
+  }
+}
+
+.notes-list {
+  li {
+    padding: 0.5rem 0;
+    border-bottom: 1px solid darken($base-color, 5%);
+    &:last-child {
+      border-bottom: 0;
+    }
+    .notes-by {
+      font-weight: bold;
+      color: $primary-color;
+    }
+    p {
+      font-size: 0.7rem;
+    }
+    .date {
+      font-size: 0.6rem;
+      font-style: italic;
+      font-weight: bold;
+    }
+  }
+}
+
+.tag {
+  padding: 0.1rem 0.4rem;
+  border: 1px solid transparent;
+  border-radius: 4px;
+  font-size: 0.7rem;
+  &.user {
+    background-color: rgba($primary-color, 0.2);
+    border-color: $primary-color;
+    color: $primary-color;
+  }
+  &.due-date {
+    background-color: rgba($danger-color, 0.2);
+    border-color: $danger-color;
+    color: $danger-color;
+  }
+  &.extend-date {
+    background-color: rgba($info-color, 0.2);
+    border-color: $info-color;
+    color: $info-color;
+  }
+  &.client {
+    background-color: rgba($success-color, 0.2);
+    border-color: $success-color;
+    color: $success-color;
+  }
+}
+
+.task-tabs {
+  border: 0;
+  display: flex;
+  li {
+    a {
+      padding: 1rem;
+      border-right: 1px solid rgba($light-color, 0.4);
+      color: $light-color;
+      background-color: $primary-color;
+      display: inline-block;
+      font-weight: 600;
+      &.active {
+        color: darken($primary-color, 10%);
+        background-color: $light-color;
+        font-weight: bold;
+        span {
+          background-color: $primary-color;
+          color: $light-color;
+        }
+      }
+      span {
+        margin-left: 1rem;
+        background-color: #ddf7f7;
+        color: #023538;
+        border-radius: 4px;
+        font-size: 0.7rem;
+        padding: 0.2rem 0.5rem;
+        font-weight: bold;
+      }
+    }
+  }
+}
+
+.task-tab-content {
+  background-color: $light-color;
+  padding: 1rem;
+  box-shadow: 0 0px 11px #ddd;
+  .task-wapper {
+    .time-title {
+      margin: 0.5rem;
+      font-weight: 600;
+      color: lighten($dark-color, 70%);
+      span {
+        color: $danger-color;
+      }
+    }
+    .load-more {
+      padding: 1rem 0;
+    }
+    .task-row {
+      display: flex;
+      flex-direction: column;
+      padding: 0.6rem 1rem;
+      border-top: 1px solid darken($base-color, 3%);
+      position: relative;
+      border-left: 4px solid transparent;
+      &.completed {
+        border-left-color: $success-color;
+      }
+      &.pending {
+        border-left-color: $warning-color;
+      }
+      &.toBeReviewed {
+        border-left-color: $info-color;
+      }
+      &:last-child {
+        border-top: 0;
+      }
+      .action-dropdown {
+        position: absolute;
+        right: 8px;
+        top: 8px;
+      }
+      .header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding-bottom: 0.5rem;
+        .project-details {
+          flex: 1;
+          width: auto;
+          h4 {
+            font-size: 0.8rem;
+          }
+        }
+        .label-tags {
+          flex-basis: 50%;
+          display: flex;
+          justify-content: flex-end;
+          padding-right: 1rem;
+          li {
+            margin-right: 0.5rem;
+          }
+        }
+      }
+      .content {
+        h4 {
+          font-size: 0.9rem;
+          font-weight: 500;
+          margin-bottom: 0.4rem;
+          .show-description-icon {
+            margin-right: 0.4rem;
+          }
+          .created-on {
+            float: right;
+            font-size: 0.6rem;
+            font-style: italic;
+            color: darken($base-color, 20%);
+          }
+        }
+        .description {
+          display: none;
+          font-size: 0.8rem;
+          color: rgba($dark-color, 0.6);
+          &.show {
+            display: block;
+          }
+        }
+      }
+    }
+  }
+}
+
+.filter-row {
+  display: flex;
+  align-items: center;
+  margin-bottom: 1rem;
+  border: 1px solid rgba($dark-color, 0.1);
+  background-color: $base-color;
+  padding: 0.5rem 1rem;
+  border-radius: 5px;
+  &-item {
+    margin-right: 1rem;
+    &:last-child {
+      margin-right: 0;
+    }
+  }
+}
+
+// .task-tab-content {
+//   .title {
+//     font-size: 0.9rem;
+//     color: $dark-color;
+//     text-transform: capitalize;
+//   }
+//   .sub-title {
+//     font-size: 0.8rem;
+//     color: $primary-color;
+//     font-weight: 400;
+//     span {
+//       color: rgba($dark-color, 0.3);
+//     }
+//   }
+//   .more-details {
+//     display: flex;
+//     margin-top: 0.5rem;
+//     align-items: center;
+//     li {
+//       margin-right: 1rem;
+//     }
+//   }
+//   .assigned-date {
+//     font-size: 0.8rem;
+//     margin-top: 0.5rem;
+//     label {
+//       font-weight: bold;
+//       color: $dark-color;
+//     }
+//   }
+// }
+
+// .task-table {
+//   th,
+//   td {
+//     background-color: transparent;
+//     padding: 1rem;
+//   }
+//   tr {
+//     border: 0;
+//     display: block;
+//     margin-bottom: 1rem;
+//     background-color: $light-color;
+//     border-radius: 20px;
+//     &.completed {
+//       border: 2px $success-color dashed;
+//     }
+//     &.pending {
+//       border: 2px $warning-color solid;
+//     }
+//     &.toBeReviewed {
+//       border: 2px $danger-color solid;
+//     }
+//     &.timeline-date {
+//       background-color: transparent;
+//       margin-bottom: 0;
+//       td {
+//         padding: 0.5rem 0;
+//       }
+//     }
+//   }
+// }
+
+.milestone-list {
+  li {
+    display: flex;
+    align-items: center;
+    border: 1px dashed $base-color;
+    padding: 10px;
+    .item {
+      padding: 0.5rem;
+      color: darken($secondary-color, 20%);
+    }
+    .amt {
+      color: $primary-color;
+      font-weight: 400;
+      font-size: 1rem;
+    }
+  }
+}
+
+.custom-combobox {
+  position: relative;
+  display: inline-block;
+}
+.custom-combobox-toggle {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  margin-left: -1px;
+  padding: 0;
+}
+.custom-combobox-input {
+  margin: 0;
+  padding: 5px 10px;
+}
+
+[data-toggle="toggle"] {
+  display: none;
+}
+
+.uploaded-file-list {
+  margin: 1rem 0;
+  width: 100%;
+  li {
+    position: relative;
+    padding: 0.5rem 2rem 0;
+    border-bottom: 1px dotted $base-color;
+    display: flex;
+    justify-content: space-between;
+    span {
+      cursor: pointer;
+    }
+    &:before {
+      position: absolute;
+      content: "\f019";
+      font-family: "Font Awesome 5 Free";
+      width: 30px;
+      height: 30px;
+      color: $primary-color;
+      left: 0;
+      font-weight: 600;
+    }
+  }
+}
+
+@import "./mobile";

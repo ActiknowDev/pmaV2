@@ -1,0 +1,42 @@
+/** @format */
+.page-auth {
+  background-color: $base-color;
+  display: flex;
+  align-items: center;
+  height: 100vh;
+
+  .auth-wrap {
+    width: 800px;
+    margin: 0 auto;
+    box-shadow: 0 1px 1px darken($base-color, 10%);
+    min-height: 450px;
+    max-width: 100%;
+    display: flex;
+    .auth-item {
+      width: 50%;
+      height: 450px;
+      &.content {
+        background-color: $primary-color;
+        justify-content: center;
+        align-items: center;
+        position: relative;
+        display: flex;
+        p {
+          color: rgba($light-color, 0.8);
+        }
+        .copyright {
+          position: absolute;
+          bottom: 1rem;
+        }
+      }
+      &.form {
+        background-color: $light-color;
+        padding: 4rem 3rem;
+        .action-field {
+          display: flex;
+          justify-content: space-between;
+        }
+      }
+    }
+  }
+}

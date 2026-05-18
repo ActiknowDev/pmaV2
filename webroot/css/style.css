@@ -1,0 +1,12 @@
+.error {
+    color: red;
+}
+
+#ui-id-1 {
+    top: 263.297px;
+    left: 690.5px;
+    overflow: scroll;
+    max-height: 260px !important;
+    width: 408.422px;
+    display: none;
+}

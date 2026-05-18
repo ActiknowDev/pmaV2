@@ -1,0 +1,79 @@
+/** @format */
+
+.app-content {
+  padding-top: 65px;
+  min-height: 100vh;
+  background-color: $base-color;
+}
+
+.page {
+  &-title,
+  &-filter,
+  &-content {
+    padding: 1rem 0;
+  }
+  &-title {
+    @include set-background($light-color);
+    .heading {
+      margin-bottom: 0;
+    }
+  }
+}
+
+// APP HEADER
+.app-header {
+  .checkbtn {
+    font-size: 30px;
+    float: right;
+    line-height: 60px;
+    margin-right: 15px;
+    cursor: pointer;
+    display: none;
+  }
+  #check {
+    display: none;
+  }
+
+  nav {
+    display: flex;
+    height: 65px;
+    background-color: $primary-color;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.4rem 6.5rem;
+    position: fixed;
+    z-index: 10;
+    width: 100%;
+    top: 0;
+    ul {
+      display: flex;
+      li > a {
+        color: $dark-color;
+        padding: 0.6rem 0rem;
+        letter-spacing: 0.1rem;
+        color: $light-color;
+        font-size: 0.8rem;
+        border-bottom: 3px solid transparent;
+        display: inline-block;
+        margin-left: 1.5rem;
+        line-height: 40px;
+        text-transform: uppercase;
+        &.active,
+        &:hover {
+          text-decoration: none;
+          border-bottom: 2px solid $light-color;
+        }
+      }
+      .nav-dropdown {
+        a {
+          display: block;
+          padding: 0.5rem 1rem;
+          font-size: 0.9rem;
+          &:hover {
+            text-decoration: none;
+          }
+        }
+      }
+    }
+  }
+}

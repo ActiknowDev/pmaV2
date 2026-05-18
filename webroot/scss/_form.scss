@@ -1,0 +1,66 @@
+/** @format */
+
+label {
+  color: $dark-color;
+  font-weight: bold;
+}
+
+.form-check-btn {
+  margin-bottom: 0;
+  border: 1px solid darken($base-color, 20%);
+  padding: 0.1rem 0.5rem;
+  display: flex;
+  align-items: center;
+  border-radius: 4px;
+  label {
+    font-weight: 600;
+    font-size: 0.7rem;
+  }
+  input {
+    margin-right: 0.5rem;
+  }
+}
+.form-control {
+  border: 1px solid darken($base-color, 10%);
+  font-size: 0.8rem;
+  font-weight: 600;
+  height: 35px;
+  &:focus {
+    box-shadow: none;
+    border-color: darken($base-color, 2%);
+  }
+  &::placeholder {
+    color: darken($base-color, 10%);
+    font-weight: normal;
+  }
+  &.input-sm {
+    height: 25px;
+    padding: 1px;
+  }
+}
+
+.wd-50 {
+  width: 50px;
+}
+.wd-100 {
+  width: 220px;
+}
+.wd-200 {
+  width: 200px;
+}
+
+.adon-group {
+  display: flex;
+  border: 1px solid darken($base-color, 10%);
+  border-radius: 3px;
+  .form-control,
+  .v-btn,
+  .icon {
+    border: 0;
+    border-radius: 0;
+    height: 33px;
+  }
+  .form-control {
+    padding-left: 4px;
+  }
+}
