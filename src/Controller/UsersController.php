@@ -604,8 +604,8 @@ class UsersController extends AppController
 		$conn = ConnectionManager::get('default');
 		$this->Authorization->skipAuthorization();
 
-		$this->Projects = TableRegistry::get('Projects');
-		$this->Users = TableRegistry::get('Users');
+		$this->Projects = $this->fetchTable('Projects');//TableRegistry::get('Projects');
+		$this->Users = $this->fetchTable('Users');
 		$user = $this->Users
 			->findById($id)
 			->firstOrFail();
@@ -2346,7 +2346,7 @@ class UsersController extends AppController
 
 		$column_list = "aps.`id`,aps.`completed`, aps.`completed_date`, aps.`status`, aps.`approved`, aps.`task_name`, aps.`description`, aps.`due_date`, aps.`created_at`, aps.`modified_at`, aps.`project_id`, aps.`extend_days`, aps.`extend_count`";
 
-
+		$this->Projects = $this->fetchTable("Projects");
 		$projects_data =  $this->Projects
 			->find("all")
 			->where(['active' => 1])
@@ -2526,7 +2526,16 @@ class UsersController extends AppController
 			$stmtUsers2 = $conn->execute($query);
 			$myTeam = $stmtUsers2->fetchAll("assoc");
 		} else {
-
+			$this->MyTeams = $this->fetchTable("MyTeams");
+			// $team_id_get = $this->MyTeams->find("list", [
+			// 	"valueField" => "id",
+			// 	"conditions" => [
+			// 		"OR" => [
+			// 			"MyTeams.tech_lead" => $user_id,
+			// 			"MyTeams.project_manager" => $user_id
+			// 		]
+			// 	]
+			// ])->toList();
 			$team_id_get = $this->MyTeams->find("list", [
 				"valueField" => "id",
 				"conditions" => [
@@ -2534,11 +2543,8 @@ class UsersController extends AppController
 						"MyTeams.tech_lead" => $user_id,
 						"MyTeams.project_manager" => $user_id
 					]
-
 				]
-
-			])->toList();
-
+			])->toArray();
 			$condition_array = [];
 
 			if (!empty($team_id_get)) {
@@ -2547,15 +2553,20 @@ class UsersController extends AppController
 				$condition_array["id IN"] = $team_id_get;
 			}
 
+			// $tech_lead_arr = $this->MyTeams->find("list", [
+			// 	"valueField" => "tech_lead",
+			// 	"conditions" => $condition_array
+			// ])->toList();
+
 			$tech_lead_arr = $this->MyTeams->find("list", [
 				"valueField" => "tech_lead",
 				"conditions" => $condition_array
-			])->toList();
+			])->toArray();
 
 			$project_manager_list = $this->MyTeams->find("list", [
 				"valueField" => "project_manager",
 				"conditions" => $condition_array
-			])->toList();
+			])->toArray();
 
 
 
@@ -2658,7 +2669,7 @@ class UsersController extends AppController
 
 
 
-
+		$this->AssigendProjectTasks = $this->fetchTable("AssigendProjectTasks");
 		$completed_task = $this->AssigendProjectTasks->find("all")
 			->contain(["Assigned_to_data", "Assigned_by_data", "Projects", "Projects.Client"])
 			->where(["assigned_to" => $user_id, "completed" => 1, 'approved' => 0]);

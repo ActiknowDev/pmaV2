@@ -26,7 +26,7 @@ class MyTeamResource extends Entity
      *
      * @var array
      */
-    protected $_accessible = [
+    protected array $_accessible = [
         'my_team_id' => true,
         'resid' => true,
         'created_at' => true,

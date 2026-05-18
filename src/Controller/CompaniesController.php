@@ -61,7 +61,7 @@ class CompaniesController extends AppController
 		$role = $userSession['role'];
 		$session->write('menu', 0);
 
-		$company = TableRegistry::get('Users');
+		$company = this->fetchTable('Users');
 
 		$companies = $company
 			->find()
@@ -90,7 +90,7 @@ class CompaniesController extends AppController
 
 
 		if ($this->request->is('post')) {
-			$this->Users = TableRegistry::get('Users');
+			$this->Users = this->fetchTable('Users');
 			$company = $this->Users->newEmptyEntity();
 			$company = $this->Users->patchEntity($company, $this->request->getData());
 			$company->name = $this->request->getData('contact_person_name');
@@ -108,7 +108,7 @@ class CompaniesController extends AppController
 		$this->autoRender = false;
 		$this->Authorization->skipAuthorization();
 		if ($this->request->is('ajax')) {
-			$company = TableRegistry::get('Users');
+			$company = this->fetchTable('Users');
 			$query = $company->query();
 			$query->update()
 				->set(['status' => $status])
@@ -127,7 +127,7 @@ class CompaniesController extends AppController
 		$this->autoRender = false;
 		$this->Authorization->skipAuthorization();
 		if ($this->request->is('ajax')) {
-			$company = TableRegistry::get('Projects');
+			$company = this->fetchTable('Projects');
 			$query = $company->query();
 			$query->update()
 				->set(['active' => $status])
@@ -148,7 +148,7 @@ class CompaniesController extends AppController
 	public function delete($id)
 	{
 		$this->Authorization->skipAuthorization();
-		$company = TableRegistry::get('Users');
+		$company = this->fetchTable('Users');
 		$query = $company->query();
 		$query->update()
 			->set(['deleted' => 0])
@@ -160,7 +160,7 @@ class CompaniesController extends AppController
 	{
 		$this->autoRender = false;
 		$this->Authorization->skipAuthorization();
-		$company = TableRegistry::get('Users');
+		$company = this->fetchTable('Users');
 		$company = $company
 			->findById($id)
 			->firstOrFail();
@@ -171,7 +171,7 @@ class CompaniesController extends AppController
 	{
 		$this->autoRender = false;
 		$this->Authorization->skipAuthorization();
-		$this->Users = TableRegistry::get('Users');
+		$this->Users = this->fetchTable('Users');
 		$company = $this->Users
 			->findById($id)
 			->firstOrFail();
@@ -189,7 +189,7 @@ class CompaniesController extends AppController
 	public function loginVendor($id)
 	{
 		$this->Authorization->skipAuthorization();
-		$this->Users = TableRegistry::get('Users');
+		$this->Users = this->fetchTable('Users');
 		$session = new \Cake\Http\Session();
 
 		$user = $this->Users
@@ -230,7 +230,7 @@ class CompaniesController extends AppController
 	// 	$this->viewBuilder()->setLayout('default_new');
 	// 	$this->Authorization->skipAuthorization();
 	// 	$conn = ConnectionManager::get('default');
-	// 	$this->Users = TableRegistry::get('Users');
+	// 	$this->Users = this->fetchTable('Users');
 
 	// 	$session = new \Cake\Http\Session();
 	// 	$userSession = $session->read('data');
@@ -240,7 +240,7 @@ class CompaniesController extends AppController
 
 	// 	if ($this->request->is('post')) {
 	// 		$this->autoRender = false;
-	// 		$this->Projects = TableRegistry::get('Projects');
+	// 		$this->Projects = this->fetchTable('Projects');
 
 	// 		$projects = $this->Projects->find('all')
 	// 			->select(['id'])
@@ -496,7 +496,7 @@ class CompaniesController extends AppController
 		$this->viewBuilder()->setLayout('default_new');
 		$this->Authorization->skipAuthorization();
 		$conn = ConnectionManager::get('default');
-		$this->Users = TableRegistry::get('Users');
+		$this->Users = $this->fetchTable('Users');
 
 		$session = new \Cake\Http\Session();
 		$userSession = $session->read('data');
@@ -505,7 +505,7 @@ class CompaniesController extends AppController
 
 		if ($this->request->is('post')) {
 			$this->autoRender = false;
-			$this->Projects = TableRegistry::get('Projects');
+			$this->Projects = $this->fetchTable('Projects');
 
 			$projects = $this->Projects->find('all')
 				->select(['id'])
@@ -764,7 +764,7 @@ class CompaniesController extends AppController
 		$this->viewBuilder()->setLayout('default_new');
 		$conn = ConnectionManager::get('default');
 		$this->Authorization->skipAuthorization();
-		$this->Projects = TableRegistry::get('Projects');
+		$this->Projects = $this->fetchTable('Projects');
 		$session = new \Cake\Http\Session();
 		$userSession = $session->read('data');
 		$user_id = $userSession['id'];
@@ -931,7 +931,7 @@ class CompaniesController extends AppController
 		$this->viewBuilder()->setLayout('default_new');
 		$conn = ConnectionManager::get('default');
 		$this->Authorization->skipAuthorization();
-		$this->Projects = TableRegistry::get('Projects');
+		$this->Projects = $this->fetchTable('Projects');
 		$session = new \Cake\Http\Session();
 		$this->request->getSession()->write('managerId', $manager_id);
 		$this->request->getSession()->write('page', 'listproject');
@@ -1073,7 +1073,7 @@ class CompaniesController extends AppController
 		$this->viewBuilder()->setLayout('default_new');
 		$conn = ConnectionManager::get('default');
 		$this->Authorization->skipAuthorization();
-		$this->Projects = TableRegistry::get('Projects');
+		$this->Projects = $this->fetchTable('Projects');
 
 		$this->request->getSession()->write('managerId', $manager_id);
 		$this->request->getSession()->write('page', 'active');
@@ -1208,8 +1208,8 @@ class CompaniesController extends AppController
 		$this->viewBuilder()->setLayout('default_new');
 		$conn = ConnectionManager::get('default');
 		$this->Authorization->skipAuthorization();
-		$this->Projects = TableRegistry::get('Projects');
-		$this->Users = TableRegistry::get('Users');
+		$this->Projects = $this->fetchTable('Projects');
+		$this->Users = $this->fetchTable('Users');
 
 		$mId = $this->request->getSession()->read('managerId');
 		// $userId = $this->request->getSession()->read('userId');
@@ -1357,9 +1357,9 @@ class CompaniesController extends AppController
 			// print_r($this->request->getData());
 			// die;
 			$this->autoRender = false;
-			$this->Projects = TableRegistry::get('Projects');
-			$this->Users = TableRegistry::get('Users');
-			$project_resource = TableRegistry::get('ProjectResources');
+			$this->Projects = $this->fetchTable('Projects');
+			$this->Users = $this->fetchTable('Users');
+			$project_resource = $this->fetchTable('ProjectResources');
 
 			$id = $this->request->getData('project_id');
 			$project = $this->Projects
@@ -1512,7 +1512,7 @@ class CompaniesController extends AppController
 	{
 		$this->Authorization->skipAuthorization();
 		$conn = ConnectionManager::get('default');
-		$this->Projects = TableRegistry::get('Projects');
+		$this->Projects = $this->fetchTable('Projects');
 
 		// echo $id;
 		// die;
@@ -1622,8 +1622,8 @@ class CompaniesController extends AppController
 		$this->autoRender = false;
 		$this->Authorization->skipAuthorization();
 		$conn = ConnectionManager::get('default');
-		$this->Projects = TableRegistry::get('Projects');
-		$this->ProjectMilestones = TableRegistry::get('ProjectMilestones');
+		$this->Projects = $this->fetchTable('Projects');
+		$this->ProjectMilestones = $this->fetchTable('Projects');
 		$mile = $this->ProjectMilestones->newEmptyEntity();
 
 		if ($this->request->is('ajax')) {
@@ -1683,7 +1683,7 @@ class CompaniesController extends AppController
 	{
 		$this->autoRender = false;
 		$this->Authorization->skipAuthorization();
-		$this->ProjectMilestones = TableRegistry::get('ProjectMilestones');
+		$this->ProjectMilestones = $this->fetchTable('ProjectMilestones');
 		$this->loadModel("Projects");
 		if ($type == 'edit') {
 			$miles = $this->ProjectMilestones
@@ -1723,7 +1723,7 @@ class CompaniesController extends AppController
 	{
 		$this->autoRender = false;
 		$this->Authorization->skipAuthorization();
-		$this->ProjectMilestones = TableRegistry::get('ProjectMilestones');
+		$this->ProjectMilestones = $this->fetchTable('ProjectMilestones');
 		$id = $this->request->getData('mile_id');
 		$mile = $this->ProjectMilestones
 			->findById($id)
@@ -1824,8 +1824,8 @@ class CompaniesController extends AppController
 		$this->autoRender = false;
 		$this->Authorization->skipAuthorization();
 		$conn = ConnectionManager::get('default');
-		$this->Projects = TableRegistry::get('Projects');
-		$this->ProjectPayments = TableRegistry::get('ProjectPayments');
+		$this->Projects = $this->fetchTable('Projects');
+		$this->ProjectPayments = $this->fetchTable('ProjectPayments');
 		$payment = $this->ProjectPayments->newEmptyEntity();
 
 		if ($this->request->is('ajax')) {
@@ -1862,7 +1862,7 @@ class CompaniesController extends AppController
 	{
 		$this->autoRender = false;
 		$this->Authorization->skipAuthorization();
-		$this->ProjectPayments = TableRegistry::get('ProjectPayments');
+		$this->ProjectPayments = $this->fetchTable('ProjectPayments');
 		if ($type == 'edit') {
 			$payment = $this->ProjectPayments
 				->findById($id)
@@ -1881,7 +1881,7 @@ class CompaniesController extends AppController
 	{
 		$this->autoRender = false;
 		$this->Authorization->skipAuthorization();
-		$this->ProjectPayments = TableRegistry::get('ProjectPayments');
+		$this->ProjectPayments = $this->fetchTable('ProjectPayments');
 		$id = $this->request->getData('payment_id');
 		$payment = $this->ProjectPayments
 			->findById($id)
@@ -1911,10 +1911,10 @@ class CompaniesController extends AppController
 		$this->autoRender = false;
 		$this->Authorization->skipAuthorization();
 		if ($this->request->is('ajax')) {
-			$this->Projects = TableRegistry::get('Projects');
-			$this->ProjectMilestones = TableRegistry::get('ProjectMilestones');
-			$this->ProjectPayments = TableRegistry::get('ProjectPayments');
-			$this->ProjectTasks = TableRegistry::get('ProjectTasks');
+			$this->Projects = $this->fetchTable('Projects');
+			$this->ProjectMilestones = $this->fetchTable('ProjectMilestones');
+			$this->ProjectPayments = $this->fetchTable('ProjectPayments');
+			$this->ProjectTasks = $this->fetchTable('ProjectTasks');
 
 			if ($type == 'project') {
 				$query = $this->Projects->query();
@@ -1962,7 +1962,7 @@ class CompaniesController extends AppController
 		$this->autoRender = false;
 		$this->Authorization->skipAuthorization();
 
-		$this->ProjectTasks = TableRegistry::get('ProjectTasks');
+		$this->ProjectTasks = $this->fetchTable('ProjectTasks');
 		$tasks = $this->ProjectTasks->newEmptyEntity();
 
 		if ($this->request->is('ajax')) {
@@ -1995,7 +1995,7 @@ class CompaniesController extends AppController
 	{
 		$this->autoRender = false;
 		$this->Authorization->skipAuthorization();
-		$this->ProjectTasks = TableRegistry::get('ProjectTasks');
+		$this->ProjectTasks = $this->fetchTable('ProjectTasks');
 		if ($type == 'edit') {
 			$tasks = $this->ProjectTasks
 				->findById($id)
@@ -2015,7 +2015,7 @@ class CompaniesController extends AppController
 	{
 		$this->autoRender = false;
 		$this->Authorization->skipAuthorization();
-		$this->ProjectTasks = TableRegistry::get('ProjectTasks');
+		$this->ProjectTasks = $this->fetchTable('ProjectTasks');
 		$id = $this->request->getData('task_id');
 		$tasks = $this->ProjectTasks
 			->findById($id)
@@ -2095,7 +2095,7 @@ class CompaniesController extends AppController
 		$this->viewBuilder()->setLayout('default_new');
 		$conn = ConnectionManager::get('default');
 		$this->Authorization->skipAuthorization();
-		$this->Projects = TableRegistry::get('Projects');
+		$this->Projects = $this->fetchTable('Projects');
 
 		$session = new \Cake\Http\Session();
 		$userSession = $session->read('data');
@@ -2177,7 +2177,7 @@ class CompaniesController extends AppController
 		$this->viewBuilder()->setLayout('default_new');
 		$conn = ConnectionManager::get('default');
 		$this->Authorization->skipAuthorization();
-		$this->Projects = TableRegistry::get('Projects');
+		$this->Projects = $this->fetchTable('Projects');
 
 		$session = new \Cake\Http\Session();
 		$userSession = $session->read('data');
@@ -2258,8 +2258,8 @@ class CompaniesController extends AppController
 		$this->viewBuilder()->setLayout('default_new');
 		$conn = ConnectionManager::get('default');
 		$this->Authorization->skipAuthorization();
-		$this->Projects = TableRegistry::get('Projects');
-		$this->Users = TableRegistry::get('Users');
+		$this->Projects = $this->fetchTable('Projects');
+		$this->Users = $this->fetchTable('Users');
 
 		$mId = $this->request->getSession()->read('managerId');
 		// $userId = $this->request->getSession()->read('userId');
@@ -3209,7 +3209,7 @@ class CompaniesController extends AppController
 		$roleArray = $userSession['role_name'];
 
 		if (in_array(4, $roleArray)) {
-			$this->Users = TableRegistry::get('Users');
+			$this->Users = this->fetchTable('Users');
 			$mId = $this->request->getSession()->read('managerId');
 			$parent_id = ($role == 1) ? $userSession['id'] : $userSession['parent_id'];
 			$assignedList = $this->Users->find()
@@ -3233,7 +3233,7 @@ class CompaniesController extends AppController
 			$oppstage = $this->Stage->find()->where(['deleted'=>0])->toArray();
 
 			if ($this->request->is(['post', 'put'])) {
-				$this->Opportunity = TableRegistry::get('Opportunity');
+				$this->Opportunity = this->fetchTable('Opportunity');
 				$opportunity = $this->Opportunity->newEmptyEntity();
 				$opportunity['user_id'] = $user_id;
 				$opportunity['opportunity_name'] = $this->request->getData('opportunity_name');
@@ -3289,7 +3289,7 @@ class CompaniesController extends AppController
 			$this->viewBuilder()->setLayout('default_new');
 			$conn = ConnectionManager::get('default');
 			$this->Authorization->skipAuthorization();
-			$this->Users = TableRegistry::get('Users');
+			$this->Users = this->fetchTable('Users');
 			$mId = $this->request->getSession()->read('managerId');
 			$session = new \Cake\Http\Session();
 			$userSession = $session->read('data');
@@ -3479,7 +3479,7 @@ class CompaniesController extends AppController
 
 			if ($this->request->is(['post', 'put'])) {
 				$id=$this->request->getData('id');
-				$this->Probability = TableRegistry::get('Probability');
+				$this->Probability = this->fetchTable('Probability');
 				if($id && !empty($id)) {
 					$probability = $this->Probability->get($id);
 				} else {
@@ -3838,8 +3838,8 @@ class CompaniesController extends AppController
 		$roleArray = $userSession['role_name'];
 
 		if (in_array(4, $roleArray)) {
-			$this->Users = TableRegistry::get('Users');
-			$this->Projects = TableRegistry::get('Projects');
+			$this->Users = this->fetchTable('Users');
+			$this->Projects = this->fetchTable('Projects');
 			$mId = $this->request->getSession()->read('managerId');
 			$parent_id = ($role == 1) ? $userSession['id'] : $userSession['parent_id'];
 			$assignedList = $this->Users->find()
@@ -3889,7 +3889,7 @@ class CompaniesController extends AppController
 				$clientName = $client->client_name;
 				$email = $this->request->getData('client_email');
 
-				$this->SupportPlan = TableRegistry::get('SupportPlan');
+				$this->SupportPlan = this->fetchTable('SupportPlan');
 				$plan = $this->SupportPlan->newEmptyEntity();
 				$plan['user_id'] = $user_id;
 				$plan['plan_id'] = $this->request->getData('plan_id');
@@ -3985,8 +3985,8 @@ class CompaniesController extends AppController
 		$conn = ConnectionManager::get('default');
 		$this->Authorization->skipAuthorization();
 		$session = new \Cake\Http\Session();
-		$this->Projects = TableRegistry::get('Projects');
-		$this->Users = TableRegistry::get('Users');
+		$this->Projects = this->fetchTable('Projects');
+		$this->Users = this->fetchTable('Users');
 	
 		if ($this->request->is('ajax')) {
 			$client_id = $this->request->getData('client_id');
@@ -4007,8 +4007,8 @@ class CompaniesController extends AppController
 		$conn = ConnectionManager::get('default');
 		$this->Authorization->skipAuthorization();
 		$session = new \Cake\Http\Session();
-		$this->Users = TableRegistry::get('Users');
-		$this->Projects = TableRegistry::get('Projects');
+		$this->Users = this->fetchTable('Users');
+		$this->Projects = this->fetchTable('Projects');
 	
 		if ($this->request->is('ajax')) {
 			$project_id = $this->request->getData('project_id');
@@ -4028,8 +4028,8 @@ class CompaniesController extends AppController
 			$this->viewBuilder()->setLayout('default_new');
 			$conn = ConnectionManager::get('default');
 			$this->Authorization->skipAuthorization();
-			$this->Users = TableRegistry::get('Users');
-			$this->Projects = TableRegistry::get('Projects');
+			$this->Users = this->fetchTable('Users');
+			$this->Projects = this->fetchTable('Projects');
 			$mId = $this->request->getSession()->read('managerId');
 			$session = new \Cake\Http\Session();
 			$userSession = $session->read('data');

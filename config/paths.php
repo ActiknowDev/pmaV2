@@ -92,3 +92,21 @@ define('CAKE_CORE_INCLUDE_PATH', ROOT . DS . 'vendor' . DS . 'cakephp' . DS . 'c
  */
 define('CORE_PATH', CAKE_CORE_INCLUDE_PATH . DS);
 define('CAKE', CORE_PATH . 'src' . DS);
+
+$web_path = '';
+if (isset($_SERVER['SERVER_NAME'])) {
+	if (isset($_SERVER['HTTPS']) && ($_SERVER['HTTPS'] == 'on' || $_SERVER['HTTPS'] == 1) || isset($_SERVER['HTTP_X_FORWARDED_PROTO']) && $_SERVER['HTTP_X_FORWARDED_PROTO'] == 'https') {
+		$web_path = 'https://' . $_SERVER['SERVER_NAME'] . '/pma_php_upgrade_version/';
+
+	} else {
+		$web_path = 'http://' . $_SERVER['SERVER_NAME'] . '/pma_php_upgrade_version/';
+	}
+}
+define('WEBURL', $web_path);
+
+//define('path', ROOT.'\actiknowcalendar.json',true);
+define('SITE_ROOT', realpath(dirname("webroot")));
+define('BUG_REPORTING', 'http://44.230.62.131/bug-reporting/img/tickets_file');
+
+define('UW_CLIENTID', 'f397daf6198b028fc6b60d5d72b0f030');
+define('UW_CLIENTSECRET', '14943cf02a1aec2e');

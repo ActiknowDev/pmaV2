@@ -39,7 +39,7 @@ class AssigendProjectTask extends Entity
      *
      * @var array
      */
-    protected $_accessible = [
+    protected array $_accessible = [
         'assigned_to' => true,
         'assigned_by' => true,
         'completed' => true,

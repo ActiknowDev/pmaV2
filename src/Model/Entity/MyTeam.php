@@ -28,7 +28,7 @@ class MyTeam extends Entity
      *
      * @var array
      */
-    protected $_accessible = [
+    protected array $_accessible = [
         'created_by' => true,
         'tech_lead' => true,
         'project_manager' => true,
