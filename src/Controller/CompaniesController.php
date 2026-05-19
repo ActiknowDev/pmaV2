@@ -1202,310 +1202,310 @@ class CompaniesController extends AppController
 		$this->set(compact('projects', 'total', 'active', 'complete', 'my', 'count', 'active', 'projectManagers', 'totalPaid', 'totalAmount', 'manager_id'));
 	}
 
-	public function editProject($id, $manager_id = null)
-	{
-		//set layout
-		$this->viewBuilder()->setLayout('default_new');
-		$conn = ConnectionManager::get('default');
-		$this->Authorization->skipAuthorization();
-		$this->Projects = $this->fetchTable('Projects');
-		$this->Users = $this->fetchTable('Users');
-
-		$mId = $this->request->getSession()->read('managerId');
-		// $userId = $this->request->getSession()->read('userId');
-		$page = $this->request->getSession()->read('page');
-
-		$this->request->getSession()->delete('managerId');
-		$this->request->getSession()->delete('page');
-
-		// echo $mId;
-		// echo $page;
-		// die;
-
-		$session = new \Cake\Http\Session();
-		$userSession = $session->read('data');
-		$role = $userSession['role'];
-		$user_id = $parent_id = ($role == 1) ? $userSession['id'] : $userSession['parent_id'];
-
-		$query = "SELECT p.*,c.client_name FROM projects p LEFT JOIN users c ON p.client_id = c.id WHERE p.deleted=1 AND p.id=" . $id;
-		$stmtProduct = $conn->execute($query);
-		$list = $stmtProduct->fetchAll('assoc');
-
-		$projects = array();
-		$miles = array();
-		$payments = array();
-		$reslist = array();
-		$resourceList = array();
-		foreach ($list as $l) {
-			$p['id'] = $l['id'];
-			$p['project_name'] = $l['project_name'];
-			$p['client']    = $l['client_name'];
-			$p['upwork_ref_id']    = $l['upwork_ref_id'];
-			$p['award']   = date('m/d/Y', strtotime($l['awarded_on']));
-			$p['due_date'] = date('m/d/Y', strtotime($l['due_date']));
-			$p['type'] = $l['project_type'];
-			$p['amount'] = $l['amount'];
-			$p['status'] = $l['status'];
-			$p['mlid'] = $l['milestone_id'];
-			$p['payid'] = $l['payment_id'];
-			$p['project_manager_id'] = $l['project_manager_id'];
-			$p['tech_lead_id'] = $l['tech_lead_id'];
-			$p['bd_id'] = $l['bd_id'];
-			$p['resources'] = $l['resources'];
-			$p['hourly_rate'] = $l['hourly_rate'];
-			$p['bill'] = $l['bill'];
-			$p['source'] = $l['source'];
-
-			$projects[] = $p;
-			$mileid = $l['milestone_id'];
-			$paymentid = $l['payment_id'];
-			$resourceid = $l['resources'];
-		}
-		if ($mileid) {
-			$query = "SELECT p.* FROM project_milestones p WHERE p.project_id =" . $id . " AND deleted=0";
-			$stmtProduct = $conn->execute($query);
-			$list = $stmtProduct->fetchAll('assoc');
-
-			foreach ($list as $l) {
-				$query = "SELECT p.* FROM project_tasks p WHERE p.milestone_id =" . $l['id'];
-				$stmtProduct = $conn->execute($query);
-				$tlist = $stmtProduct->fetchAll('assoc');
-				$p['task_list'] = array();
-				if (count($tlist) > 0) {
-					foreach ($tlist as $tl) {
-						$t['id'] = $tl['id'];
-						$t['task'] = $tl['task'];
-						$t['due_date'] = ($tl['due_date'] != '1800-01-01') ? date('d F Y', strtotime($tl['due_date'])) : '';
-						$t['status'] = $tl['status'];
-						$p['task_list'][] = $t;
-					}
-				}
-
-				$p['id'] = $l['id'];
-				$p['title'] = $l['title'];
-				$p['due_date'] = date('d F Y', strtotime($l['due_date']));
-				$p['amount'] = $l['amount'];
-				$p['status'] = $l['status'];
-
-				$miles[] = $p;
-			}
-		}
-
-		if ($paymentid) {
-			$query = "SELECT p.* FROM project_payments p WHERE p.id IN (" . $paymentid . ")";
-			$stmtProduct = $conn->execute($query);
-			$list = $stmtProduct->fetchAll('assoc');
-
-			foreach ($list as $l) {
-				$p['id'] = $l['id'];
-				$p['description'] = $l['description'];
-				$p['payment_date'] = date('d F Y', strtotime($l['payment_date']));
-				$p['receive_amt'] = $l['receive_amt'];
-				$p['status'] = $l['status'];
-
-				$payments[] = $p;
-			}
-		}
-
-		if ($resourceid) {
-			$query = "SELECT id,name FROM users WHERE id IN (" . $resourceid . ")";
-			$stmtProduct = $conn->execute($query);
-			$list = $stmtProduct->fetchAll('assoc');
-			foreach ($list as $l) {
-				$n = explode(' ', $l['name']);
-
-				$t['name'] = $n[0];
-				$reslist[] = $t;
-			}
-
-			if (count($miles) > 0) {
-				foreach ($miles as $m) {
-					$abc['id'] = $m['id'];
-					$abc['title'] = $m['title'];
-					$abc['status'] = $m['status'];
-					$abc['due_date'] = $m['due_date'];
-					$abc['res'] = array();
-					foreach ($list as $l) {
-						$n = explode(' ', $l['name']);
-
-						$t['name'] = $n[0];
-						$t['id'] = $l['id'];
-						$t['time'] = $t['worked'] = 0;
-
-						$query = "SELECT time_slot FROM project_allocations WHERE milestone_id=" . $m['id'] . " AND resource_id=" . $l['id'];
-						$stmtProduct = $conn->execute($query);
-						$mlist = $stmtProduct->fetchAll('assoc');
-						if (count($mlist) > 0)
-							$t['time'] = $mlist[0]['time_slot'];
-
-						$query = "SELECT IFNULL(SUM(time_used),0) as worked FROM user_timesheets WHERE milestone_id=" . $m['id'] . " AND resource_id=" . $l['id'];
-						$stmtProduct = $conn->execute($query);
-						$mlist = $stmtProduct->fetchAll('assoc');
-						if (count($mlist) > 0)
-							$t['worked'] = $mlist[0]['worked'];
-						$abc['res'][] = $t;
-					}
-
-					$resourceList[] = $abc;
-				}
-			}
-		}
-
-		if ($this->request->is('post')) {
-
-			// echo "<pre>";
-			// print_r($this->request->getData());
-			// die;
-			$this->autoRender = false;
+		public function editProject($id, $manager_id = null)
+		{
+			//set layout
+			$this->viewBuilder()->setLayout('default_new');
+			$conn = ConnectionManager::get('default');
+			$this->Authorization->skipAuthorization();
 			$this->Projects = $this->fetchTable('Projects');
 			$this->Users = $this->fetchTable('Users');
-			$project_resource = $this->fetchTable('ProjectResources');
 
-			$id = $this->request->getData('project_id');
-			$project = $this->Projects
-				->findById($id)
-				->firstOrFail();
+			$mId = $this->request->getSession()->read('managerId');
+			// $userId = $this->request->getSession()->read('userId');
+			$page = $this->request->getSession()->read('page');
 
-			$project = $this->Projects->patchEntity($project, $this->request->getData());
-			//get client id
-			$client = $this->Users->find('all')
-				->select(['id'])
-				->where(['client_name' => $this->request->getData('client_name'), 'company_id' => $parent_id])
-				->first();
+			$this->request->getSession()->delete('managerId');
+			$this->request->getSession()->delete('page');
 
-			$project->client_id = $client->id;
+			// echo $mId;
+			// echo $page;
+			// die;
 
-			$date = explode('/', $this->request->getData('awarded_on'));
-			$awarded_on = $date[2] . '-' . $date[0] . '-' . $date[1];
-			$project->awarded_on = $awarded_on;
+			$session = new \Cake\Http\Session();
+			$userSession = $session->read('data');
+			$role = $userSession['role'];
+			$user_id = $parent_id = ($role == 1) ? $userSession['id'] : $userSession['parent_id'];
 
-			$date = explode('/', $this->request->getData('due_date'));
-			$due_date = $date[2] . '-' . $date[0] . '-' . $date[1];
-			$project->due_date = $due_date;
+			$query = "SELECT p.*,c.client_name FROM projects p LEFT JOIN users c ON p.client_id = c.id WHERE p.deleted=1 AND p.id=" . $id;
+			$stmtProduct = $conn->execute($query);
+			$list = $stmtProduct->fetchAll('assoc');
 
-			$resource = $this->request->getData('resources');
-			$resources = implode(',', $resource);
-			$project->resources = $resources;
+			$projects = array();
+			$miles = array();
+			$payments = array();
+			$reslist = array();
+			$resourceList = array();
+			foreach ($list as $l) {
+				$p['id'] = $l['id'];
+				$p['project_name'] = $l['project_name'];
+				$p['client']    = $l['client_name'];
+				$p['upwork_ref_id']    = $l['upwork_ref_id'];
+				$p['award']   = date('m/d/Y', strtotime($l['awarded_on']));
+				$p['due_date'] = date('m/d/Y', strtotime($l['due_date']));
+				$p['type'] = $l['project_type'];
+				$p['amount'] = $l['amount'];
+				$p['status'] = $l['status'];
+				$p['mlid'] = $l['milestone_id'];
+				$p['payid'] = $l['payment_id'];
+				$p['project_manager_id'] = $l['project_manager_id'];
+				$p['tech_lead_id'] = $l['tech_lead_id'];
+				$p['bd_id'] = $l['bd_id'];
+				$p['resources'] = $l['resources'];
+				$p['hourly_rate'] = $l['hourly_rate'];
+				$p['bill'] = $l['bill'];
+				$p['source'] = $l['source'];
 
-			$milestones = '';
-			if (!empty($this->request->getData('milesid'))) {
-				$milestone = $this->request->getData('milesid');
-				$milestones = implode(',', $milestone);
+				$projects[] = $p;
+				$mileid = $l['milestone_id'];
+				$paymentid = $l['payment_id'];
+				$resourceid = $l['resources'];
 			}
-			$project->milestone_id = $milestones;
+			if ($mileid) {
+				$query = "SELECT p.* FROM project_milestones p WHERE p.project_id =" . $id . " AND deleted=0";
+				$stmtProduct = $conn->execute($query);
+				$list = $stmtProduct->fetchAll('assoc');
 
-			$payments = '';
-			if (!empty($this->request->getData('ptid'))) {
-				$payment = $this->request->getData('ptid');
-				$payments = implode(',', $payment);
-			}
-			$project->payment_id = $payments;
+				foreach ($list as $l) {
+					$query = "SELECT p.* FROM project_tasks p WHERE p.milestone_id =" . $l['id'];
+					$stmtProduct = $conn->execute($query);
+					$tlist = $stmtProduct->fetchAll('assoc');
+					$p['task_list'] = array();
+					if (count($tlist) > 0) {
+						foreach ($tlist as $tl) {
+							$t['id'] = $tl['id'];
+							$t['task'] = $tl['task'];
+							$t['due_date'] = ($tl['due_date'] != '1800-01-01') ? date('d F Y', strtotime($tl['due_date'])) : '';
+							$t['status'] = $tl['status'];
+							$p['task_list'][] = $t;
+						}
+					}
 
-			$project->hourly_rate = $this->request->getData('hourly_rate');
+					$p['id'] = $l['id'];
+					$p['title'] = $l['title'];
+					$p['due_date'] = date('d F Y', strtotime($l['due_date']));
+					$p['amount'] = $l['amount'];
+					$p['status'] = $l['status'];
 
-			if ($this->request->getData('bill') == "on")
-				$project->bill = "Non Billable";
-			else
-				$project->bill = "Billable";
-
-
-			if ($result = $this->Projects->save($project)) {
-
-				$project_resource->deleteAll(['project_id' => $id]);
-				$all_resource = [];
-				$m = 0;
-				foreach ($resource as $p_res) {
-					$all_resource[$m]['project_id'] = $id;
-					$all_resource[$m]['user_id'] = $p_res;
-					$m++;
+					$miles[] = $p;
 				}
-				$entities = $project_resource->newEntities($all_resource);
-				$project_resource->saveMany($entities);
-
-				$redirect = $this->request->getQuery('redirect', [
-					'controller' => 'Companies',
-					'action' => 'editProject',
-					$id
-				]);
-
-
-
-
-				return $this->redirect($redirect);
-			} else {
-				$this->Flash->error(__('Unable to update your project.'));
 			}
+
+			if ($paymentid) {
+				$query = "SELECT p.* FROM project_payments p WHERE p.id IN (" . $paymentid . ")";
+				$stmtProduct = $conn->execute($query);
+				$list = $stmtProduct->fetchAll('assoc');
+
+				foreach ($list as $l) {
+					$p['id'] = $l['id'];
+					$p['description'] = $l['description'];
+					$p['payment_date'] = date('d F Y', strtotime($l['payment_date']));
+					$p['receive_amt'] = $l['receive_amt'];
+					$p['status'] = $l['status'];
+
+					$payments[] = $p;
+				}
+			}
+
+			if ($resourceid) {
+				$query = "SELECT id,name FROM users WHERE id IN (" . $resourceid . ")";
+				$stmtProduct = $conn->execute($query);
+				$list = $stmtProduct->fetchAll('assoc');
+				foreach ($list as $l) {
+					$n = explode(' ', $l['name']);
+
+					$t['name'] = $n[0];
+					$reslist[] = $t;
+				}
+
+				if (count($miles) > 0) {
+					foreach ($miles as $m) {
+						$abc['id'] = $m['id'];
+						$abc['title'] = $m['title'];
+						$abc['status'] = $m['status'];
+						$abc['due_date'] = $m['due_date'];
+						$abc['res'] = array();
+						foreach ($list as $l) {
+							$n = explode(' ', $l['name']);
+
+							$t['name'] = $n[0];
+							$t['id'] = $l['id'];
+							$t['time'] = $t['worked'] = 0;
+
+							$query = "SELECT time_slot FROM project_allocations WHERE milestone_id=" . $m['id'] . " AND resource_id=" . $l['id'];
+							$stmtProduct = $conn->execute($query);
+							$mlist = $stmtProduct->fetchAll('assoc');
+							if (count($mlist) > 0)
+								$t['time'] = $mlist[0]['time_slot'];
+
+							$query = "SELECT IFNULL(SUM(time_used),0) as worked FROM user_timesheets WHERE milestone_id=" . $m['id'] . " AND resource_id=" . $l['id'];
+							$stmtProduct = $conn->execute($query);
+							$mlist = $stmtProduct->fetchAll('assoc');
+							if (count($mlist) > 0)
+								$t['worked'] = $mlist[0]['worked'];
+							$abc['res'][] = $t;
+						}
+
+						$resourceList[] = $abc;
+					}
+				}
+			}
+
+			if ($this->request->is('post')) {
+
+				// echo "<pre>";
+				// print_r($this->request->getData());
+				// die;
+				$this->autoRender = false;
+				$this->Projects = $this->fetchTable('Projects');
+				$this->Users = $this->fetchTable('Users');
+				$project_resource = $this->fetchTable('ProjectResources');
+
+				$id = $this->request->getData('project_id');
+				$project = $this->Projects
+					->findById($id)
+					->firstOrFail();
+
+				$project = $this->Projects->patchEntity($project, $this->request->getData());
+				//get client id
+				$client = $this->Users->find('all')
+					->select(['id'])
+					->where(['client_name' => $this->request->getData('client_name'), 'company_id' => $parent_id])
+					->first();
+
+				$project->client_id = $client->id;
+
+				$date = explode('/', $this->request->getData('awarded_on'));
+				$awarded_on = $date[2] . '-' . $date[0] . '-' . $date[1];
+				$project->awarded_on = $awarded_on;
+
+				$date = explode('/', $this->request->getData('due_date'));
+				$due_date = $date[2] . '-' . $date[0] . '-' . $date[1];
+				$project->due_date = $due_date;
+
+				$resource = $this->request->getData('resources');
+				$resources = implode(',', $resource);
+				$project->resources = $resources;
+
+				$milestones = '';
+				if (!empty($this->request->getData('milesid'))) {
+					$milestone = $this->request->getData('milesid');
+					$milestones = implode(',', $milestone);
+				}
+				$project->milestone_id = $milestones;
+
+				$payments = '';
+				if (!empty($this->request->getData('ptid'))) {
+					$payment = $this->request->getData('ptid');
+					$payments = implode(',', $payment);
+				}
+				$project->payment_id = $payments;
+
+				$project->hourly_rate = $this->request->getData('hourly_rate');
+
+				if ($this->request->getData('bill') == "on")
+					$project->bill = "Non Billable";
+				else
+					$project->bill = "Billable";
+
+
+				if ($result = $this->Projects->save($project)) {
+
+					$project_resource->deleteAll(['project_id' => $id]);
+					$all_resource = [];
+					$m = 0;
+					foreach ($resource as $p_res) {
+						$all_resource[$m]['project_id'] = $id;
+						$all_resource[$m]['user_id'] = $p_res;
+						$m++;
+					}
+					$entities = $project_resource->newEntities($all_resource);
+					$project_resource->saveMany($entities);
+
+					$redirect = $this->request->getQuery('redirect', [
+						'controller' => 'Companies',
+						'action' => 'editProject',
+						$id
+					]);
+
+
+
+
+					return $this->redirect($redirect);
+				} else {
+					$this->Flash->error(__('Unable to update your project.'));
+				}
+			}
+
+			// $user_id = $this->request->getAttribute('identity')->getIdentifier();
+			$manager = $this->Users->find('all')
+				->where(['role' => 3, 'FIND_IN_SET(\'4\',Users.role_name) !=' => 0, 'Users.deleted' => 1, 'company_id' => $parent_id, "status" => 1])->order(["name" => "ASC"])->toArray();
+			$techlead = $this->Users->find('all')
+				->where(['role' => 3, 'FIND_IN_SET(\'5\',Users.role_name) !=' => 0, 'Users.deleted' => 1, 'company_id' => $parent_id, "status" => 1])->order(["name" => "ASC"])->toArray();
+
+			$bdteam = $this->Users->find('all')
+				->where(['role' => 3, 'FIND_IN_SET(\'6\',Users.role_name) !=' => 0, 'Users.deleted' => 1, 'company_id' => $parent_id, "status" => 1])->order(["name" => "ASC"])->toArray();
+
+			$resource = $this->Users->find()
+				->where(function (QueryExpression $exp) use ($parent_id) {
+					$orConditions = $exp->or(['FIND_IN_SET(\'7\',Users.role_name) !=' => 0])
+						->notEq('FIND_IN_SET(\'8\',Users.role_name)', 0);
+					return $exp
+						->add($orConditions)
+						->eq('deleted', 1)
+						->eq('role', 3)
+						->eq('company_id', $parent_id)
+						->eq("status", 1);
+				})->order(["name" => "ASC"])->toArray();
+
+			$projectMileDueDate = $this->ProjectMilestones->find()
+				->select(['max_date' => 'MAX(due_date)'])
+				->where(['project_id' => $id])
+				->first()->max_date;
+
+			$maxExtendDate = $this->MilestoneExtend->find()
+				->select(['max_date' => 'MAX(extend_date)'])
+				->where(['project_id' => $id])
+				->first()->max_date;
+			// echo $id;
+			// echo '<pre>';
+			// print_r($maxExtendDate);
+			// die;
+			$total_actual_hours=0;
+			$total_allocated_hours=0;
+			$actual_hours = "SELECT user_timesheets.id as uid,user_timesheets.milestone_id,user_timesheets.resource_id, user_timesheets.time_used,project_milestones.title,projects.project_name,projects.id as pid FROM `user_timesheets` LEFT JOIN project_milestones ON project_milestones.id=user_timesheets.milestone_id LEFT JOIN projects ON projects.id=project_milestones.project_id WHERE projects.id=".$id;
+			$stmtProduct = $conn->execute($actual_hours);
+			$actual_hours = $stmtProduct->fetchAll('assoc');
+			
+			foreach($actual_hours as $actual_hour){
+					$total_actual_hours += $actual_hour['time_used'];
+			}
+
+			$allocated_hours = "SELECT project_allocations.time_slot FROM `project_allocations` LEFT JOIN project_milestones ON project_allocations.milestone_id=project_milestones.id LEFT JOIN projects ON project_milestones.project_id=projects.id WHERE projects.id=".$id;
+			$stmtProduct = $conn->execute($allocated_hours);
+			$allocated_hours = $stmtProduct->fetchAll('assoc');
+			
+			foreach($allocated_hours as $allocated_hour){
+					$total_allocated_hours += $allocated_hour['time_slot'];
+			}
+			// dd($total_allocated_hours);
+
+			// $pm_amount = "SELECT project_milestones.id,project_milestones.title,project_milestones.project_id,sum(project_milestones.amount) as t_amount,projects.id as projId,projects.project_name FROM `project_milestones` LEFT JOIN projects ON projects.id=project_milestones.project_id WHERE projects.id=". $id;
+
+			$pm_amount = "SELECT project_milestones.id,project_milestones.title,project_milestones.project_id,sum(project_milestones.amount) as t_amount,projects.id as projId,projects.project_name FROM `project_milestones` LEFT JOIN projects ON projects.id=project_milestones.project_id WHERE projects.id=". $id. " GROUP BY project_milestones.id";
+
+			// echo "<pre>";
+			// print_r($pm_amount);
+			// die();
+
+			$stmtProduct = $conn->execute($pm_amount);
+			$pm_amount = $stmtProduct->fetchAll('assoc');
+			$total_pm_amount=$pm_amount[0]['t_amount'];
+				// dd($pm_amount[0]['t_amount']);
+				// dd($total_pm_amount);
+
+			$this->set(compact('projects', 'miles', 'payments', 'reslist', 'manager', 'techlead', 'bdteam', 'resource', 'resourceList', 'mId', 'page', 'id', 'projectMileDueDate', 'maxExtendDate','total_actual_hours','total_allocated_hours','total_pm_amount'));
 		}
-
-		// $user_id = $this->request->getAttribute('identity')->getIdentifier();
-		$manager = $this->Users->find('all')
-			->where(['role' => 3, 'FIND_IN_SET(\'4\',Users.role_name) !=' => 0, 'Users.deleted' => 1, 'company_id' => $parent_id, "status" => 1])->order(["name" => "ASC"])->toArray();
-		$techlead = $this->Users->find('all')
-			->where(['role' => 3, 'FIND_IN_SET(\'5\',Users.role_name) !=' => 0, 'Users.deleted' => 1, 'company_id' => $parent_id, "status" => 1])->order(["name" => "ASC"])->toArray();
-
-		$bdteam = $this->Users->find('all')
-			->where(['role' => 3, 'FIND_IN_SET(\'6\',Users.role_name) !=' => 0, 'Users.deleted' => 1, 'company_id' => $parent_id, "status" => 1])->order(["name" => "ASC"])->toArray();
-
-		$resource = $this->Users->find()
-			->where(function (QueryExpression $exp) use ($parent_id) {
-				$orConditions = $exp->or(['FIND_IN_SET(\'7\',Users.role_name) !=' => 0])
-					->notEq('FIND_IN_SET(\'8\',Users.role_name)', 0);
-				return $exp
-					->add($orConditions)
-					->eq('deleted', 1)
-					->eq('role', 3)
-					->eq('company_id', $parent_id)
-					->eq("status", 1);
-			})->order(["name" => "ASC"])->toArray();
-
-		$projectMileDueDate = $this->ProjectMilestones->find()
-			->select(['max_date' => 'MAX(due_date)'])
-			->where(['project_id' => $id])
-			->first()->max_date;
-
-		$maxExtendDate = $this->MilestoneExtend->find()
-			->select(['max_date' => 'MAX(extend_date)'])
-			->where(['project_id' => $id])
-			->first()->max_date;
-		// echo $id;
-		// echo '<pre>';
-		// print_r($maxExtendDate);
-		// die;
-		$total_actual_hours=0;
-		$total_allocated_hours=0;
-		$actual_hours = "SELECT user_timesheets.id as uid,user_timesheets.milestone_id,user_timesheets.resource_id, user_timesheets.time_used,project_milestones.title,projects.project_name,projects.id as pid FROM `user_timesheets` LEFT JOIN project_milestones ON project_milestones.id=user_timesheets.milestone_id LEFT JOIN projects ON projects.id=project_milestones.project_id WHERE projects.id=".$id;
-		$stmtProduct = $conn->execute($actual_hours);
-		$actual_hours = $stmtProduct->fetchAll('assoc');
-		
-		foreach($actual_hours as $actual_hour){
-                $total_actual_hours += $actual_hour['time_used'];
-		}
-
-		$allocated_hours = "SELECT project_allocations.time_slot FROM `project_allocations` LEFT JOIN project_milestones ON project_allocations.milestone_id=project_milestones.id LEFT JOIN projects ON project_milestones.project_id=projects.id WHERE projects.id=".$id;
-		$stmtProduct = $conn->execute($allocated_hours);
-		$allocated_hours = $stmtProduct->fetchAll('assoc');
-		
-		foreach($allocated_hours as $allocated_hour){
-                $total_allocated_hours += $allocated_hour['time_slot'];
-		}
-		// dd($total_allocated_hours);
-
-		// $pm_amount = "SELECT project_milestones.id,project_milestones.title,project_milestones.project_id,sum(project_milestones.amount) as t_amount,projects.id as projId,projects.project_name FROM `project_milestones` LEFT JOIN projects ON projects.id=project_milestones.project_id WHERE projects.id=". $id;
-
-		$pm_amount = "SELECT project_milestones.id,project_milestones.title,project_milestones.project_id,sum(project_milestones.amount) as t_amount,projects.id as projId,projects.project_name FROM `project_milestones` LEFT JOIN projects ON projects.id=project_milestones.project_id WHERE projects.id=". $id. " GROUP BY project_milestones.id";
-
-		// echo "<pre>";
-		// print_r($pm_amount);
-		// die();
-
-		$stmtProduct = $conn->execute($pm_amount);
-		$pm_amount = $stmtProduct->fetchAll('assoc');
-		$total_pm_amount=$pm_amount[0]['t_amount'];
-			// dd($pm_amount[0]['t_amount']);
-			// dd($total_pm_amount);
-
-		$this->set(compact('projects', 'miles', 'payments', 'reslist', 'manager', 'techlead', 'bdteam', 'resource', 'resourceList', 'mId', 'page', 'id', 'projectMileDueDate', 'maxExtendDate','total_actual_hours','total_allocated_hours','total_pm_amount'));
-	}
 
 
 	public function deleteProject($id)
@@ -1623,7 +1623,7 @@ class CompaniesController extends AppController
 		$this->Authorization->skipAuthorization();
 		$conn = ConnectionManager::get('default');
 		$this->Projects = $this->fetchTable('Projects');
-		$this->ProjectMilestones = $this->fetchTable('Projects');
+		$this->ProjectMilestones = $this->fetchTable('ProjectMilestones');
 		$mile = $this->ProjectMilestones->newEmptyEntity();
 
 		if ($this->request->is('ajax')) {

@@ -105,8 +105,14 @@ if (isset($_SERVER['SERVER_NAME'])) {
 define('WEBURL', $web_path);
 
 //define('path', ROOT.'\actiknowcalendar.json',true);
-define('SITE_ROOT', realpath(dirname("webroot")));
-define('BUG_REPORTING', 'http://44.230.62.131/bug-reporting/img/tickets_file');
+// define('SITE_ROOT', realpath(dirname("webroot")));
+// define('BUG_REPORTING', 'http://44.230.62.131/bug-reporting/img/tickets_file');
 
-define('UW_CLIENTID', 'f397daf6198b028fc6b60d5d72b0f030');
-define('UW_CLIENTSECRET', '14943cf02a1aec2e');
+// define('UW_CLIENTID', 'f397daf6198b028fc6b60d5d72b0f030');
+// define('UW_CLIENTSECRET', '14943cf02a1aec2e');
+
+define('BUG_REPORTING', getenv('BUG_REPORTING'));
+
+define('UW_CLIENTID', getenv('UW_CLIENTID'));
+
+define('UW_CLIENTSECRET', getenv('UW_CLIENTSECRET'));
