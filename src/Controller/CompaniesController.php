@@ -25,7 +25,7 @@ class CompaniesController extends AppController
 		$this->loadComponent('Flash'); // Include the FlashComponent
 		// $this->loadComponent('RequestHandler');
 		// $this->loadModel("ProjectMilestonesLogs");
-		$this->MilestoneExtend = $this->getTableLocator()->get("MilestoneExtend");
+		// $this->MilestoneExtend = $this->getTableLocator()->get("MilestoneExtend");
 		$this->ProjectMilestones = $this->getTableLocator()->get("ProjectMilestones");
 		$this->ProjectMilestonesLogs = $this->getTableLocator()->get("ProjectMilestonesLogs");
 		$this->Opportunity = $this->getTableLocator()->get("Opportunity");
@@ -1210,6 +1210,7 @@ class CompaniesController extends AppController
 			$this->Authorization->skipAuthorization();
 			$this->Projects = $this->fetchTable('Projects');
 			$this->Users = $this->fetchTable('Users');
+			$this->MilestoneExtend = $this->fetchTable('MilestoneExtend');
 
 			$mId = $this->request->getSession()->read('managerId');
 			// $userId = $this->request->getSession()->read('userId');
@@ -1516,10 +1517,16 @@ class CompaniesController extends AppController
 
 		// echo $id;
 		// die;
-		$query =  $this->Projects->query();
-		$query->update()
+		// $query =  $this->Projects->query();
+		// $query->update()
+		// 	->set(['deleted' => 0])
+		// 	->where(['id' => $id]);
+		$query = $this->Projects->updateQuery();
+
+		$query
 			->set(['deleted' => 0])
 			->where(['id' => $id]);
+
 		if ($query->execute())
 			echo 1;
 		else
@@ -1617,63 +1624,171 @@ class CompaniesController extends AppController
 
 
 
+	// public function addMilestone()
+	// {
+	// 	$this->autoRender = false;
+	// 	$this->Authorization->skipAuthorization();
+	// 	$conn = ConnectionManager::get('default');
+	// 	$this->Projects = $this->fetchTable('Projects');
+	// 	$this->ProjectMilestones = $this->fetchTable('ProjectMilestones');
+	// 	$this->MilestoneExtend = $this->fetchTable('MilestoneExtend');
+	// 	$mile = $this->ProjectMilestones->newEmptyEntity();
+
+	// 	if ($this->request->is('ajax')) {
+	// 		// echo '<pre>';
+	// 		// print_r($this->request->getData());
+	// 		// die;
+
+	// 		$mile = $this->ProjectMilestones->patchEntity($mile, $this->request->getData());
+	// 		$mile->due_date = date('Y-m-d', strtotime($this->request->getData('due_date')));
+	// 		//$due_date = $date[2] . '-' . $date[0] . '-' . $date[1];
+	// 		//$mile->due_date = $due_date;
+	// 		if ($result = $this->ProjectMilestones->save($mile)) {
+
+	// 			//add this value in project table
+	// 			if (!empty($this->request->getData('project_id'))) {
+	// 				$r = $this->Projects->find('all')
+	// 					->select(['milestone_id', 'due_date'])
+	// 					->where(['id' => $this->request->getData('project_id')])
+	// 					->first();
+
+	// 				$mid = ($r->milestone_id == '') ? $result->id : $r->milestone_id . ',' . $result->id;
+	// 				if (strtotime($this->request->getData('due_date')) > strtotime($r->due_date)) {
+	// 					$extend = $this->MilestoneExtend->newEmptyEntity();
+	// 					$extend->project_id = (int) $this->request->getData('project_id');
+	// 					$extend->extend_date = date('Y-m-d', strtotime($this->request->getData('due_date')));
+	// 					$this->MilestoneExtend->save($extend);
+	// 					$query = "UPDATE projects SET milestone_id='" . $mid . "', extend_date='" .  date('Y-m-d', strtotime($this->request->getData('due_date'))) . "' WHERE id=" . $this->request->getData('project_id');
+	// 				} else {
+	// 					$query = "UPDATE projects SET milestone_id='" . $mid . "' WHERE id=" . $this->request->getData('project_id');
+	// 				}
+	// 				$conn->execute($query);
+	// 			}
+
+	// 			$data = array(
+	// 				'id' => $result->id,
+	// 				'title' => $this->request->getData('title'),
+	// 				'due_date' => date('d F Y', strtotime($this->request->getData('due_date'))),
+	// 				'amount' => $this->request->getData('amount')
+	// 			);
+
+
+	// 			$userSession = $this->getuserdata();
+	// 			// echo '<pre>';
+	// 			// print_r($userSession);
+	// 			// print_r($result['id']);
+	// 			// die;
+
+	// 			$this->milestonelog($this->request->getData('project_id'), $result["id"], $userSession["id"], "Created", []);
+
+	// 			echo json_encode($data);
+	// 			die;
+	// 		}
+	// 	}
+	// }
+
 	public function addMilestone()
 	{
 		$this->autoRender = false;
+
 		$this->Authorization->skipAuthorization();
+
 		$conn = ConnectionManager::get('default');
+
 		$this->Projects = $this->fetchTable('Projects');
 		$this->ProjectMilestones = $this->fetchTable('ProjectMilestones');
+		$this->MilestoneExtend = $this->fetchTable('MilestoneExtend');
+
 		$mile = $this->ProjectMilestones->newEmptyEntity();
 
 		if ($this->request->is('ajax')) {
-			// echo '<pre>';
-			// print_r($this->request->getData());
-			// die;
 
-			$mile = $this->ProjectMilestones->patchEntity($mile, $this->request->getData());
-			$mile->due_date = date('Y-m-d', strtotime($this->request->getData('due_date')));
-			//$due_date = $date[2] . '-' . $date[0] . '-' . $date[1];
-			//$mile->due_date = $due_date;
-			if ($result = $this->ProjectMilestones->save($mile)) {
+			try {
 
-				//add this value in project table
+				$mile = $this->ProjectMilestones->patchEntity(
+					$mile,
+					$this->request->getData()
+				);
+
+				$mile->due_date = date(
+					'Y-m-d',
+					strtotime($this->request->getData('due_date'))
+				);
+
+				$result = $this->ProjectMilestones->save($mile);
+
+				if (!$result) {
+
+					echo "<pre>";
+					print_r($mile->getErrors());
+					die;
+				}
+
 				if (!empty($this->request->getData('project_id'))) {
-					$r = $this->Projects->find('all')
+
+					$r = $this->Projects->find()
 						->select(['milestone_id', 'due_date'])
-						->where(['id' => $this->request->getData('project_id')])
+						->where([
+							'id' => $this->request->getData('project_id')
+						])
 						->first();
 
-					$mid = ($r->milestone_id == '') ? $result->id : $r->milestone_id . ',' . $result->id;
-					if (strtotime($this->request->getData('due_date')) > strtotime($r->due_date)) {
+					$mid = empty($r->milestone_id)
+						? $result->id
+						: $r->milestone_id . ',' . $result->id;
+
+					if (
+						strtotime($this->request->getData('due_date'))
+						> strtotime($r->due_date)
+					) {
+
 						$extend = $this->MilestoneExtend->newEmptyEntity();
-						$extend->project_id = (int) $this->request->getData('project_id');
-						$extend->extend_date = date('Y-m-d', strtotime($this->request->getData('due_date')));
-						$this->MilestoneExtend->save($extend);
-						$query = "UPDATE projects SET milestone_id='" . $mid . "', extend_date='" .  date('Y-m-d', strtotime($this->request->getData('due_date'))) . "' WHERE id=" . $this->request->getData('project_id');
+
+						$extend->project_id = (int)$this->request->getData('project_id');
+
+						$extend->extend_date = date(
+							'Y-m-d',
+							strtotime($this->request->getData('due_date'))
+						);
+
+						$saveExtend = $this->MilestoneExtend->save($extend);
+
+						if (!$saveExtend) {
+
+							echo "<pre>";
+							print_r($extend->getErrors());
+							die;
+						}
+
+						$query = "
+							UPDATE projects
+							SET
+								milestone_id='$mid',
+								extend_date='" . date(
+									'Y-m-d',
+									strtotime($this->request->getData('due_date'))
+								) . "'
+							WHERE id=" . $this->request->getData('project_id');
+
 					} else {
-						$query = "UPDATE projects SET milestone_id='" . $mid . "' WHERE id=" . $this->request->getData('project_id');
+
+						$query = "
+							UPDATE projects
+							SET milestone_id='$mid'
+							WHERE id=" . $this->request->getData('project_id');
 					}
+
 					$conn->execute($query);
 				}
 
-				$data = array(
-					'id' => $result->id,
-					'title' => $this->request->getData('title'),
-					'due_date' => date('d F Y', strtotime($this->request->getData('due_date'))),
-					'amount' => $this->request->getData('amount')
-				);
+				echo json_encode([
+					'success' => true
+				]);
 
+			} catch (\Exception $e) {
 
-				$userSession = $this->getuserdata();
-				// echo '<pre>';
-				// print_r($userSession);
-				// print_r($result['id']);
-				// die;
-
-				$this->milestonelog($this->request->getData('project_id'), $result["id"], $userSession["id"], "Created", []);
-
-				echo json_encode($data);
+				echo "<pre>";
+				echo $e->getMessage();
 				die;
 			}
 		}
@@ -1684,7 +1799,8 @@ class CompaniesController extends AppController
 		$this->autoRender = false;
 		$this->Authorization->skipAuthorization();
 		$this->ProjectMilestones = $this->fetchTable('ProjectMilestones');
-		$this->loadModel("Projects");
+		// $this->loadModel("Projects");
+		$this->fetchTable("Projects");
 		if ($type == 'edit') {
 			$miles = $this->ProjectMilestones
 				->findById($id)
@@ -1917,8 +2033,13 @@ class CompaniesController extends AppController
 			$this->ProjectTasks = $this->fetchTable('ProjectTasks');
 
 			if ($type == 'project') {
-				$query = $this->Projects->query();
-				$query->update()
+				// $query = $this->Projects->query();
+				// $query->update()
+				// 	->set(['status' => $status])
+				// 	->where(['id' => $id]);
+				$query = $this->Projects->updateQuery();
+
+				$query
 					->set(['status' => $status])
 					->where(['id' => $id]);
 				if ($query->execute())
@@ -1928,28 +2049,64 @@ class CompaniesController extends AppController
 				die;
 			}
 			if ($type == 'miles') {
-				$query = $this->ProjectMilestones->query();
+				// $query = $this->ProjectMilestones->query();
 
-				$query->update()
+				// $query->update()
+				// 	->set(['status' => $status])
+				// 	->where(['id' => $id])
+				// 	->execute();
+
+				$query = $this->ProjectMilestones->updateQuery();
+
+				$query
 					->set(['status' => $status])
-					->where(['id' => $id])
-					->execute();
+					->where(['id' => $id]);
+
+				if ($query->execute()) {
+					echo 1;
+				} else {
+					echo 0;
+				}
 			}
 			if ($type == 'payment') {
-				$query = $this->ProjectPayments->query();
+				// $query = $this->ProjectPayments->query();
 
-				$query->update()
+				// $query->update()
+				// 	->set(['status' => $status])
+				// 	->where(['id' => $id])
+				// 	->execute();
+
+				$query = $this->ProjectPayments->updateQuery();
+
+				$query
 					->set(['status' => $status])
-					->where(['id' => $id])
-					->execute();
+					->where(['id' => $id]);
+
+				if ($query->execute()) {
+					echo 1;
+				} else {
+					echo 0;
+				}
 			}
 			if ($type == 'tasks') {
-				$query = $this->ProjectTasks->query();
+				// $query = $this->ProjectTasks->query();
 
-				$query->update()
+				// $query->update()
+				// 	->set(['status' => $status])
+				// 	->where(['id' => $id])
+				// 	->execute();
+
+				$query = $this->ProjectTasks->updateQuery();
+
+				$query
 					->set(['status' => $status])
-					->where(['id' => $id])
-					->execute();
+					->where(['id' => $id]);
+
+				if ($query->execute()) {
+					echo 1;
+				} else {
+					echo 0;
+				}
 			}
 
 			die();
