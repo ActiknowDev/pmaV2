@@ -171,7 +171,7 @@ class ClientsController extends AppController
 		$this->Authorization->skipAuthorization();
 
 		if ($this->request->is('post')) {
-			$this->Users = this->fetchTable('Users');
+			$this->Users = $this->fetchTable('Users');
 
 
 			$session = new \Cake\Http\Session();
@@ -211,7 +211,6 @@ class ClientsController extends AppController
 				$client->role = 2;
 				$client->status = 1;
 				$client->point_of_contact = $this->request->getData('pointOfContant');
-
 				$this->Users->save($client);
 				// if ($this->Users->save($client)) {
 				// 	$client_id = $this->Users->find('all')
@@ -312,7 +311,7 @@ class ClientsController extends AppController
 	{
 		$this->autoRender = false;
 		$this->Authorization->skipAuthorization();
-		$this->Users = this->fetchTable('Users');
+		$this->Users = $this->fetchTable('Users');
 		$client = $this->Users
 			->findById($id)
 			->firstOrFail();

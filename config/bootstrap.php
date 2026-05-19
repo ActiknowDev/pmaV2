@@ -73,6 +73,14 @@ require CAKE . 'functions.php';
 //         ->toServer();
 // }
 
+if (file_exists(ROOT . DS . '.env')) {
+    $dotenv = new \josegonzalez\Dotenv\Loader([ROOT . DS . '.env']);
+
+    $dotenv->parse()
+        ->putenv()
+        ->toEnv()
+        ->toServer();
+}
 /*
  * Read configuration file and inject configuration into various
  * CakePHP classes.

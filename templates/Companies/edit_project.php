@@ -136,7 +136,7 @@ if (isset($_GET['month'])) {
                                     </div>
                                 </div>
 
-                                <?php
+                                <!-- <?php
                                 if (strtotime($extend_date) > strtotime($due_date)) {
                                 ?>
                                 <div class="col-md-3">
@@ -146,6 +146,29 @@ if (isset($_GET['month'])) {
                                             <span class="icon ft-primary"><i class="fa fa-calendar-alt"></i></span>
                                             <input class="form-control" type="text" placeholder="" name="extend_date"
                                                 value="<?= $extend_date; ?>" autocomplete="off" readonly>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <?php } ?> -->
+
+                                <?php if (!empty($extend_date) && strtotime($extend_date) > strtotime($due_date)) { ?>
+
+                                <div class="col-md-3">
+                                    <div class="form-group">
+                                        <label for="">Extend Date</label>
+                                        <div class="adon-group ddate">
+                                            <span class="icon ft-primary">
+                                                <i class="fa fa-calendar-alt"></i>
+                                            </span>
+
+                                            <input class="form-control"
+                                                type="text"
+                                                placeholder=""
+                                                name="extend_date"
+                                                value="<?= $extend_date; ?>"
+                                                autocomplete="off"
+                                                readonly>
                                         </div>
                                     </div>
                                 </div>
