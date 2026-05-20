@@ -61,7 +61,7 @@ class CompaniesController extends AppController
 		$role = $userSession['role'];
 		$session->write('menu', 0);
 
-		$company = this->fetchTable('Users');
+		$company = $this->fetchTable('Users');
 
 		$companies = $company
 			->find()
@@ -90,7 +90,7 @@ class CompaniesController extends AppController
 
 
 		if ($this->request->is('post')) {
-			$this->Users = this->fetchTable('Users');
+			$this->Users = $this->fetchTable('Users');
 			$company = $this->Users->newEmptyEntity();
 			$company = $this->Users->patchEntity($company, $this->request->getData());
 			$company->name = $this->request->getData('contact_person_name');
@@ -108,7 +108,7 @@ class CompaniesController extends AppController
 		$this->autoRender = false;
 		$this->Authorization->skipAuthorization();
 		if ($this->request->is('ajax')) {
-			$company = this->fetchTable('Users');
+			$company = $this->fetchTable('Users');
 			$query = $company->query();
 			$query->update()
 				->set(['status' => $status])
@@ -127,7 +127,7 @@ class CompaniesController extends AppController
 		$this->autoRender = false;
 		$this->Authorization->skipAuthorization();
 		if ($this->request->is('ajax')) {
-			$company = this->fetchTable('Projects');
+			$company = $this->fetchTable('Projects');
 			$query = $company->query();
 			$query->update()
 				->set(['active' => $status])
@@ -148,7 +148,7 @@ class CompaniesController extends AppController
 	public function delete($id)
 	{
 		$this->Authorization->skipAuthorization();
-		$company = this->fetchTable('Users');
+		$company = $this->fetchTable('Users');
 		$query = $company->query();
 		$query->update()
 			->set(['deleted' => 0])
@@ -160,7 +160,7 @@ class CompaniesController extends AppController
 	{
 		$this->autoRender = false;
 		$this->Authorization->skipAuthorization();
-		$company = this->fetchTable('Users');
+		$company = $this->fetchTable('Users');
 		$company = $company
 			->findById($id)
 			->firstOrFail();
@@ -171,7 +171,7 @@ class CompaniesController extends AppController
 	{
 		$this->autoRender = false;
 		$this->Authorization->skipAuthorization();
-		$this->Users = this->fetchTable('Users');
+		$this->Users = $this->fetchTable('Users');
 		$company = $this->Users
 			->findById($id)
 			->firstOrFail();
@@ -189,7 +189,7 @@ class CompaniesController extends AppController
 	public function loginVendor($id)
 	{
 		$this->Authorization->skipAuthorization();
-		$this->Users = this->fetchTable('Users');
+		$this->Users = $this->fetchTable('Users');
 		$session = new \Cake\Http\Session();
 
 		$user = $this->Users
@@ -230,7 +230,7 @@ class CompaniesController extends AppController
 	// 	$this->viewBuilder()->setLayout('default_new');
 	// 	$this->Authorization->skipAuthorization();
 	// 	$conn = ConnectionManager::get('default');
-	// 	$this->Users = this->fetchTable('Users');
+	// 	$this->Users = $this->fetchTable('Users');
 
 	// 	$session = new \Cake\Http\Session();
 	// 	$userSession = $session->read('data');
@@ -240,7 +240,7 @@ class CompaniesController extends AppController
 
 	// 	if ($this->request->is('post')) {
 	// 		$this->autoRender = false;
-	// 		$this->Projects = this->fetchTable('Projects');
+	// 		$this->Projects = $this->fetchTable('Projects');
 
 	// 		$projects = $this->Projects->find('all')
 	// 			->select(['id'])
@@ -3366,7 +3366,7 @@ class CompaniesController extends AppController
 		$roleArray = $userSession['role_name'];
 
 		if (in_array(4, $roleArray)) {
-			$this->Users = this->fetchTable('Users');
+			$this->Users = $this->fetchTable('Users');
 			$mId = $this->request->getSession()->read('managerId');
 			$parent_id = ($role == 1) ? $userSession['id'] : $userSession['parent_id'];
 			$assignedList = $this->Users->find()
@@ -3390,7 +3390,7 @@ class CompaniesController extends AppController
 			$oppstage = $this->Stage->find()->where(['deleted'=>0])->toArray();
 
 			if ($this->request->is(['post', 'put'])) {
-				$this->Opportunity = this->fetchTable('Opportunity');
+				$this->Opportunity = $this->fetchTable('Opportunity');
 				$opportunity = $this->Opportunity->newEmptyEntity();
 				$opportunity['user_id'] = $user_id;
 				$opportunity['opportunity_name'] = $this->request->getData('opportunity_name');
@@ -3446,7 +3446,7 @@ class CompaniesController extends AppController
 			$this->viewBuilder()->setLayout('default_new');
 			$conn = ConnectionManager::get('default');
 			$this->Authorization->skipAuthorization();
-			$this->Users = this->fetchTable('Users');
+			$this->Users = $this->fetchTable('Users');
 			$mId = $this->request->getSession()->read('managerId');
 			$session = new \Cake\Http\Session();
 			$userSession = $session->read('data');
@@ -3636,7 +3636,7 @@ class CompaniesController extends AppController
 
 			if ($this->request->is(['post', 'put'])) {
 				$id=$this->request->getData('id');
-				$this->Probability = this->fetchTable('Probability');
+				$this->Probability = $this->fetchTable('Probability');
 				if($id && !empty($id)) {
 					$probability = $this->Probability->get($id);
 				} else {
@@ -3904,11 +3904,15 @@ class CompaniesController extends AppController
 					$id = $value['id'];
 					$end_date = date('Y-m-d', strtotime($value['end_date']));
 					if($end_date < $today) {
-						$query =  $this->SupportPlan->query();
-									$query->update()
-										->set(['status' => 0])
-										->where(['id' => $id]);
-									$query->execute();
+						// $query =  $this->SupportPlan->query();
+						// 			$query->update()
+						// 				->set(['status' => 0])
+						// 				->where(['id' => $id]);
+						// 			$query->execute();
+						$this->SupportPlan->updateQuery()
+						->set(['status' => 0])
+						->where(['id' => $id])
+						->execute();
 					}
 				}
 			}
@@ -3995,8 +3999,8 @@ class CompaniesController extends AppController
 		$roleArray = $userSession['role_name'];
 
 		if (in_array(4, $roleArray)) {
-			$this->Users = this->fetchTable('Users');
-			$this->Projects = this->fetchTable('Projects');
+			$this->Users = $this->fetchTable('Users');
+			$this->Projects = $this->fetchTable('Projects');
 			$mId = $this->request->getSession()->read('managerId');
 			$parent_id = ($role == 1) ? $userSession['id'] : $userSession['parent_id'];
 			$assignedList = $this->Users->find()
@@ -4046,7 +4050,7 @@ class CompaniesController extends AppController
 				$clientName = $client->client_name;
 				$email = $this->request->getData('client_email');
 
-				$this->SupportPlan = this->fetchTable('SupportPlan');
+				$this->SupportPlan = $this->fetchTable('SupportPlan');
 				$plan = $this->SupportPlan->newEmptyEntity();
 				$plan['user_id'] = $user_id;
 				$plan['plan_id'] = $this->request->getData('plan_id');
@@ -4142,8 +4146,8 @@ class CompaniesController extends AppController
 		$conn = ConnectionManager::get('default');
 		$this->Authorization->skipAuthorization();
 		$session = new \Cake\Http\Session();
-		$this->Projects = this->fetchTable('Projects');
-		$this->Users = this->fetchTable('Users');
+		$this->Projects = $this->fetchTable('Projects');
+		$this->Users = $this->fetchTable('Users');
 	
 		if ($this->request->is('ajax')) {
 			$client_id = $this->request->getData('client_id');
@@ -4164,8 +4168,8 @@ class CompaniesController extends AppController
 		$conn = ConnectionManager::get('default');
 		$this->Authorization->skipAuthorization();
 		$session = new \Cake\Http\Session();
-		$this->Users = this->fetchTable('Users');
-		$this->Projects = this->fetchTable('Projects');
+		$this->Users = $this->fetchTable('Users');
+		$this->Projects = $this->fetchTable('Projects');
 	
 		if ($this->request->is('ajax')) {
 			$project_id = $this->request->getData('project_id');
@@ -4185,8 +4189,8 @@ class CompaniesController extends AppController
 			$this->viewBuilder()->setLayout('default_new');
 			$conn = ConnectionManager::get('default');
 			$this->Authorization->skipAuthorization();
-			$this->Users = this->fetchTable('Users');
-			$this->Projects = this->fetchTable('Projects');
+			$this->Users = $this->fetchTable('Users');
+			$this->Projects = $this->fetchTable('Projects');
 			$mId = $this->request->getSession()->read('managerId');
 			$session = new \Cake\Http\Session();
 			$userSession = $session->read('data');
@@ -4350,10 +4354,9 @@ class CompaniesController extends AppController
 		// } else {
 		// 	$val=0;
 		// }
-		$query =  $this->SupportPlan->query();
-		$query->update()
-			->set(['status' => $status])
-			->where(['id' => $id]);
+		 $query = $this->SupportPlan->updateQuery()
+        ->set(['status' => $status])
+        ->where(['id' => $id]);
 		if ($query->execute())
 			echo 1;
 		else
@@ -4363,8 +4366,8 @@ class CompaniesController extends AppController
 
 	public function deleteSupportplan($id){
 		$this->Authorization->skipAuthorization();
-		$query =  $this->SupportPlan->query();
-		$query->update()
+		
+		$this->SupportPlan->updateQuery()
 			->set(['deleted' => 1])
 			->where(['id' => $id])
 			->execute();
@@ -4390,10 +4393,10 @@ class CompaniesController extends AppController
 				$update = ['invoice_paid' => 0];
 			}
 		}
-		$query =  $this->SupportPlansPayment->query();
-		$query->update()
+		$this->SupportPlansPayment->updateQuery()
 			->set($update)
-			->where(['id' => $id]);
+			->where(['id' => $id])
+			->execute();
 		if ($query->execute())
 			echo 1;
 		else

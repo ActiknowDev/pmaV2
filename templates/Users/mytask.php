@@ -905,7 +905,12 @@
                                 <?php if (count($add_task_project) > 0) :
                                     foreach ($add_task_project as $p) : ?>
 
-                                        <option value="<?= $p['id']; ?>"><?= substr($p['project_name'], 0, 20); ?> - <?= $p["client"]["client_name"] ?></option>
+                                        <!-- <option value="<?= $p['id']; ?>"><?= substr($p['project_name'], 0, 20); ?> - <?= $p["client"]["client_name"] ?></option> -->
+
+                                        <option value="<?= $p['id']; ?>">
+                                            <?= substr($p['project_name'], 0, 20); ?> -
+                                            <?= !empty($p['client']) ? $p['client']['client_name'] : 'No Client'; ?>
+                                        </option>
 
                                 <?php endforeach;
                                 endif; ?>
