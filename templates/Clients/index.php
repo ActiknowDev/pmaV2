@@ -166,16 +166,16 @@
                                 <select name="pointOfContant" class="form-control" id="pocData">
                                     <option value="">Select</option>
                                     <?php
-                  if (count($pointContact) > 0) :
-                    foreach ($pointContact as $value) :
-                  ?>
+                                        if (count($pointContact) > 0) :
+                                            foreach ($pointContact as $value) :
+                                        ?>
 
-                                    <option value="<?= $value['id'] ?>"><?= $value['name'] ?></option>
+                                                            <option value="<?= $value['id'] ?>"><?= $value['name'] ?></option>
 
-                                    <?php
-                    endforeach;
-                  endif;
-                  ?>
+                                                            <?php
+                                            endforeach;
+                                        endif;
+                                    ?>
                                 </select>
                             </div>
                         </div>
@@ -320,16 +320,16 @@
                             <div class="adon-group res">
                                 <select name="pointOfContant" class="form-control" id="pocData1">
                                     <?php
-                  if (count($pointContact) > 0) :
-                    foreach ($pointContact as $value) :
-                  ?>
+                                        if (count($pointContact) > 0) :
+                                            foreach ($pointContact as $value) :
+                                        ?>
 
-                                    <option value="<?= $value['id'] ?>"><?= $value['name'] ?></option>
+                                                            <option value="<?= $value['id'] ?>"><?= $value['name'] ?></option>
 
-                                    <?php
-                    endforeach;
-                  endif;
-                  ?>
+                                                            <?php
+                                            endforeach;
+                                        endif;
+                                    ?>
                                 </select>
                             </div>
                         </div>

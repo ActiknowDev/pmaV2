@@ -171,26 +171,56 @@ class ClientsController extends AppController
 			echo 0;
 		die;
 	}
+
 	public function edit($id)
 	{
 		$this->autoRender = false;
+
 		$this->Authorization->skipAuthorization();
+
 		$client = $this->fetchTable('Users');
+
 		$client = $client
 			->findById($id)
 			->firstOrFail();
 
 		$user = $this->getTableLocator()->get('Users');
 
-		$userClientData = $user->find('all')->contain([
-			"client_data"
-		])->where(['Users.id' => $id])->toList();
-		// print_r($client->point_of_contact);
-		// die;
+		$userClientData = $user
+			->find('all')
+			->contain([
+				'client_data'
+			])
+			->where([
+				'Users.id' => $id
+			])
+			->toArray();
 
 		echo json_encode($userClientData);
+
 		die;
 	}
+
+	// public function edit($id)
+	// {
+	// 	$this->autoRender = false;
+	// 	$this->Authorization->skipAuthorization();
+	// 	$client = $this->fetchTable('Users');
+	// 	$client = $client
+	// 		->findById($id)
+	// 		->firstOrFail();
+
+	// 	$user = $this->getTableLocator()->get('Users');
+
+	// 	$userClientData = $user->find('all')->contain([
+	// 		"client_data"
+	// 	])->where(['Users.id' => $id])->toList();
+	// 	// print_r($client->point_of_contact);
+	// 	// die;
+
+	// 	echo json_encode($userClientData);
+	// 	die;
+	// }
 
 
 	public function editData($id)
