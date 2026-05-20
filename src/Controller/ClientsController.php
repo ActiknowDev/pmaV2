@@ -43,7 +43,7 @@ class ClientsController extends AppController
 		$parent_id = ($role == 1) ? $userSession['id'] : $userSession['parent_id'];
 
 
-		$client = this->fetchTable('Users');
+		$client = $this->fetchTable('Users');
 			// validation for valid user
 		$roleArray = $userSession['role_name'];
 		$validList = [4, 6, 9, 10];
@@ -82,88 +82,7 @@ class ClientsController extends AppController
 		$this->set(compact('clients', 'pointContact', 'totalClients', 'totalActiveClients', 'totalInactiveClients'));
 	}
 
-	// public function index()
-	// {
-	// 	// Set layout
-	// 	$this->viewBuilder()->setLayout('default_new');
-
-	// 	// Skip authorization
-	// 	$this->Authorization->skipAuthorization();
-
-	// 	// Read user session
-	// 	$session = new \Cake\Http\Session();
-	// 	$userSession = $session->read('data');
-	// 	$role = $userSession['role'];
-	// 	$parent_id = ($role == 1) ? $userSession['id'] : $userSession['parent_id'];
-
-	// 	// Get Users table
-	// 	$client = $this->getTableLocator()->get('Users');
-
-	// 	// Validation for valid user
-	// 	$roleArray = $userSession['role_name'];
-	// 	$validList = [4, 6, 9, 10];
-	// 	$this->routeValidation($roleArray, $validList);
-
-	// 	// Paginated clients list
-	// 	$query = $client->find()
-	// 		->where([
-	// 			'deleted' => 1,
-	// 			'role' => 2,
-	// 			'company_id' => $parent_id
-	// 		])
-	// 		->order(['created' => 'DESC']);
-
-	// 	// ✅ Use modern CakePHP pagination
-	// 	$clients = $this->paginate($query);
-
-	// 	// Total clients count
-	// 	$totalClients = $client->find()
-	// 		->where([
-	// 			'deleted' => 1,
-	// 			'role' => 2,
-	// 			'company_id' => $parent_id
-	// 		])
-	// 		->count();
-
-	// 	// Total active clients count
-	// 	$totalActiveClients = $client->find()
-	// 		->where([
-	// 			'deleted' => 1,
-	// 			'role' => 2,
-	// 			'status' => 1,
-	// 			'company_id' => $parent_id
-	// 		])
-	// 		->count();
-
-	// 	// Total inactive clients count
-	// 	$totalInactiveClients = $client->find()
-	// 		->where([
-	// 			'deleted' => 1,
-	// 			'role' => 2,
-	// 			'status' => 0,
-	// 			'company_id' => $parent_id
-	// 		])
-	// 		->count();
-
-	// 	// Get point of contact users (role_name includes 7)
-	// 	$user = $this->getTableLocator()->get("Users");
-	// 	$pointContact = $user->find()
-	// 		->where(["FIND_IN_SET('7', role_name)"])
-	// 		->select(['name', 'id'])
-	// 		->toArray();
-
-	// 	// Set variables for the view
-	// 	$this->set('title', 'PMA');
-	// 	$this->set(compact(
-	// 		'clients',
-	// 		'pointContact',
-	// 		'totalClients',
-	// 		'totalActiveClients',
-	// 		'totalInactiveClients'
-	// 	));
-	// }
-
-
+	
 	public function add()
 	{
 		$this->autoRender = false;
@@ -179,21 +98,7 @@ class ClientsController extends AppController
 			$role = $userSession['role'];
 			$parent_id = ($role == 1) ? $userSession['id'] : $userSession['parent_id'];
 
-			// if ($this->request->getData('addClientName')) {
-			// 	$client = $this->Users->newEmptyEntity();
-			// 	$client->role = 2;
-			// 	$client->status = 1;
-			// 	$client->company_id = $parent_id;
-			// 	$client = $this->Users->patchEntity($client, $this->request->getData());
-			// 	if ($this->Users->save($client)) {
-			// 		$clientDataTbl = $this->getTableLocator()->get('ClientData');
-			// 		$clientData = $clientDataTbl->newEmptyEntity();
-
-			// 		$clientData->client_id = $client->id;
-			// 		$clientDataTbl->save($clientData);
-			// 		echo 1;
-			// 		die;
-			// 	}
+			
 			$users = $this->Users->find('all')
 				->select(['id'])
 				->where(['client_name' => $this->request->getData('client_name'), 'deleted' => 1, 'company_id' => $parent_id])
@@ -212,14 +117,6 @@ class ClientsController extends AppController
 				$client->status = 1;
 				$client->point_of_contact = $this->request->getData('pointOfContant');
 				$this->Users->save($client);
-				// if ($this->Users->save($client)) {
-				// 	$client_id = $this->Users->find('all')
-				// 		->select(['id'])
-				// 		->where(['client_name' => $this->request->getData('client_name'), 'deleted' => 1, 'company_id' => $parent_id])
-				// 		->toArray();
-				// 	print_r($client_id[0]['id']);
-				// 	die;
-				// }
 
 				$last_followup_date = date("Y-m-d", strtotime($this->request->getData('last_followup_date')));
 				$next_followup_date = date("Y-m-d", strtotime($this->request->getData('next_followup_date')));
@@ -235,14 +132,6 @@ class ClientsController extends AppController
 				$clientData->last_followup_date = $last_followup_date;
 				$clientData->next_followup_date = $next_followup_date;
 				$clientData->description = $this->request->getData('description');
-
-
-				// print_r($clientData);
-				// die;
-				// print_r($this->request->getData());
-				// die;
-				// $this->request->getData("point_of_contact");
-				// $client->password = Security::hash('password');
 				if ($clientDataTbl->save($clientData)) {
 					// $data['sussess'] = 'true';
 					echo 1;
@@ -257,7 +146,7 @@ class ClientsController extends AppController
 		$this->autoRender = false;
 		$this->Authorization->skipAuthorization();
 		if ($this->request->is('ajax')) {
-			$client = this->fetchTable('Users');
+			$client = $this->fetchTable('Users');
 			$query = $client->query();
 			$query->update()
 				->set(['status' => $status])
@@ -270,7 +159,7 @@ class ClientsController extends AppController
 	public function delete($id)
 	{
 		$this->Authorization->skipAuthorization();
-		$client = this->fetchTable('Users');
+		$client = $this->fetchTable('Users');
 		$query = $client->query();
 		$query->update()
 			->set(['deleted' => 0])
@@ -281,15 +170,12 @@ class ClientsController extends AppController
 		else
 			echo 0;
 		die;
-
-		// $clientDataTbl = $this->getTableLocator()->get('ClientData');
-		// return $this->redirect(['controller' => 'Clients', 'action' => 'index']);
 	}
 	public function edit($id)
 	{
 		$this->autoRender = false;
 		$this->Authorization->skipAuthorization();
-		$client = this->fetchTable('Users');
+		$client = $this->fetchTable('Users');
 		$client = $client
 			->findById($id)
 			->firstOrFail();
@@ -317,19 +203,7 @@ class ClientsController extends AppController
 			->firstOrFail();
 
 		$clientDataTbl = $this->getTableLocator()->get('ClientData');
-		// ->where(['client_id' => $id])
-		// ->toArray();
-		// print_r($clientData);
-		// die;
 		if ($this->request->is(['post', 'put'])) {
-
-			// print_r($this->request->getData('pointOfContant'));
-			// die;
-			// $pointOfContact = "";
-			// if (count($this->request->getData('pointOfContant')) > 0) {
-			// 	$pointOfContact = implode(",", $this->request->getData('pointOfContant'));
-			// }
-
 			$client = $this->Users->patchEntity($client, $this->request->getData());
 			$client->point_of_contact = $this->request->getData('pointOfContant');
 			if ($this->Users->save($client)) {
@@ -347,19 +221,6 @@ class ClientsController extends AppController
 					$clientData->next_followup_date = $next_followup_date;
 					$clientData->description = $this->request->getData('description');
 					$clientDataTbl->save($clientData);
-
-					// $clientDataTbl->query()
-					// 	->update()
-					// 	->set([
-					// 		'client_id' => $id,
-					// 		'potential' => $this->request->getData('potential'),
-					// 		'relationship' => $this->request->getData('relationship'),
-					// 		'last_followup_date' => $this->request->getData('last_followup_date'),
-					// 		'next_followup_date' => $this->request->getData('next_followup_date'),
-					// 		'description' => $this->request->getData('description'),
-					// 	])
-					// 	->where(['id' => $clientData[0]['id']])
-					// 	->execute();
 					echo true;
 				} else {
 					$clientData = $clientDataTbl->newEmptyEntity();
@@ -409,8 +270,8 @@ class ClientsController extends AppController
 		$conn = ConnectionManager::get('default');
 		$this->Authorization->skipAuthorization();
 
-		$this->Projects = this->fetchTable('Projects');
-		$client = this->fetchTable('Users');
+		$this->Projects = $this->fetchTable('Projects');
+		$client = $this->fetchTable('Users');
 		$client = $client
 			->findById($id)
 			->firstOrFail();
