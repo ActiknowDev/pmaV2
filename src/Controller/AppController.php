@@ -96,7 +96,7 @@ class AppController extends Controller
             $session = new Session();
             $userSession = $session->read('data');
 
-            if ($userSession["role_name"] == "user") {
+            if ( isset($userSession["role_name"]) && $userSession["role_name"] == "user") {
 
                 $this->redirect(["controller" => "Users", "action" => "login"]);
             }

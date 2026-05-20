@@ -172,7 +172,7 @@ class Application extends BaseApplication implements
                 'password' => 'password',
             ],
 
-            'loginUrl' => '/',
+            'loginUrl' => '/users/login',
 
             'identifiers' => [
                 [

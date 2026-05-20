@@ -1552,7 +1552,7 @@ class CompaniesController extends AppController
 		// $milestone_logs_table->user_id = $user_id;
 		// $milestone_logs_table->action_performed = $action_type;
 
-		if (count($data_got) > 0) {
+		if ($data_got && count($data_got) > 0) {
 
 			if (isset($data_got["old_price"])) {
 
@@ -1800,7 +1800,7 @@ class CompaniesController extends AppController
 		$this->Authorization->skipAuthorization();
 		$this->ProjectMilestones = $this->fetchTable('ProjectMilestones');
 		// $this->loadModel("Projects");
-		$this->fetchTable("Projects");
+		$this->Projects = $this->fetchTable("Projects");
 		if ($type == 'edit') {
 			$miles = $this->ProjectMilestones
 				->findById($id)
@@ -1810,12 +1810,18 @@ class CompaniesController extends AppController
 		} else {
 
 			$user_data = $this->getuserdata();
-			$project_id = $this->Projects->find("all", [
-				"select" => [$id],
-				"conditions" => [
-					"FIND_IN_SET({$id},milestone_id)"
-				]
-			])->first();
+			// $project_id = $this->Projects->find("all", [
+			// 	"select" => [$id],
+			// 	"conditions" => [
+			// 		"FIND_IN_SET({$id},milestone_id)"
+			// 	]
+			// ])->first();
+			$project_id = $this->Projects->find()
+				->where([
+					"FIND_IN_SET(:id, milestone_id) >" => 0
+				])
+				->bind(':id', $id, 'integer')
+				->first();
 
 			// // echo "<pre>";
 			// echo(json_encode($project_id["id"]));
