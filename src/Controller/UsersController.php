@@ -1112,7 +1112,8 @@ class UsersController extends AppController
 		$milestoneid = $this->request->getData('milestoneid');
 		$timesheetday = $this->request->getData('timesheetday');
 
-		$this->loadModel('UserTimesheets');
+		// $this->loadModel('UserTimesheets');
+		$this->UserTimesheets = $this->fetchTable('UserTimesheets');
 		$allotmentnotes = $this->UserTimesheets->find('all')->where(['milestone_id' => $milestoneid, 'resource_id' => $id, 'work_date' => $timesheetday])->first();
 
 		if (!empty($allotmentnotes)) {
@@ -1567,8 +1568,11 @@ class UsersController extends AppController
 		// die;	
 
 
-		$this->loadModel("MyTeams");
-		$this->loadModel("MyTeamResources");
+		// $this->loadModel("MyTeams");
+		// $this->loadModel("MyTeamResources");
+		$this->MyTeams = $this->fetchTable("MyTeams");
+		$this->MyTeamResources = $this->fetchTable("MyTeamResources");
+
 
 
 
@@ -2866,7 +2870,8 @@ class UsersController extends AppController
 		$user_id = $userSession['id'];
 
 
-		$this->loadModel("AssigendProjectTaskNotes");
+		// $this->loadModel("AssigendProjectTaskNotes");
+		$this->AssigendProjectTaskNotes = $this->fetchTable("AssigendProjectTaskNotes");
 
 		if ($this->request->is('post')) {
 
@@ -2907,7 +2912,8 @@ class UsersController extends AppController
 		$this->Authorization->skipAuthorization();
 
 
-		$this->loadModel("AssigendProjectTaskNotes");
+		// $this->loadModel("AssigendProjectTaskNotes");
+		$this->AssigendProjectTaskNotes = $this->fetchTable("AssigendProjectTaskNotes");
 
 		$all_notes = $this->AssigendProjectTaskNotes->find("all")->contain(["Users"])->where(["taskid" => $id]);
 
@@ -2927,7 +2933,9 @@ class UsersController extends AppController
 		$user_id = $userSession['id'];
 		$conn = ConnectionManager::get('default');
 
-		$this->loadModel("AssigendProjectTasks");
+		// $this->loadModel("AssigendProjectTasks");
+		$this->AssigendProjectTasks = $this->fetchTable("AssigendProjectTasks");
+
 
 		if ($this->request->is('post')) {
 

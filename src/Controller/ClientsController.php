@@ -146,9 +146,15 @@ class ClientsController extends AppController
 		$this->autoRender = false;
 		$this->Authorization->skipAuthorization();
 		if ($this->request->is('ajax')) {
-			$client = $this->fetchTable('Users');
-			$query = $client->query();
-			$query->update()
+			// $client = $this->fetchTable('Users');
+			// $query = $client->query();
+			// $query->update()
+			// 	->set(['status' => $status])
+			// 	->where(['id' => $id])
+			// 	->execute();
+			$usersTable = $this->fetchTable('Users');
+
+			$usersTable->updateQuery()
 				->set(['status' => $status])
 				->where(['id' => $id])
 				->execute();
