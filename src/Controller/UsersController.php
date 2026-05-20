@@ -389,10 +389,6 @@ class UsersController extends AppController
 		$userSession = $session->read('data');
 		$role = $userSession['role'];
 
-
-
-
-
 		$parent_id = ($role == 1) ? $userSession['id'] : $userSession['parent_id'];
 
 		if ($this->request->is('ajax')) {
@@ -877,137 +873,159 @@ class UsersController extends AppController
 	}
 
 
-		public function timesheetReport($month=null,$year=null) {
+	public function timesheetReport($month=null,$year=null) {
 
 		
-	if($month==null) {
-		$month=date('m');
-	} else {
-		$month=$month;
-	}
-	if($year==null){
-		$year=date('Y');
-	} else {
-		$year=$year;
-	}
+		if($month==null) {
+			$month=date('m');
+		} else {
+			$month=$month;
+		}
+		if($year==null){
+			$year=date('Y');
+		} else {
+			$year=$year;
+		}
 
-	$this->Authorization->skipAuthorization();
-	$this->viewBuilder()->setLayout('default_new');
-	$conn = ConnectionManager::get('default');
-	$session = new \Cake\Http\Session();
-	$userSession = $session->read('data');
-	$user_id = $userSession['id'];
-	// validation for valid user
-	$roleArray = $userSession['role_name'];
-	$validList = [10,4,13];
-	$this->routeValidation($roleArray,$validList);
+		$this->Authorization->skipAuthorization();
+		$this->viewBuilder()->setLayout('default_new');
+		$conn = ConnectionManager::get('default');
+		$session = new \Cake\Http\Session();
+		$userSession = $session->read('data');
+		$user_id = $userSession['id'];
+		// validation for valid user
+		$roleArray = $userSession['role_name'];
+		$validList = [10,4,13];
+		$this->routeValidation($roleArray,$validList);
 
-	$this->request->getSession()->write('page', 'timesheet_report');
+		$this->request->getSession()->write('page', 'timesheet_report');
 
-	// previous 
-	// $query = "SELECT user_timesheets.id,user_timesheets.milestone_id,user_timesheets.resource_id,sum(user_timesheets.time_used) as time_used,user_timesheets.work_date, project_milestones.title, project_milestones.project_id,projects.project_name,projects.bill,users.name as username,users.id as userid FROM `user_timesheets` LEFT JOIN project_milestones ON user_timesheets.milestone_id=project_milestones.id LEFT JOIN projects ON projects.id=project_milestones.project_id LEFT JOIN users ON users.id=user_timesheets.resource_id WHERE month(work_date)=". $month ." AND year(work_date)=".$year." 
-	// GROUP BY 
-	// users.name
-	// ";
+		// previous 
+		// $query = "SELECT user_timesheets.id,user_timesheets.milestone_id,user_timesheets.resource_id,sum(user_timesheets.time_used) as time_used,user_timesheets.work_date, project_milestones.title, project_milestones.project_id,projects.project_name,projects.bill,users.name as username,users.id as userid FROM `user_timesheets` LEFT JOIN project_milestones ON user_timesheets.milestone_id=project_milestones.id LEFT JOIN projects ON projects.id=project_milestones.project_id LEFT JOIN users ON users.id=user_timesheets.resource_id WHERE month(work_date)=". $month ." AND year(work_date)=".$year." 
+		// GROUP BY 
+		// users.name
+		// ";
 
-	// $query = "
-	// SELECT 
-	// 	ANY_VALUE(user_timesheets.id) AS id,
-	// 	ANY_VALUE(user_timesheets.milestone_id) AS milestone_id,
-	// 	user_timesheets.resource_id,
-	// 	SUM(user_timesheets.time_used) AS time_used,
-	// 	ANY_VALUE(user_timesheets.work_date) AS work_date,
-	// 	ANY_VALUE(project_milestones.title) AS title,
-	// 	ANY_VALUE(project_milestones.project_id) AS project_id,
-	// 	ANY_VALUE(projects.project_name) AS project_name,
-	// 	ANY_VALUE(projects.bill) AS bill,
-	// 	users.name AS username,
-	// 	users.id AS userid
-	// FROM `user_timesheets`
-	// LEFT JOIN project_milestones ON user_timesheets.milestone_id = project_milestones.id
-	// LEFT JOIN projects ON projects.id = project_milestones.project_id
-	// LEFT JOIN users ON users.id = user_timesheets.resource_id
-	// WHERE month(work_date) = $month AND year(work_date) = $year
-	// GROUP BY users.name, users.id, user_timesheets.resource_id
-	// ";
+		// $query = "
+		// SELECT 
+		// 	ANY_VALUE(user_timesheets.id) AS id,
+		// 	ANY_VALUE(user_timesheets.milestone_id) AS milestone_id,
+		// 	user_timesheets.resource_id,
+		// 	SUM(user_timesheets.time_used) AS time_used,
+		// 	ANY_VALUE(user_timesheets.work_date) AS work_date,
+		// 	ANY_VALUE(project_milestones.title) AS title,
+		// 	ANY_VALUE(project_milestones.project_id) AS project_id,
+		// 	ANY_VALUE(projects.project_name) AS project_name,
+		// 	ANY_VALUE(projects.bill) AS bill,
+		// 	users.name AS username,
+		// 	users.id AS userid
+		// FROM `user_timesheets`
+		// LEFT JOIN project_milestones ON user_timesheets.milestone_id = project_milestones.id
+		// LEFT JOIN projects ON projects.id = project_milestones.project_id
+		// LEFT JOIN users ON users.id = user_timesheets.resource_id
+		// WHERE month(work_date) = $month AND year(work_date) = $year
+		// GROUP BY users.name, users.id, user_timesheets.resource_id
+		// ";
 
-	$query = "
-		SELECT 
-			ANY_VALUE(user_timesheets.id) AS id,
-			ANY_VALUE(user_timesheets.milestone_id) AS milestone_id,
-			user_timesheets.resource_id,
-			SUM(user_timesheets.time_used) AS time_used,
-			ANY_VALUE(user_timesheets.work_date) AS work_date,
-			ANY_VALUE(project_milestones.title) AS title,
-			ANY_VALUE(project_milestones.project_id) AS project_id,
-			ANY_VALUE(projects.project_name) AS project_name,
-			ANY_VALUE(projects.bill) AS bill,
-			users.name AS username,
-			users.id AS userid
-		FROM `user_timesheets`
-		LEFT JOIN project_milestones ON user_timesheets.milestone_id = project_milestones.id
-		LEFT JOIN projects ON projects.id = project_milestones.project_id
-		LEFT JOIN users ON users.id = user_timesheets.resource_id
-		WHERE month(work_date) = $month AND year(work_date) = $year
-		GROUP BY users.name, users.id, user_timesheets.resource_id
-		";
+		// $query = "
+		// 	SELECT 
+		// 		ANY_VALUE(user_timesheets.id) AS id,
+		// 		ANY_VALUE(user_timesheets.milestone_id) AS milestone_id,
+		// 		user_timesheets.resource_id,
+		// 		SUM(user_timesheets.time_used) AS time_used,
+		// 		ANY_VALUE(user_timesheets.work_date) AS work_date,
+		// 		ANY_VALUE(project_milestones.title) AS title,
+		// 		ANY_VALUE(project_milestones.project_id) AS project_id,
+		// 		ANY_VALUE(projects.project_name) AS project_name,
+		// 		ANY_VALUE(projects.bill) AS bill,
+		// 		users.name AS username,
+		// 		users.id AS userid
+		// 	FROM `user_timesheets`
+		// 	LEFT JOIN project_milestones ON user_timesheets.milestone_id = project_milestones.id
+		// 	LEFT JOIN projects ON projects.id = project_milestones.project_id
+		// 	LEFT JOIN users ON users.id = user_timesheets.resource_id
+		// 	WHERE month(work_date) = $month AND year(work_date) = $year
+		// 	GROUP BY users.name, users.id, user_timesheets.resource_id
+		// 	";
 
-	// dd($query);
-	$stmtProduct = $conn->execute($query);
-	$list = $stmtProduct->fetchAll('assoc');
-	$projects = array();
-	// dd($list);
+		$query = "
+			SELECT 
+				(user_timesheets.id) AS id,
+				(user_timesheets.milestone_id) AS milestone_id,
+				user_timesheets.resource_id,
+				SUM(user_timesheets.time_used) AS time_used,
+				(user_timesheets.work_date) AS work_date,
+				(project_milestones.title) AS title,
+				(project_milestones.project_id) AS project_id,
+				(projects.project_name) AS project_name,
+				(projects.bill) AS bill,
+				users.name AS username,
+				users.id AS userid
+			FROM `user_timesheets`
+			LEFT JOIN project_milestones ON user_timesheets.milestone_id = project_milestones.id
+			LEFT JOIN projects ON projects.id = project_milestones.project_id
+			LEFT JOIN users ON users.id = user_timesheets.resource_id
+			WHERE month(work_date) = $month AND year(work_date) = $year
+			GROUP BY users.name, users.id, user_timesheets.resource_id
+			";
 
-	foreach ($list as $l) {
 
-		$p['project_id'] = $l['project_id'];
-		// dd($p['project_id']);
-		$p['project_name'] = $l['project_name'];
-		$p['bill'] = $l['bill'];
-		$p['userid'] = $l['userid'];
-		$p['username'] = $l['username'];
-		// $p['time_used'] = $l['time_used'];
-		// $p['miles'] = array();
-		
-			// $query = "SELECT id,title,project_id FROM project_milestones p WHERE p.id IN (" . $l['milestone_id'] . ") AND p.deleted=0 AND status != 'Completed' AND month(p.due_date)=". $month . " AND year(p.due_date)=".$year;
-		// $query = "SELECT (select sum(project_allocations.time_slot) from project_allocations where project_allocations.milestone_id in (select id from project_milestones where project_milestones.project_id = " . $l['project_id'] . " ) AND project_allocations.resource_id=" . $l['userid'] . " ) as time_slot";
-		// $stmtProduct = $conn->execute($query);
-		// $mlist = $stmtProduct->fetchAll('assoc');
+		// dd($query);
+		$stmtProduct = $conn->execute($query);
+		$list = $stmtProduct->fetchAll('assoc');
+		$projects = array();
+		// dd($list);
 
-		// $billable_time_used = "SELECT sum(user_timesheets.time_used) as time_used,users.name as username FROM `user_timesheets` LEFT JOIN project_milestones ON user_timesheets.milestone_id=project_milestones.id LEFT JOIN projects ON projects.id=project_milestones.project_id LEFT JOIN users ON users.id=user_timesheets.resource_id WHERE month(work_date)=05 AND year(work_date)=2023 AND user_timesheets.resource_id=502 AND projects.bill='Billable' GROUP BY users.name";
-		$billable_time_used ="SELECT sum(user_timesheets.time_used) as time_used,users.name as username, (SELECT SUM(project_allocations.time_slot) FROM project_allocations INNER JOIN project_milestones ON project_allocations.milestone_id = project_milestones.id INNER JOIN projects ON project_milestones.project_id = projects.id WHERE projects.bill = 'Billable' AND project_allocations.resource_id = " . $l['userid'] . ") AS time_slot FROM `user_timesheets` LEFT JOIN project_milestones ON user_timesheets.milestone_id=project_milestones.id LEFT JOIN projects ON projects.id=project_milestones.project_id LEFT JOIN users ON users.id=user_timesheets.resource_id WHERE month(user_timesheets.work_date)=". $month ." AND year(user_timesheets.work_date)=". $year ." AND user_timesheets.resource_id=" . $l['userid'] . " AND projects.bill='Billable' GROUP BY users.name";
-		$stmtProduct = $conn->execute($billable_time_used);
-		$billable_time_used_data = $stmtProduct->fetchAll('assoc');
+		foreach ($list as $l) {
 
-		$non_billable_time_used = "SELECT sum(user_timesheets.time_used) as time_used,users.name as username, (SELECT SUM(project_allocations.time_slot) FROM project_allocations INNER JOIN project_milestones ON project_allocations.milestone_id = project_milestones.id INNER JOIN projects ON project_milestones.project_id = projects.id WHERE projects.bill = 'Non Billable' AND project_allocations.resource_id = " . $l['userid'] . ") AS time_slot FROM `user_timesheets` LEFT JOIN project_milestones ON user_timesheets.milestone_id=project_milestones.id LEFT JOIN projects ON projects.id=project_milestones.project_id LEFT JOIN users ON users.id=user_timesheets.resource_id WHERE month(user_timesheets.work_date)=". $month ." AND year(user_timesheets.work_date)=". $year ." AND user_timesheets.resource_id=" . $l['userid'] . " AND projects.bill='Non Billable' GROUP BY users.name";
-		$stmtProduct = $conn->execute($non_billable_time_used);
-		$non_billable_time_used_data = $stmtProduct->fetchAll('assoc');
-		// dd($billable_time_used_data[0]['time_used']);
-		$p['non_billable_time_used'] = count($non_billable_time_used_data) > 0 ? $non_billable_time_used_data[0]['time_used'] : 0;
-		// $p['non_billable_time_slot'] = $non_billable_time_used_data[0]['time_slot'];
-		// $p['non_billable_time_slot'] = count($non_billable_time_used_data) > 0 ? $non_billable_time_used_data[0]['time_slot'] : 0;
-		$p['billable_time_used'] = count($billable_time_used_data) > 0 ? $billable_time_used_data[0]['time_used'] : 0;
-		// $p['billable_time_slot'] = count($billable_time_used_data) > 0 ? $billable_time_used_data[0]['time_slot'] : 0;
-		// $p['billable_time_used'] = $billable_time_used_data[0]['time_used'];
-		// $p['billable_time_slot'] = $billable_time_used_data[0]['time_slot'];
-		// $p['time_slot'] = $mlist;
+			$p['project_id'] = $l['project_id'];
+			// dd($p['project_id']);
+			$p['project_name'] = $l['project_name'];
+			$p['bill'] = $l['bill'];
+			$p['userid'] = $l['userid'];
+			$p['username'] = $l['username'];
+			// $p['time_used'] = $l['time_used'];
+			// $p['miles'] = array();
+			
+				// $query = "SELECT id,title,project_id FROM project_milestones p WHERE p.id IN (" . $l['milestone_id'] . ") AND p.deleted=0 AND status != 'Completed' AND month(p.due_date)=". $month . " AND year(p.due_date)=".$year;
+			// $query = "SELECT (select sum(project_allocations.time_slot) from project_allocations where project_allocations.milestone_id in (select id from project_milestones where project_milestones.project_id = " . $l['project_id'] . " ) AND project_allocations.resource_id=" . $l['userid'] . " ) as time_slot";
+			// $stmtProduct = $conn->execute($query);
+			// $mlist = $stmtProduct->fetchAll('assoc');
 
-		$time_slot="SELECT sum(project_allocations.time_slot) as time_slot,projects.project_name,project_allocations.resource_id FROM `project_allocations` LEFT JOIN project_milestones ON project_milestones.id=project_allocations.milestone_id LEFT JOIN projects ON projects.id=project_milestones.project_id WHERE month(project_milestones.due_date)=". $month ." AND year(project_milestones.due_date)=". $year ." AND project_allocations.resource_id=" . $l['userid'] . " AND projects.bill='Billable' GROUP by project_allocations.resource_id,projects.project_name";
-		$stmtProduct = $conn->execute($time_slot);
-		$time_slot = $stmtProduct->fetchAll('assoc');
-		$p['time_slot']=$time_slot;
+			// $billable_time_used = "SELECT sum(user_timesheets.time_used) as time_used,users.name as username FROM `user_timesheets` LEFT JOIN project_milestones ON user_timesheets.milestone_id=project_milestones.id LEFT JOIN projects ON projects.id=project_milestones.project_id LEFT JOIN users ON users.id=user_timesheets.resource_id WHERE month(work_date)=05 AND year(work_date)=2023 AND user_timesheets.resource_id=502 AND projects.bill='Billable' GROUP BY users.name";
+			$billable_time_used ="SELECT sum(user_timesheets.time_used) as time_used,users.name as username, (SELECT SUM(project_allocations.time_slot) FROM project_allocations INNER JOIN project_milestones ON project_allocations.milestone_id = project_milestones.id INNER JOIN projects ON project_milestones.project_id = projects.id WHERE projects.bill = 'Billable' AND project_allocations.resource_id = " . $l['userid'] . ") AS time_slot FROM `user_timesheets` LEFT JOIN project_milestones ON user_timesheets.milestone_id=project_milestones.id LEFT JOIN projects ON projects.id=project_milestones.project_id LEFT JOIN users ON users.id=user_timesheets.resource_id WHERE month(user_timesheets.work_date)=". $month ." AND year(user_timesheets.work_date)=". $year ." AND user_timesheets.resource_id=" . $l['userid'] . " AND projects.bill='Billable' GROUP BY users.name";
+			$stmtProduct = $conn->execute($billable_time_used);
+			$billable_time_used_data = $stmtProduct->fetchAll('assoc');
 
-		$non_billable_time_slot="SELECT sum(project_allocations.time_slot) as time_slot,projects.project_name,project_allocations.resource_id FROM `project_allocations` LEFT JOIN project_milestones ON project_milestones.id=project_allocations.milestone_id LEFT JOIN projects ON projects.id=project_milestones.project_id WHERE month(project_milestones.due_date)=". $month ." AND year(project_milestones.due_date)=". $year ." AND project_allocations.resource_id=" . $l['userid'] . " AND projects.bill='Non Billable' GROUP by project_allocations.resource_id,projects.project_name";
-		$stmtProduct = $conn->execute($non_billable_time_slot);
-		$non_billable_time_slot = $stmtProduct->fetchAll('assoc');
-		// $p['non_billable_time_slot']=$non_billable_time_slot;
-		$p['non_billable_time_slot'] = count($non_billable_time_slot) > 0 ? $non_billable_time_slot : 0;
+			$non_billable_time_used = "SELECT sum(user_timesheets.time_used) as time_used,users.name as username, (SELECT SUM(project_allocations.time_slot) FROM project_allocations INNER JOIN project_milestones ON project_allocations.milestone_id = project_milestones.id INNER JOIN projects ON project_milestones.project_id = projects.id WHERE projects.bill = 'Non Billable' AND project_allocations.resource_id = " . $l['userid'] . ") AS time_slot FROM `user_timesheets` LEFT JOIN project_milestones ON user_timesheets.milestone_id=project_milestones.id LEFT JOIN projects ON projects.id=project_milestones.project_id LEFT JOIN users ON users.id=user_timesheets.resource_id WHERE month(user_timesheets.work_date)=". $month ." AND year(user_timesheets.work_date)=". $year ." AND user_timesheets.resource_id=" . $l['userid'] . " AND projects.bill='Non Billable' GROUP BY users.name";
+			$stmtProduct = $conn->execute($non_billable_time_used);
+			$non_billable_time_used_data = $stmtProduct->fetchAll('assoc');
+			// dd($billable_time_used_data[0]['time_used']);
+			$p['non_billable_time_used'] = count($non_billable_time_used_data) > 0 ? $non_billable_time_used_data[0]['time_used'] : 0;
+			// $p['non_billable_time_slot'] = $non_billable_time_used_data[0]['time_slot'];
+			// $p['non_billable_time_slot'] = count($non_billable_time_used_data) > 0 ? $non_billable_time_used_data[0]['time_slot'] : 0;
+			$p['billable_time_used'] = count($billable_time_used_data) > 0 ? $billable_time_used_data[0]['time_used'] : 0;
+			// $p['billable_time_slot'] = count($billable_time_used_data) > 0 ? $billable_time_used_data[0]['time_slot'] : 0;
+			// $p['billable_time_used'] = $billable_time_used_data[0]['time_used'];
+			// $p['billable_time_slot'] = $billable_time_used_data[0]['time_slot'];
+			// $p['time_slot'] = $mlist;
 
-		$projects[] = $p;
-	}
-	// dd($projects);
+			$time_slot="SELECT sum(project_allocations.time_slot) as time_slot,projects.project_name,project_allocations.resource_id FROM `project_allocations` LEFT JOIN project_milestones ON project_milestones.id=project_allocations.milestone_id LEFT JOIN projects ON projects.id=project_milestones.project_id WHERE month(project_milestones.due_date)=". $month ." AND year(project_milestones.due_date)=". $year ." AND project_allocations.resource_id=" . $l['userid'] . " AND projects.bill='Billable' GROUP by project_allocations.resource_id,projects.project_name";
+			$stmtProduct = $conn->execute($time_slot);
+			$time_slot = $stmtProduct->fetchAll('assoc');
+			$p['time_slot']=$time_slot;
 
-	$this->set(compact('projects','month','year'));
+			$non_billable_time_slot="SELECT sum(project_allocations.time_slot) as time_slot,projects.project_name,project_allocations.resource_id FROM `project_allocations` LEFT JOIN project_milestones ON project_milestones.id=project_allocations.milestone_id LEFT JOIN projects ON projects.id=project_milestones.project_id WHERE month(project_milestones.due_date)=". $month ." AND year(project_milestones.due_date)=". $year ." AND project_allocations.resource_id=" . $l['userid'] . " AND projects.bill='Non Billable' GROUP by project_allocations.resource_id,projects.project_name";
+			$stmtProduct = $conn->execute($non_billable_time_slot);
+			$non_billable_time_slot = $stmtProduct->fetchAll('assoc');
+			// $p['non_billable_time_slot']=$non_billable_time_slot;
+			$p['non_billable_time_slot'] = count($non_billable_time_slot) > 0 ? $non_billable_time_slot : 0;
+
+			$projects[] = $p;
+		}
+		// dd($projects);
+
+		$this->set(compact('projects','month','year'));
 
 	}
 
@@ -3767,6 +3785,7 @@ class UsersController extends AppController
 		$roleArray = $userSession['role_name'];
 		$validList = [10,4,13];
 		$this->routeValidation($roleArray,$validList);
+		$this->EmployeePunchTime = $this->fetchTable('EmployeePunchTime');
 
 		if($from==null) {
 			$from=date('Y-m-d');
@@ -3850,6 +3869,8 @@ class UsersController extends AppController
 		$roleArray = $userSession['role_name'];
 		$validList = [10,4,13];
 		$this->routeValidation($roleArray,$validList);
+
+		$this->EmployeePunchTime = $this->fetchTable('EmployeePunchTime');
     
 		if($month==null) {
 			$month=date('m');
