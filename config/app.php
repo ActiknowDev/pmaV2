@@ -170,10 +170,12 @@ return [
      *   your application that still emit deprecations.
      */
     'Error' => [
-        'errorLevel' => E_ALL,
+        // 'errorLevel' => E_ALL,
+        'errorLevel' => E_ALL & ~E_DEPRECATED & ~E_USER_DEPRECATED,
+        'trace' => false,
         'skipLog' => [],
         'log' => true,
-        'trace' => true,
+        // 'trace' => true,
         'ignoredDeprecationPaths' => [],
     ],
 
