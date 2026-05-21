@@ -17,6 +17,19 @@ use Cake\Http\Client;
 
 class CompaniesController extends AppController
 {
+	protected $ProjectMilestones;
+	protected $ProjectMilestonesLogs;
+	protected $Opportunity;
+	protected $Probability;
+	protected $SupportPlan;
+	protected $SupportPlansPayment;
+	protected $ActivityTbl;
+	protected $UpworkContract;
+	protected $UpworkEngagementList;
+	protected $UpworkMilestone;
+	protected $Plans;
+	protected $Stage;
+
 	public function initialize(): void
 	{
 		parent::initialize();
@@ -26,18 +39,19 @@ class CompaniesController extends AppController
 		// $this->loadComponent('RequestHandler');
 		// $this->loadModel("ProjectMilestonesLogs");
 		// $this->MilestoneExtend = $this->getTableLocator()->get("MilestoneExtend");
-		$this->ProjectMilestones = $this->getTableLocator()->get("ProjectMilestones");
-		$this->ProjectMilestonesLogs = $this->getTableLocator()->get("ProjectMilestonesLogs");
-		$this->Opportunity = $this->getTableLocator()->get("Opportunity");
-		$this->Probability = $this->getTableLocator()->get("Probability");
-		$this->SupportPlan = $this->getTableLocator()->get("SupportPlan");
-		$this->SupportPlansPayment = $this->getTableLocator()->get("SupportPlansPayment");
-		$this->ActivityTbl = $this->getTableLocator()->get("Activity");
-		$this->UpworkContract = $this->getTableLocator()->get("UpworkContract");
-		$this->UpworkEngagementList = $this->getTableLocator()->get("UpworkEngagementList");
-		$this->UpworkMilestone = $this->getTableLocator()->get("UpworkMilestone");
-		$this->Plans = $this->getTableLocator()->get("Plans");
-		$this->Stage = $this->getTableLocator()->get("OpportunityStage");
+
+		$this->ProjectMilestones = $this->fetchTable("ProjectMilestones");
+		$this->ProjectMilestonesLogs = $this->fetchTable("ProjectMilestonesLogs");
+		$this->Opportunity = $this->fetchTable("Opportunity");
+		$this->Probability = $this->fetchTable("Probability");
+		$this->SupportPlan = $this->fetchTable("SupportPlan");
+		$this->SupportPlansPayment = $this->fetchTable("SupportPlansPayment");
+		$this->ActivityTbl = $this->fetchTable("Activity");
+		$this->UpworkContract = $this->fetchTable("UpworkContract");
+		$this->UpworkEngagementList = $this->fetchTable("UpworkEngagementList");
+		$this->UpworkMilestone = $this->fetchTable("UpworkMilestone");
+		$this->Plans = $this->fetchTable("Plans");
+		$this->Stage = $this->fetchTable("OpportunityStage");
 	}
 
 	public function beforeFilter(\Cake\Event\EventInterface $event)

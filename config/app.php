@@ -107,7 +107,7 @@ return [
          * Duration will be set to '+2 minutes' in bootstrap.php when debug = true
          * If you set 'className' => 'Null' core cache will be disabled.
          */
-        '_cake_core_' => [
+        '_cake_translations_' => [
             'className' => FileEngine::class,
             'prefix' => 'myapp_cake_core_',
             'path' => CACHE . 'persistent' . DS,
@@ -170,10 +170,12 @@ return [
      *   your application that still emit deprecations.
      */
     'Error' => [
-        'errorLevel' => E_ALL,
+        // 'errorLevel' => E_ALL,
+        'errorLevel' => E_ALL & ~E_DEPRECATED & ~E_USER_DEPRECATED,
+        'trace' => false,
         'skipLog' => [],
         'log' => true,
-        'trace' => true,
+        // 'trace' => true,
         'ignoredDeprecationPaths' => [],
     ],
 
