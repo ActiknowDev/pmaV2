@@ -17,6 +17,19 @@ use Cake\Http\Client;
 
 class CompaniesController extends AppController
 {
+	protected $ProjectMilestones;
+	protected $ProjectMilestonesLogs;
+	protected $Opportunity;
+	protected $Probability;
+	protected $SupportPlan;
+	protected $SupportPlansPayment;
+	protected $ActivityTbl;
+	protected $UpworkContract;
+	protected $UpworkEngagementList;
+	protected $UpworkMilestone;
+	protected $Plans;
+	protected $Stage;
+
 	public function initialize(): void
 	{
 		parent::initialize();
