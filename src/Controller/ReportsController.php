@@ -33,29 +33,12 @@ class ReportsController extends AppController
 
 	private function getChartRevenueForPeriod($conn, $from_date, $to_date, $monthOrder, $wh, $whereMgr, $whereBd, $whereSrc)
 	{
-		// $query = "
-		// 			SELECT 
-		// 		MONTH(pm.due_date) AS month, 
-		// 		IFNULL(SUM(pm.amount), 0) AS total,
-		// 		ANY_VALUE(p.payment_id) AS payment_id,
-		// 		ANY_VALUE(p.milestone_id) AS milestone_id
-		// 	FROM project_milestones pm
-		// 	JOIN projects p ON pm.project_id = p.id
-		// 	JOIN users u ON p.client_id = u.id
-		// 	WHERE pm.due_date BETWEEN '".$from_date."' AND '".$to_date."'
-		// 	AND pm.deleted = 0
-		// 	AND p.deleted = 1 ".$wh."
-		// 	AND p.id != 0
-		// 	".$whereMgr." ".$whereBd." ".$whereSrc."
-		// 	GROUP BY MONTH(pm.due_date)
-		// 	";
-
 		$query = "
 					SELECT 
 				MONTH(pm.due_date) AS month, 
 				IFNULL(SUM(pm.amount), 0) AS total,
-				(p.payment_id) AS payment_id,
-				(p.milestone_id) AS milestone_id
+				ANY_VALUE(p.payment_id) AS payment_id,
+				ANY_VALUE(p.milestone_id) AS milestone_id
 			FROM project_milestones pm
 			JOIN projects p ON pm.project_id = p.id
 			JOIN users u ON p.client_id = u.id
@@ -66,6 +49,23 @@ class ReportsController extends AppController
 			".$whereMgr." ".$whereBd." ".$whereSrc."
 			GROUP BY MONTH(pm.due_date)
 			";
+
+		// $query = "
+		// 			SELECT 
+		// 		MONTH(pm.due_date) AS month, 
+		// 		IFNULL(SUM(pm.amount), 0) AS total,
+		// 		(p.payment_id) AS payment_id,
+		// 		(p.milestone_id) AS milestone_id
+		// 	FROM project_milestones pm
+		// 	JOIN projects p ON pm.project_id = p.id
+		// 	JOIN users u ON p.client_id = u.id
+		// 	WHERE pm.due_date BETWEEN '".$from_date."' AND '".$to_date."'
+		// 	AND pm.deleted = 0
+		// 	AND p.deleted = 1 ".$wh."
+		// 	AND p.id != 0
+		// 	".$whereMgr." ".$whereBd." ".$whereSrc."
+		// 	GROUP BY MONTH(pm.due_date)
+		// 	";
 		$stmt = $conn->execute($query);
 		$data = $stmt->fetchAll('assoc');
 		$map = [];

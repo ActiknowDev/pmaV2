@@ -143,44 +143,44 @@ class ScoreCardController extends AppController
 				}
 			}
 		}
-		//  $time_used_query = "
-        // SELECT 
-        //     ANY_VALUE(user_timesheets.id) as id,
-        //     ANY_VALUE(user_timesheets.milestone_id) as milestone_id,
-        //     ANY_VALUE(user_timesheets.resource_id) as resource_id,
-        //     SUM(user_timesheets.time_used) as time_used,
-        //     ANY_VALUE(user_timesheets.work_date) as work_date,
-        //     ANY_VALUE(project_milestones.title) as title,
-        //     ANY_VALUE(project_milestones.project_id) as project_id,
-        //     projects.project_name,
-        //     ANY_VALUE(projects.bill) as bill,
-        //     users.name as username,
-        //     ANY_VALUE(users.id) as userid
-        // FROM user_timesheets 
-        // LEFT JOIN project_milestones ON user_timesheets.milestone_id=project_milestones.id 
-        // LEFT JOIN projects ON projects.id=project_milestones.project_id 
-        // LEFT JOIN users ON users.id=user_timesheets.resource_id 
-        // WHERE month(work_date)=" .$month. " AND year(work_date)=". $year ." AND user_timesheets.resource_id=" . $userId . " 
-        // GROUP BY projects.project_name, users.name";
 		 $time_used_query = "
         SELECT 
-            (user_timesheets.id) as id,
-            (user_timesheets.milestone_id) as milestone_id,
-            (user_timesheets.resource_id) as resource_id,
+            ANY_VALUE(user_timesheets.id) as id,
+            ANY_VALUE(user_timesheets.milestone_id) as milestone_id,
+            ANY_VALUE(user_timesheets.resource_id) as resource_id,
             SUM(user_timesheets.time_used) as time_used,
-            (user_timesheets.work_date) as work_date,
-            (project_milestones.title) as title,
-            (project_milestones.project_id) as project_id,
+            ANY_VALUE(user_timesheets.work_date) as work_date,
+            ANY_VALUE(project_milestones.title) as title,
+            ANY_VALUE(project_milestones.project_id) as project_id,
             projects.project_name,
-            (projects.bill) as bill,
+            ANY_VALUE(projects.bill) as bill,
             users.name as username,
-            (users.id) as userid
+            ANY_VALUE(users.id) as userid
         FROM user_timesheets 
         LEFT JOIN project_milestones ON user_timesheets.milestone_id=project_milestones.id 
         LEFT JOIN projects ON projects.id=project_milestones.project_id 
         LEFT JOIN users ON users.id=user_timesheets.resource_id 
         WHERE month(work_date)=" .$month. " AND year(work_date)=". $year ." AND user_timesheets.resource_id=" . $userId . " 
         GROUP BY projects.project_name, users.name";
+		//  $time_used_query = "
+        // SELECT 
+        //     (user_timesheets.id) as id,
+        //     (user_timesheets.milestone_id) as milestone_id,
+        //     (user_timesheets.resource_id) as resource_id,
+        //     SUM(user_timesheets.time_used) as time_used,
+        //     (user_timesheets.work_date) as work_date,
+        //     (project_milestones.title) as title,
+        //     (project_milestones.project_id) as project_id,
+        //     projects.project_name,
+        //     (projects.bill) as bill,
+        //     users.name as username,
+        //     (users.id) as userid
+        // FROM user_timesheets 
+        // LEFT JOIN project_milestones ON user_timesheets.milestone_id=project_milestones.id 
+        // LEFT JOIN projects ON projects.id=project_milestones.project_id 
+        // LEFT JOIN users ON users.id=user_timesheets.resource_id 
+        // WHERE month(work_date)=" .$month. " AND year(work_date)=". $year ." AND user_timesheets.resource_id=" . $userId . " 
+        // GROUP BY projects.project_name, users.name";
 
 		$stmtProduct = $conn->execute($time_used_query);
 		$time_used = $stmtProduct->fetchAll('assoc');

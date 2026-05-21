@@ -145,7 +145,6 @@ $role = $userSession['role'];
                                 <!-- <td><?= $row['type']; ?></td>    -->
                                 <td>$ <?= $row['expected_amount']; ?></td>
                                 <td class="center-item"><span style="display:none;"><?= $row['probability_percentage'] ?></span><p class="pro-color" title="<?= $row['probability_percentage'] ?>" style="background:<?= $row['probability_color_code'] ?>;"></p></td>
-                                <!-- <td><?= (!empty($row['expected_closed_date']) ? date_format($row['expected_closed_date'],"d-m-Y"): '-'); ?></td>      -->
                                 <td><i class="fa fa-eye" style="cursor:pointer; color: #017bf6;" onclick="loadModelData(this)" data-next="<?= $row['next_step'];?>" data-toggle="modal" data-target="#model_popup"></i></td>
                                 <td>
                                         <input class="tgl tgl-light change-status" id="<?= $row['id']; ?>" type="checkbox" value="<?= $row['deleted'] == '0' ? '0' : '1' ?>" <?= $row['deleted'] == '0' ? 'checked' : '' ?> />

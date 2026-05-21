@@ -3427,22 +3427,41 @@ class CompaniesController extends AppController
 		}
 	}
 
-	public function deleteOpportunity($id,$status)
+	// public function deleteOpportunity($id,$status)
+	// {
+	// 	$this->Authorization->skipAuthorization();
+	// 	// if($type=='delete') {
+	// 	// 	$val=1;
+	// 	// } else {
+	// 	// 	$val=0;
+	// 	// }
+	// 	$query =  $this->Opportunity->query();
+	// 	$query->update()
+	// 		->set(['deleted' => $status])
+	// 		->where(['id' => $id]);
+	// 	if ($query->execute())
+	// 		echo 1;
+	// 	else
+	// 		echo 0;
+	// 	die;
+	// }
+
+
+	public function deleteOpportunity($id, $status)
 	{
 		$this->Authorization->skipAuthorization();
-		// if($type=='delete') {
-		// 	$val=1;
-		// } else {
-		// 	$val=0;
-		// }
-		$query =  $this->Opportunity->query();
-		$query->update()
-			->set(['deleted' => $status])
-			->where(['id' => $id]);
-		if ($query->execute())
+
+		$result = $this->Opportunity->updateAll(
+			['deleted' => $status],
+			['id' => $id]
+		);
+
+		if ($result) {
 			echo 1;
-		else
+		} else {
 			echo 0;
+		}
+
 		die;
 	}
 
@@ -3704,21 +3723,41 @@ class CompaniesController extends AppController
 		die;
 	}
 
+	// public function deleteprobability()
+	// {
+	// 	$this->Authorization->skipAuthorization();
+	// 	$this->autoRender = false;
+	// 	$id=$this->request->getData('id');
+	// 	$query =  $this->Probability->query();
+	// 	// $query->update()
+	// 	// 	->set(['deleted' => 1])
+	// 	// 	->where(['id' => $id]);
+	// 	$query->delete()
+	// 		->where(['id' => $id]);
+	// 	if ($query->execute())
+	// 		echo 1;
+	// 	else
+	// 		echo 0;
+	// 	die;
+	// }
+
 	public function deleteprobability()
 	{
 		$this->Authorization->skipAuthorization();
 		$this->autoRender = false;
-		$id=$this->request->getData('id');
-		$query =  $this->Probability->query();
-		// $query->update()
-		// 	->set(['deleted' => 1])
-		// 	->where(['id' => $id]);
-		$query->delete()
-			->where(['id' => $id]);
-		if ($query->execute())
+
+		$id = $this->request->getData('id');
+
+		$result = $this->Probability->deleteAll([
+			'id' => $id
+		]);
+
+		if ($result) {
 			echo 1;
-		else
+		} else {
 			echo 0;
+		}
+
 		die;
 	}
 
