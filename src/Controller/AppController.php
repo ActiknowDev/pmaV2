@@ -257,8 +257,8 @@ class AppController extends Controller
         $mailer = new Mailer();
         $mailer->setTransport('default');
         $mailer->setEmailFormat('html')
-            // ->setTo($email)
-            ->setTo("kajal.bharti@actiknow.com")
+            ->setTo($email)
+            // ->setTo("kajal.bharti@actiknow.com")
             ->setCc("devendra.singh@actiknow.com")
             ->setCc("twinkle.gupta@actiknowbi.com")
             ->setSubject("Welcome to Actiknow's Bug Reporting Platform")
