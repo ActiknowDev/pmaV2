@@ -47,7 +47,10 @@ $role = $userSession['role'];
                                                 $class = 'fs_danger';
                                                 $tag = 'Decrease';
                                             }
-                                            $percent = (($current_month_revenue->amount - $last_month_revenue->amount) / $last_month_revenue->amount) * 100;
+                                            $percent = (!empty($last_month_revenue->amount))
+                                                ? (($current_month_revenue->amount - $last_month_revenue->amount) / $last_month_revenue->amount) * 100
+                                                : 0;
+                                            // $percent = (($current_month_revenue->amount - $last_month_revenue->amount) / $last_month_revenue->amount) * 100;
                                         ?>   
 
                                         <span class="<?= $class ?> fs-10 fw_500">
