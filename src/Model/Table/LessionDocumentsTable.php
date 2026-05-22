@@ -7,7 +7,6 @@ use Cake\ORM\Query;
 use Cake\ORM\RulesChecker;
 use Cake\ORM\Table;
 use Cake\Validation\Validator;
-use SoftDelete\Model\Table\SoftDeleteTrait;
 
 /**
  * LessionDocuments Model
@@ -28,9 +27,6 @@ use SoftDelete\Model\Table\SoftDeleteTrait;
  */
 class LessionDocumentsTable extends Table
 {
-    use SoftDeleteTrait;
-    protected $softDeleteField = 'deleted_at';
-
     /**
      * Initialize method
      *
@@ -100,7 +96,7 @@ class LessionDocumentsTable extends Table
      */
     public function buildRules(RulesChecker $rules): RulesChecker
     {
-        $rules->add($rules->existsIn('lession_id', 'Lessions'), ['errorField' => 'lession_id']);
+        $rules->add($rules->existsIn(['lession_id'], 'Lessions'));
 
         return $rules;
     }

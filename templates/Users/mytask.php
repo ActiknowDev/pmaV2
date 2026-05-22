@@ -140,89 +140,6 @@
                             </ul>
                             <div class="tab-content task-tab-content" id="myTabContent">
                                 <div class="tab-pane fade show active task-wapper" id="mytask" role="tabpanel" aria-labelledby="mytask-tab">
-                                    <!-- FILTER ROW -->
-                                    <!--    <div class="filter-row">
-                                 <div class="filter-row-item">
-                                    <label for=""> Filter</label>
-                                </div>
-                                <div class="filter-row-item">
-                                    <div class="adon-group">
-                                        <span class="icon icon-md icon-light"><i class="fa fa-search"></i></span>
-                                        <input type="text" class="form-control" placeholder="Search">
-                                    </div>
-                                </div>
-                                <div class="filter-row-item">
-                                    <div class="adon-group">
-                                        <span class="icon icon-md icon-light"><i class="fa fa-check"></i></span>
-                                        <select name="" id="" class="form-control">
-                                            <option value="">All Task</option>
-                                            <option value="">To Be Review</option>
-                                        </select>
-                                    </div>
-                                </div>
-                                <div class="filter-row-item">
-                                    <div class="adon-group">
-                                        <span class="icon icon-md icon-light"><i class="fa fa-users"></i></span>
-                                        <select name="" id="" class="form-control">
-                                            <option value="">All Users</option>
-                                            <option value="">Varun Dev</option>
-                                            <option value="">Karan Dev</option>
-                                            <option value="">Suresh Kumar</option>
-                                            <option value="">Shubham Gupta</option>
-                                        </select>
-                                    </div>
-                                </div>
-                            </div>
-                         -->
-                                    <!--     <h4 class="time-title">Today <span>(05)</span></h4> -->
-
-                                    <!-- TASK ROW -->
-
-                                    <!--                 
-                            <div class="task-row">
-                                <div class="dropdown action-dropdown">
-                                    <a class="icon icon-sm dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                        <i class="fa fa-ellipsis-v"></i>
-                                    </a>
-                                    <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenuLink">
-                                        <a class="dropdown-item" data-target="#add_task" data-toggle="modal" href="#">Edit</a>
-                                        <a class="dropdown-item" href="#" data-target="#view_notes" data-toggle="modal">Notes</a>
-                                        <a class="dropdown-item" href="#">Delete</a>
-                                    </div>
-                                </div>
-                                <div class="header">
-                                    <div class="project-details">
-                                        <h4><a href="#"><?= substr(@$p['project_name'], 0, 20); ?></a> | <?= @$p['client_name']; ?></h4>
-                                    </div>
-                                    <ul class="label-tags">
-                                        <li><span class="tag user"><?= @$p["assigned_by"]; ?></span></li>
-                                        <li><span class="tag due-date">Due 25 May</span> </li>
-                                        <li><span class="tag extend-date">EXT 30 May | 3 T</span></li>
-                                        <li>
-                                            <div class="form-group form-check form-check-btn">
-                                                <input type="checkbox" class="" id="exampleCheck1">
-                                                <label class="form-check-label" for="exampleCheck1">Complete</label>
-                                            </div>
-                                        </li>
-                                    </ul>
-                                </div>
-                                <div class="content">
-                                    <h4>
-                                        <span class="show-description-icon">
-                                            <i class="fas fa-chevron-circle-down"></i>
-                                        </span>
-                                        Design a landing page webiste for Azabiz tool. 
-                                        <span class="created-on">
-                                            -23 May
-                                        </span>
-                                    </h4>
-                                    <p class="description">
-                                        Lorem ipsum dolor sit amet consectetur adipisicing elit. Dolorum blanditiis voluptas rerum. Quasi amet nisi ea non quia at, quos quam repellendus, nesciunt facilis aspernatur explicabo! Quidem velit repellat quo!
-                                    </p>
-                                </div>
-                            </div>
- -->
-
 
                                     <?php if (count($mytask) > 0) :
                                         $i = 0;
@@ -292,11 +209,6 @@
                                                     </p>
                                                 </div>
                                             </div>
-                                            <!-- 
-                            <h4 class="time-title">Tomorrow <span>(10)</span></h4>
-                            <div class="load-more text-center">
-                                <a href="#" class="v-btn v-btn-base"><i class="fa fa-reply"></i><span>Load More</span></a>
-                            </div> -->
                                     <?php $i++;
                                         endforeach;
                                     endif; ?>
@@ -355,8 +267,8 @@
                                     </div>
 
                                     <?php if (count($assigned_task) > 0) :
-                                        $j = $i;
-                                        foreach ($assigned_task as $p) : ?>
+                                        // $j = $i;
+                                        foreach ($assigned_task as $j => $p) : ?>
 
 
                                             <?php if ($p["completed"] == 1) : ?>
@@ -447,10 +359,6 @@
                                             <?php $j++;
                                         endforeach;
                                     endif; ?>
-
-                                            <!-- <div class="load-more text-center">
-                                <a href="#" class="v-btn v-btn-base"><i class="fa fa-reply"></i><span>Load More</span></a>
-                            </div> -->
                                                 </div>
 
                                                 <div class="tab-pane fade task-wapper" id="completed" role="tabpanel" aria-labelledby="completed-tab">
@@ -459,10 +367,6 @@
                                                     <?php if (count($completed_task) > 0) :
                                                         $k = $j;
                                                         foreach ($completed_task as $p) : ?>
-
-
-
-
                                                             <div class="task-row">
 
                                                                 <div class="dropdown action-dropdown">
@@ -481,10 +385,6 @@
                                                                         <h4><a href="#"><?= $p["project"]["project_name"] ?></a> | <?= $p["project"]["client"]["client_name"] ?></h4>
                                                                     </div>
                                                                     <ul class="label-tags">
-                                                                        <!-- 
-                                        <li><span class="tag user"><?= $p["assigned_by_data"]["name"] ?></span></li>
-                                        
-                                         -->
                                                                         <li><span class="tag user">
                                                                                 <?php $ans;
                                                                                 preg_match("(\w+\s\w)", $p["assigned_by_data"]["name"], $ans); ?>
@@ -570,8 +470,8 @@
 
 
                                                     <?php if (count($approved_task) > 0) :
-                                                        $l = $k;
-                                                        foreach ($approved_task as $p) : ?>
+                                                        // $l = $k;
+                                                        foreach ($approved_task as $k => $p) : ?>
 
 
 
@@ -579,114 +479,93 @@
 
                                                                 <div class="task-row toBeReviewed filter-item-main-<?= $p['assigned_to_data']['id'] ?> filter-item-main
 
-                                    ">
+                                                    ">
 
-                                                                <?php else : ?>
-
-
-                                                                    <div class="task-row filter-item-main-<?= $p['assigned_by_data']['id'] ?> filter-item-main">
+                                                    <?php else : ?>
 
 
-
-                                                                    <?php endif; ?>
-
-
-                                                                    <div class="dropdown action-dropdown">
-                                                                        <a class="icon icon-sm dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                                                            <i class="fa fa-ellipsis-v"></i>
-                                                                        </a>
-                                                                        <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenuLink">
-
-                                                                            <a class="dropdown-item" href="#" data-target="#view_notes_ap_com" onclick="loadModalNotesDataReview(this);" data-id="<?= $p["id"] ?>" data-toggle="modal">Notes</a>
-
-                                                                        </div>
-                                                                    </div>
-
-
-                                                                    <div class="header">
-                                                                        <div class="project-details">
-                                                                            <h4><a href="#"><?= $p["project"]["project_name"] ?></a> | <?= $p["project"]["client"]["client_name"] ?></h4>
-                                                                        </div>
-                                                                        <ul class="label-tags">
-
-
-                                                                            <li><span class="tag user">
-
-                                                                                    <?php if ($p["assigned_by"] == $user_id) : ?>
-
-                                                                                        <?php $ans;
-                                                                                        preg_match("(\w+\s\w)", $p["assigned_to_data"]["name"], $ans); ?>
-                                                                                        To <?= $ans[0]; ?>
+                                                            <div class="task-row filter-item-main-<?= $p['assigned_by_data']['id'] ?> filter-item-main">
 
 
 
-                                                                                    <?php else : ?>
+                                                            <?php endif; ?>
 
 
-                                                                                        <?php $ans;
-                                                                                        preg_match("(\w+\s\w)", $p["assigned_by_data"]["name"], $ans); ?>
-                                                                                        By <?= $ans[0]; ?>
+                                                            <div class="dropdown action-dropdown">
+                                                                <a class="icon icon-sm dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                                                    <i class="fa fa-ellipsis-v"></i>
+                                                                </a>
+                                                                <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenuLink">
 
-                                                                                    <?php endif; ?>
+                                                                    <a class="dropdown-item" href="#" data-target="#view_notes_ap_com" onclick="loadModalNotesDataReview(this);" data-id="<?= $p["id"] ?>" data-toggle="modal">Notes</a>
 
-
-                                                                                </span></li>
-
-
-
-
-                                                                            <li><span class="tag due-date">Due <?= $p["due_date"] ?></span> </li>
+                                                                </div>
+                                                            </div>
 
 
+                                                            <div class="header">
+                                                                <div class="project-details">
+                                                                    <h4><a href="#"><?= $p["project"]["project_name"] ?></a> | <?= $p["project"]["client"]["client_name"] ?></h4>
+                                                                </div>
+                                                                <ul class="label-tags">
 
-                                                                            <?php if ($p["extend_days"]) : ?>
 
-                                                                                <li><span class="tag extend-date">EXT <?= $p["extend_days"] ?> | <?= $p["extend_count"] ?></span></li>
+                                                                    <li><span class="tag user">
+
+                                                                            <?php if ($p["assigned_by"] == $user_id) : ?>
+
+                                                                                <?php $ans;
+                                                                                preg_match("(\w+\s\w)", $p["assigned_to_data"]["name"], $ans); ?>
+                                                                                To <?= $ans[0]; ?>
+
+
+
+                                                                            <?php else : ?>
+
+
+                                                                                <?php $ans;
+                                                                                preg_match("(\w+\s\w)", $p["assigned_by_data"]["name"], $ans); ?>
+                                                                                By <?= $ans[0]; ?>
+
                                                                             <?php endif; ?>
 
 
+                                                                        </span></li>
 
-                                                                            <!--     <li>
-                                            <div class="form-group form-check form-check-btn">
-                                                <input type="checkbox" class="" id="exampleCheck<?= $l; ?>" checked onclick="CompletedMyTask('checked','<?= $p['id'] ?>',this)">
-                                                <label class="form-check-label" for="exampleCheck<?= $i ?>">Completed</label>
-                                            </div>
-                                        </li> -->
-                                                                        </ul>
-                                                                    </div>
-                                                                    <div class="content">
-                                                                        <h4>
-                                                                            <span class="show-description-icon" data-value="<?= $l ?>">
-                                                                                <i class="fas fa-chevron-circle-down"></i>
-                                                                            </span>
-                                                                            <?= $p["task_name"] ?>
-                                                                            <span class="created-on">
-                                                                                <?= $p["created_at"] ?>
-                                                                            </span>
-                                                                        </h4>
-                                                                        <p class="description-<?= $l ?>" style="display: none;">
-                                                                            <?= $p["description"] ?>
-                                                                        </p>
-                                                                    </div>
-                                                                    </div>
 
-                                                            <?php $l++;
+
+
+                                                                    <li><span class="tag due-date">Due <?= $p["due_date"] ?></span> </li>
+
+
+
+                                                                    <?php if ($p["extend_days"]) : ?>
+
+                                                                        <li><span class="tag extend-date">EXT <?= $p["extend_days"] ?> | <?= $p["extend_count"] ?></span></li>
+                                                                    <?php endif; ?>
+                                                                </ul>
+                                                            </div>
+                                                            <div class="content">
+                                                                <h4>
+                                                                    <!-- <span class="show-description-icon" data-value="<?= $l ?>"> -->
+                                                                    <span class="show-description-icon" data-value="<?= $k ?>">
+                                                                        <i class="fas fa-chevron-circle-down"></i>
+                                                                    </span>
+                                                                    <?= $p["task_name"] ?>
+                                                                    <span class="created-on">
+                                                                        <?= $p["created_at"] ?>
+                                                                    </span>
+                                                                </h4>
+                                                                <!-- <p class="description-<?= $l ?>" style="display: none;"> -->
+                                                                <p class="description-<?= $k ?>" style="display: none;">
+                                                                    <?= $p["description"] ?>
+                                                                </p>
+                                                            </div>
+                                                            </div>
+                                                    <?php $k++;
                                                         endforeach;
                                                     endif; ?>
-
-
-
-
-
-
-
-
-
                                                                 </div>
-
-
-
-
                                                                 <div class="tab-pane fade task-wapper" id="myteam" role="tabpanel" aria-labelledby="myteam-tab">
 
 
@@ -964,11 +843,6 @@
                             <label for="send_mail_task">Send Mail</label>
                         </div>
                     </div>
-
-
-
-
-
                 </div>
 
             </div>
@@ -985,76 +859,6 @@
         </div>
     </div>
 </div>
-
-
-<!-- ADD Task -->
-
-<!-- 
-<div class="modal fade" tabindex="-1" role="dialog" id="add_task">
-  <div class="modal-dialog" role="document">
-    
-      
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title">Add Task</h5>
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-          <span aria-hidden="true">&times;</span>
-        </button>
-      </div>
-      <div class="modal-body">
-        <div class="form-group">
-            <label for="">Select Project</label>
-            <select name="" class="form-control" id="">
-                <option value="">Select Project</option>
-            </select>
-        </div>
-        <div class="form-group">
-            <label for="">Task Name</label>
-            <input type="text" class="form-control">
-        </div>
-        <div class="form-group">
-            <label for="">Description</label>
-            <textarea name="" class="form-control" id="" cols="30" rows="2"></textarea>
-        </div>
-        <div class="form-group">
-            <label for="">Due Date</label>
-            <input type="date" class="form-control">
-        </div>
-        <div class="form-group">
-            <label for="">Assign To</label>
-            <select name="" class="form-control" id="">
-                <option value="">Varun Dev</option>
-            </select>
-        </div>
-        <div class="form-group">
-            <label for="">Extend Days</label><br>
-            <div class="form-check form-check-inline">
-                <input class="form-check-input" type="radio" name="inlineRadioOptions" id="inlineRadio1" value="option1">
-                <label class="form-check-label" for="inlineRadio1">1</label>
-            </div>
-            <div class="form-check form-check-inline">
-                <input class="form-check-input" type="radio" name="inlineRadioOptions" id="inlineRadio2" value="option2">
-                <label class="form-check-label" for="inlineRadio2">2</label>
-            </div>
-            <div class="form-check form-check-inline">
-                <input class="form-check-input" type="radio" name="inlineRadioOptions" id="inlineRadio3" value="option3" disabled>
-                <label class="form-check-label" for="inlineRadio3">3 (disabled)</label>
-            </div>
-        </div>
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="v-btn v-btn-base" data-dismiss="modal">Close</button>
-        <a href="#" class="v-btn v-btn-primary" data-dismiss="modal">Add</a>
-      </div>
-    </div>
-
-
-
-  </div>
-</div>
-
- -->
-
 
 <div class="modal fade hide" tabindex="-1" role="dialog" id="edit_task">
     <div class="modal-dialog" role="document">
@@ -1174,10 +978,6 @@
 
 <div class="modal fade" tabindex="-1" role="dialog" id="view_notes_ap_com">
     <div class="modal-dialog" role="document">
-
-
-        <!--     <input type="hidden" name="taskid" id="task_hidden_id">
- -->
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title">Detail Notes Page</h5>
@@ -1187,36 +987,16 @@
             </div>
             <div class="modal-body">
                 <ul class="notes-list-task notes-list">
-
-                    <!--  <li>
-                <p><span class="notes-by">Deepika M: </span> Lorem ipsum dolor sit amet consectetur adipisicing elit. Aliquid, perspiciatis! <span class="date">- 24 Mar</span></p>
-            </li>
-            <li>
-                <p><span class="notes-by">Varun D: </span>Lorem ipsum dolor sit amet consectetur adipisicing elit. Aliquid, perspiciatis! <span class="date">- 24 Mar</span></p>
-            </li>
-            <li>
-                <p><span class="notes-by">Me: </span>Lorem ipsum dolor sit amet consectetur adipisicing elit. Aliquid, perspiciatis! <span class="date">- 24 Mar</span></p>
-            </li> -->
                 </ul>
             </div>
             <div class="modal-footer">
                 <button type="button" class="v-btn v-btn-base" data-dismiss="modal">Close</button>
-                <!--         <button class="v-btn v-btn-primary" type="submit">Add</button>
- -->
-                <!--  <a href="#" class="v-btn v-btn-primary" data-dismiss="modal">Add</a> -->
             </div>
         </div>
 
 
     </div>
 </div>
-
-
-
-
-
-
-
 
 <!-- View Notes -->
 <div class="modal fade" tabindex="-1" role="dialog" id="view_notes">

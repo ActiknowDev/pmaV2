@@ -7,7 +7,6 @@ use Cake\ORM\Query;
 use Cake\ORM\RulesChecker;
 use Cake\ORM\Table;
 use Cake\Validation\Validator;
-use SoftDelete\Model\Table\SoftDeleteTrait;
 
 /**
  * Courses Model
@@ -28,8 +27,6 @@ use SoftDelete\Model\Table\SoftDeleteTrait;
  */
 class CoursesTable extends Table
 {
-    use SoftDeleteTrait;
-    protected $softDeleteField = 'deleted_at';
     /**
      * Initialize method
      *
@@ -48,6 +45,7 @@ class CoursesTable extends Table
             'foreignKey' => 'training_id',
             'joinType' => 'INNER',
         ]);
+
         $this->hasMany('Lessions', [
             'foreignKey' => 'course_id',
         ]);
