@@ -81,11 +81,6 @@ class EmployeeDetailsTable extends Table
             ->allowEmptyString('doj');
 
         $validator
-            ->date('email_dob')
-            ->allowEmptyString('email_dob');
-
-
-        $validator
             ->date('dol')
             ->allowEmptyString('dol');
 

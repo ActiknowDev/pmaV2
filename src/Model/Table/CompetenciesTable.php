@@ -7,7 +7,7 @@ use Cake\ORM\Query;
 use Cake\ORM\RulesChecker;
 use Cake\ORM\Table;
 use Cake\Validation\Validator;
-use SoftDelete\Model\Table\SoftDeleteTrait;
+// use SoftDelete\Model\Table\SoftDeleteTrait;
 
 /**
  * Competencies Model
@@ -28,8 +28,9 @@ use SoftDelete\Model\Table\SoftDeleteTrait;
  */
 class CompetenciesTable extends Table
 {
-    use SoftDeleteTrait;
-    protected $softDeleteField = 'deleted_at';
+    // use SoftDeleteTrait;
+    // protected $softDeleteField = 'deleted_at';
+
     /**
      * Initialize method
      *

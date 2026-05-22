@@ -446,36 +446,88 @@ class UsersController extends AppController
 		}
 	}
 
+	// public function delete($id)
+	// {
+	// 	$this->Authorization->skipAuthorization();
+	// 	$user = TableRegistry::get('Users');
+	// 	$teamres = TableRegistry::get("MyTeamResources");
+
+	// 	$teamres->deleteAll(["resid" => $id]);
+
+	// 	$query = $user->query();
+	// 	$query->update()
+	// 		->set(['deleted' => 0])
+	// 		->where(['id' => $id])
+	// 		->execute();
+	// 	return $this->redirect(['controller' => 'Users', 'action' => 'index']);
+	// }
+
 	public function delete($id)
 	{
 		$this->Authorization->skipAuthorization();
-		$user = TableRegistry::get('Users');
-		$teamres = TableRegistry::get("MyTeamResources");
 
-		$teamres->deleteAll(["resid" => $id]);
+		$user = $this->fetchTable('Users');
+		$teamres = $this->fetchTable('MyTeamResources');
 
-		$query = $user->query();
-		$query->update()
-			->set(['deleted' => 0])
-			->where(['id' => $id])
+		$teamres->deleteAll([
+			"resid" => $id
+		]);
+
+		$user->updateQuery()
+			->set([
+				'deleted' => 0
+			])
+			->where([
+				'id' => $id
+			])
 			->execute();
-		return $this->redirect(['controller' => 'Users', 'action' => 'index']);
+
+		return $this->redirect([
+			'controller' => 'Users',
+			'action' => 'index'
+		]);
 	}
 
 
 	//change status
+	// public function updateStatus($id, $status)
+	// {
+	// 	$this->autoRender = false;
+	// 	$this->Authorization->skipAuthorization();
+	// 	if ($this->request->is('ajax')) {
+	// 		$user = TableRegistry::get('Users');
+	// 		$query = $user->query();
+	// 		$query->update()
+	// 			->set(['status' => $status])
+	// 			->where(['id' => $id])
+	// 			->execute();
+	// 		return $this->redirect(['controller' => 'Users', 'action' => 'index']);
+	// 	}
+	// }
+
 	public function updateStatus($id, $status)
 	{
 		$this->autoRender = false;
 		$this->Authorization->skipAuthorization();
+
 		if ($this->request->is('ajax')) {
-			$user = TableRegistry::get('Users');
-			$query = $user->query();
-			$query->update()
-				->set(['status' => $status])
-				->where(['id' => $id])
+
+			$user = $this->fetchTable('Users');
+
+			$query = $user->updateQuery();
+
+			$query->set([
+					'status' => $status
+				])
+				->where([
+					'id' => $id
+				])
 				->execute();
-			return $this->redirect(['controller' => 'Users', 'action' => 'index']);
+
+			return $this->redirect([
+				'controller' => 'Users',
+				'action' => 'index'
+			]);
 		}
 	}
 

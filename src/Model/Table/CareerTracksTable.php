@@ -7,7 +7,6 @@ use Cake\ORM\Query;
 use Cake\ORM\RulesChecker;
 use Cake\ORM\Table;
 use Cake\Validation\Validator;
-use SoftDelete\Model\Table\SoftDeleteTrait;
 
 /**
  * CareerTracks Model
@@ -28,8 +27,6 @@ use SoftDelete\Model\Table\SoftDeleteTrait;
  */
 class CareerTracksTable extends Table
 {
-    use SoftDeleteTrait;
-    protected $softDeleteField = 'deleted_at';
     /**
      * Initialize method
      *
