@@ -135,29 +135,53 @@ class CompaniesController extends AppController
 
 	public function updateActive($id, $status)
 	{
-		// echo $id;
-		// echo $status;
-		// die;
 		$this->autoRender = false;
 		$this->Authorization->skipAuthorization();
+
+
 		if ($this->request->is('ajax')) {
-			$company = $this->fetchTable('Projects');
-			$query = $company->query();
-			$query->update()
+
+			$projectsTable = $this->fetchTable('Projects');
+
+			$projectsTable->updateQuery()
 				->set(['active' => $status])
-				->where(['id' => $id]);
+				->where(['id' => $id])
+				->execute();
 
-			if ($query->execute())
-				echo 1;
-			else
-				echo 0;
-
-			// if ($page == 'list')
-			// 	return $this->redirect(['controller' => 'Companies', 'action' => 'listProject']);
-			// else
-			// 	return $this->redirect(['controller' => 'Companies', 'action' => 'activeProject']);
+			echo 1;
+			die;
 		}
+
+		echo 0;
+		die;
 	}
+
+
+	// public function updateActive($id, $status)
+	// {
+	// 	// echo $id;
+	// 	// echo $status;
+	// 	// die;
+	// 	$this->autoRender = false;
+	// 	$this->Authorization->skipAuthorization();
+	// 	if ($this->request->is('ajax')) {
+	// 		$company = $this->fetchTable('Projects');
+	// 		$query = $company->query();
+	// 		$query->update()
+	// 			->set(['active' => $status])
+	// 			->where(['id' => $id]);
+
+	// 		if ($query->execute())
+	// 			echo 1;
+	// 		else
+	// 			echo 0;
+
+	// 		// if ($page == 'list')
+	// 		// 	return $this->redirect(['controller' => 'Companies', 'action' => 'listProject']);
+	// 		// else
+	// 		// 	return $this->redirect(['controller' => 'Companies', 'action' => 'activeProject']);
+	// 	}
+	// }
 	// delete data 
 	public function delete($id)
 	{
@@ -1377,18 +1401,41 @@ class CompaniesController extends AppController
 				$project_resource = $this->fetchTable('ProjectResources');
 
 				$id = $this->request->getData('project_id');
-				$project = $this->Projects
-					->findById($id)
-					->firstOrFail();
+				// $project = $this->Projects
+				// 	->findById($id)
+				// 	->firstOrFail();
+				if (empty($id)) {
+					$this->Flash->error('Invalid project ID');
+					return $this->redirect($this->referer());
+				}
+
+				$project = $this->Projects->get($id, [
+					'contain' => []
+				]);
 
 				$project = $this->Projects->patchEntity($project, $this->request->getData());
 				//get client id
-				$client = $this->Users->find('all')
+				// $client = $this->Users->find('all')
+				// 	->select(['id'])
+				// 	->where(['client_name' => $this->request->getData('client_name'), 'company_id' => $parent_id])
+				// 	->first();
+
+				// $project->client_id = $client->id;
+
+				$client = $this->Users->find()
 					->select(['id'])
-					->where(['client_name' => $this->request->getData('client_name'), 'company_id' => $parent_id])
+					->where([
+						'client_name' => $this->request->getData('client_name'),
+						'company_id' => $parent_id
+					])
 					->first();
 
-				$project->client_id = $client->id;
+				if (!empty($client)) {
+					$project->client_id = $client->id;
+				} else {
+					$this->Flash->error('Client not found.');
+					return $this->redirect($this->referer());
+				}
 
 				$date = explode('/', $this->request->getData('awarded_on'));
 				$awarded_on = $date[2] . '-' . $date[0] . '-' . $date[1];
@@ -1399,7 +1446,8 @@ class CompaniesController extends AppController
 				$project->due_date = $due_date;
 
 				$resource = $this->request->getData('resources');
-				$resources = implode(',', $resource);
+				// $resources = implode(',', $resource);
+				$resources = !empty($resource) ? implode(',', $resource) : '';
 				$project->resources = $resources;
 
 				$milestones = '';
