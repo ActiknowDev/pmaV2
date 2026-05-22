@@ -110,18 +110,29 @@ class PlansController extends AppController
 			$this->Flash->error(__('This plan is being used for Maintenance hence it cannot be deleted.'));
 			return $this->redirect(['action' => 'index']);
 		}
+		// else
+		// {
+		// 	// Delete Plan Id
+		// 	$query = $this->Plans->query();
+		// 	$query->update()
+		// 		->set(['deleted' => 1])
+		// 		->where(['id' => $id]);
+		// 	if ($query->execute())
+		// 	{
+		// 		$this->Flash->success(__('Plan Deleted Successfully!'));
+		// 		return $this->redirect(['action' => 'index']);
+		// 	}
+		// }
 		else
 		{
 			// Delete Plan Id
-			$query = $this->Plans->query();
-			$query->update()
-				->set(['deleted' => 1])
-				->where(['id' => $id]);
-			if ($query->execute())
-			{
-				$this->Flash->success(__('Plan Deleted Successfully!'));
-				return $this->redirect(['action' => 'index']);
-			}
+			$this->Plans->updateAll(
+				['deleted' => 1],
+				['id' => $id]
+			);
+
+			$this->Flash->success(__('Plan Deleted Successfully!'));
+			return $this->redirect(['action' => 'index']);
 		}
 	}
 	// End 
