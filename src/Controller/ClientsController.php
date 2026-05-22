@@ -162,19 +162,40 @@ class ClientsController extends AppController
 		}
 	}
 	// delete data 
+	// public function delete($id)
+	// {
+	// 	$this->Authorization->skipAuthorization();
+	// 	$client = $this->fetchTable('Users');
+	// 	$query = $client->query();
+	// 	$query->update()
+	// 		->set(['deleted' => 0])
+	// 		->where(['id' => $id]);
+
+	// 	if ($query->execute())
+	// 		echo 1;
+	// 	else
+	// 		echo 0;
+	// 	die;
+	// }
+
 	public function delete($id)
 	{
 		$this->Authorization->skipAuthorization();
-		$client = $this->fetchTable('Users');
-		$query = $client->query();
-		$query->update()
-			->set(['deleted' => 0])
-			->where(['id' => $id]);
 
-		if ($query->execute())
+		if ($this->request->is('ajax')) {
+
+			$usersTable = $this->fetchTable('Users');
+
+			$usersTable->updateQuery()
+				->set(['deleted' => 1])
+				->where(['id' => $id])
+				->execute();
+
 			echo 1;
-		else
-			echo 0;
+			die;
+		}
+
+		echo 0;
 		die;
 	}
 
@@ -229,46 +250,91 @@ class ClientsController extends AppController
 	// }
 
 
+	// public function editData($id)
+	// {
+	// 	$this->autoRender = false;
+	// 	$this->Authorization->skipAuthorization();
+	// 	$this->Users = $this->fetchTable('Users');
+	// 	$client = $this->Users
+	// 		->findById($id)
+	// 		->firstOrFail();
+
+	// 	$clientDataTbl = $this->getTableLocator()->get('ClientData');
+	// 	if ($this->request->is(['post', 'put'])) {
+	// 		$client = $this->Users->patchEntity($client, $this->request->getData());
+	// 		$client->point_of_contact = $this->request->getData('pointOfContant');
+	// 		if ($this->Users->save($client)) {
+	// 			$clientData = $clientDataTbl->find('all')->where(['client_id' => $client->id])->toArray();
+	// 			if (!empty($clientData)) {
+
+	// 				$clientDataTbl->deleteMany($clientData);
+	// 				$clientData = $clientDataTbl->newEmptyEntity();
+	// 				$last_followup_date = date("Y-m-d", strtotime($this->request->getData('last_followup_date')));
+	// 				$next_followup_date = date("Y-m-d", strtotime($this->request->getData('next_followup_date')));
+	// 				$clientData->client_id = $id;
+	// 				$clientData->potential = $this->request->getData('potential');
+	// 				$clientData->relationship = $this->request->getData('relationship');
+	// 				$clientData->last_followup_date = $last_followup_date;
+	// 				$clientData->next_followup_date = $next_followup_date;
+	// 				$clientData->description = $this->request->getData('description');
+	// 				$clientDataTbl->save($clientData);
+	// 				echo true;
+	// 			} else {
+	// 				$clientData = $clientDataTbl->newEmptyEntity();
+	// 				$clientData->client_id = $id;
+	// 				$clientData->potential = $this->request->getData('potential');
+	// 				$clientData->relationship = $this->request->getData('relationship');
+	// 				$clientData->last_followup_date = $this->request->getData('last_followup_date');
+	// 				$clientData->next_followup_date = $this->request->getData('next_followup_date');
+	// 				$clientData->description = $this->request->getData('description');
+	// 				$clientDataTbl->save($clientData);
+	// 				echo true;
+	// 			}
+	// 		}
+
+	// 		die;
+	// 	}
+	// }
+
 	public function editData($id)
 	{
 		$this->autoRender = false;
 		$this->Authorization->skipAuthorization();
-		$this->Users = $this->fetchTable('Users');
-		$client = $this->Users
-			->findById($id)
-			->firstOrFail();
 
-		$clientDataTbl = $this->getTableLocator()->get('ClientData');
+		$usersTable = $this->fetchTable('Users');
+		$clientDataTbl = $this->fetchTable('ClientData');
+
+		$client = $usersTable->findById($id)->firstOrFail();
+
 		if ($this->request->is(['post', 'put'])) {
-			$client = $this->Users->patchEntity($client, $this->request->getData());
-			$client->point_of_contact = $this->request->getData('pointOfContant');
-			if ($this->Users->save($client)) {
-				$clientData = $clientDataTbl->find('all')->where(['client_id' => $client->id])->toArray();
-				if (!empty($clientData)) {
 
-					$clientDataTbl->deleteMany($clientData);
-					$clientData = $clientDataTbl->newEmptyEntity();
-					$last_followup_date = date("Y-m-d", strtotime($this->request->getData('last_followup_date')));
-					$next_followup_date = date("Y-m-d", strtotime($this->request->getData('next_followup_date')));
-					$clientData->client_id = $id;
-					$clientData->potential = $this->request->getData('potential');
-					$clientData->relationship = $this->request->getData('relationship');
-					$clientData->last_followup_date = $last_followup_date;
-					$clientData->next_followup_date = $next_followup_date;
-					$clientData->description = $this->request->getData('description');
-					$clientDataTbl->save($clientData);
-					echo true;
-				} else {
-					$clientData = $clientDataTbl->newEmptyEntity();
-					$clientData->client_id = $id;
-					$clientData->potential = $this->request->getData('potential');
-					$clientData->relationship = $this->request->getData('relationship');
-					$clientData->last_followup_date = $this->request->getData('last_followup_date');
-					$clientData->next_followup_date = $this->request->getData('next_followup_date');
-					$clientData->description = $this->request->getData('description');
-					$clientDataTbl->save($clientData);
-					echo true;
+			$client = $usersTable->patchEntity($client, $this->request->getData());
+			$client->point_of_contact = $this->request->getData('pointOfContant');
+
+			if ($usersTable->save($client)) {
+
+				$existing = $clientDataTbl->find()
+					->where(['client_id' => $id])
+					->all();
+
+				if ($existing->count() > 0) {
+					$clientDataTbl->deleteAll(['client_id' => $id]);
 				}
+
+				$clientData = $clientDataTbl->newEmptyEntity();
+
+				$clientData->client_id = $id;
+				$clientData->potential = $this->request->getData('potential');
+				$clientData->relationship = $this->request->getData('relationship');
+
+				$clientData->last_followup_date = date("Y-m-d", strtotime($this->request->getData('last_followup_date')));
+				$clientData->next_followup_date = date("Y-m-d", strtotime($this->request->getData('next_followup_date')));
+
+				$clientData->description = $this->request->getData('description');
+
+				$clientDataTbl->save($clientData);
+
+				echo true;
 			}
 
 			die;
