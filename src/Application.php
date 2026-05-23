@@ -158,7 +158,7 @@ class Application extends BaseApplication implements
     public function getAuthenticationService( ServerRequestInterface $request ): AuthenticationServiceInterface {
 
         $service = new AuthenticationService([
-            'unauthenticatedRedirect' => '/',
+            'unauthenticatedRedirect' => '/pmaV2/',
             'queryParam' => 'redirect',
         ]);
 
