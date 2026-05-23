@@ -233,8 +233,10 @@ class LeavesController extends AppController
         $toDateCheck = date_format($toDate, 'm');
         $user = $this->Users->get($data['created_by']);
         $leaveType =  $data['leave_type'];
-        $from_month_date = date_format($leaveById->from_date, "m");
-        $from_year_date = date_format($leaveById->from_date, "Y");
+        // $from_month_date = date_format($leaveById->from_date, "m");
+        // $from_year_date = date_format($leaveById->from_date, "Y");
+        $from_month_date = $leaveById->from_date->format('m');
+        $from_year_date = $leaveById->from_date->format('Y');
         // dd($from_month_date);
         // $wfh=$this->Leaves->find()->select([
         //     'total'=>'SUM(datediff(Leaves.to_date,Leaves.from_date))'
@@ -563,8 +565,6 @@ class LeavesController extends AppController
             // $totalPendingLeave =  $days_count + $this->pendingLeave($id, $this->request->getData("leave_type"));
              $totalPendingLeave =  $days_count;
             $wfh=$this->Leaves->find()->select([
-                // 'total'=>'SUM(datediff(Leaves.to_date,Leaves.from_date))'
-                // 'totalwfh'=>'count(*)'
                 'totalwfh'=>'SUM(Leaves.wfh)'
             ])->where([
                 'Leaves.created_by'=>$id,
@@ -586,22 +586,6 @@ class LeavesController extends AppController
             ->order(['id' => 'DESC'])
             ->limit(1)
             ->first();
-
-            // check wfh of user
-            // $pre_wfhleave = $this->Leaves->find()
-            // ->where([
-            //     'Leaves.created_by' => $id,
-            //     'Leaves.leave_type' => 'WFH',
-            //     'OR' => [
-            //         ['Leaves.status' => 'Pending'],
-            //         ['Leaves.status' => 'Approved']
-            //     ],
-            // ])
-            // ->order(['id' => 'DESC'])
-            // ->limit(1)
-            // ->first();
-            // dd($pre_wfhleave);
-
             $query = "SELECT `start` FROM `holidays` WHERE `deleted` = 0 ORDER BY start ASC";
             $stmtList = $conn->execute($query);
             $holidaylist = $stmtList->fetchAll('assoc');
@@ -610,20 +594,6 @@ class LeavesController extends AppController
             $holidayDates = array_map(function($holiday) {
                 return date('Y-m-d', strtotime($holiday['start']));
             }, $holidaylist);
-
-
-            // if (!empty($pre_wfhleave)) {
-            //     $last_leave_date = $pre_wfhleave->to_date->format('Y-m-d');
-            //     $previousDay = date('Y-m-d', strtotime('-1 day', strtotime($last_leave_date)));
-            //     $nextDay = date('Y-m-d', strtotime('+1 day', strtotime($last_leave_date)));
-            //     $w_last_leave_day = date('l', strtotime($last_leave_date));
-            //     // check monday pre leave
-            //     $last_leave_mdate = $pre_wfhleave->from_date->format('Y-m-d');
-            //     $w_last_leave_mday = date('l', strtotime($last_leave_mdate));
-            //     // end
-            //     $current_from_day = date('l', strtotime($from_date));
-            //     $date_diff = $this->getDateDiff($last_leave_date, $from_date);
-            // }
             if (!empty($pre_leave)) {
                 $last_leave_date = $pre_leave->to_date->format('Y-m-d');
                 $previousDay = date('Y-m-d', strtotime('-1 day', strtotime($last_leave_date)));
@@ -645,9 +615,6 @@ class LeavesController extends AppController
                 $date_diff='';
                 $check_leave_type = '';
                 $halfday_type = '';
-                // $check_leave_type = '';
-                // $w_last_leave_day='';
-                // $w_last_leave_mday='';
             }
             // dd($check_leave_type);
             // dd($wfh->totalwfh);
@@ -687,14 +654,6 @@ class LeavesController extends AppController
                     $end_leave = strtotime($to_date);
            
             if ($days_count > 0) {
-            //    if($last_leave_day=='Friday' && $current_from_day=='Monday' && $date_diff==4 && $check_leave_type =='Half Day' && $halfday_type=='2') {
-            //         $cut_weekend_leave = 2;
-            //         $data['weekend']='true';
-            //       }
-            //     elseif($last_leave_mday=='Monday' && $current_from_day=='Friday' && $date_diff==4 && $check_leave_type =='Half Day' && $halfday_type=='2') {
-            //         $cut_weekend_leave = 2;
-            //         $data['weekend']='true';
-            //     } 
                if($last_leave_day=='Friday' && $current_from_day=='Monday' && $date_diff==4) {
                     $cut_weekend_leave = 2;
                     $data['weekend']='true';
@@ -760,18 +719,6 @@ class LeavesController extends AppController
                 } else if ($this->request->getData("leave_type") == "Half Day") {
                         // dd($days_count);
                     if ($days_count == 1) {
-                        // if ($user['cl'] - $takenLeave['sumCL'] > 0) {
-                        //         // dd('check cl');
-                        //     $run = true;
-                        // } elseif ($user['sl'] - $takenLeave['sumSL'] > 0) {
-                        //     // dd('check sl');
-                        //     $run = true;
-                        // } elseif ($user['el'] - $takenLeave['sumEL'] > 0) {
-                        //     // dd('check el');
-                        //     $run = true;
-                        // } else {
-                        //     $this->Flash->error(__("You Don't have enough leaves"));
-                        // }
                         $run = true;
                     } else {
                         $this->Flash->error(__("You Don't have take two half days at a time."));
@@ -845,18 +792,10 @@ class LeavesController extends AppController
                     $toDateCheck = date_format($toDate, 'm');
                     $user = $this->Users->get($data['created_by']);
                     $leaveType =  $data['leave_type'];
-                    $from_month_date = date_format($leaveById->from_date, "m");
-                    $from_year_date = date_format($leaveById->from_date, "Y");
-                    // dd($from_month_date);
-                    // $wfh=$this->Leaves->find()->select([
-                    //     'total'=>'SUM(datediff(Leaves.to_date,Leaves.from_date))'
-                    // ])->where([
-                    //     'Leaves.created_by'=>$data['created_by'],
-                    //     'month(from_date)'=>$from_month_date,
-                    //     'YEAR(from_date)'=>$from_year_date
-                    // ])
-                    // ->first();
-                    // dd($wfh);
+                    // $from_month_date = date_format($leaveById->from_date, "m");
+                    // $from_year_date = date_format($leaveById->from_date, "Y");
+                    $from_month_date = $leaveById->from_date->format('m');
+                    $from_year_date = $leaveById->from_date->format('Y');
                     $takenLeave = $this->sumOfApprovedLeave($data['created_by']);
 
                     $leaveCount = $this->getTableLocator()->get('LeaveCount');

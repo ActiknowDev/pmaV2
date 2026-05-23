@@ -1,0 +1,2 @@
+<p>Your Manager <?= $managerName . " " . strtolower($status) ?> your leave <?= $from_date . " to " . $to_date ?>.<br><br>Please check your<a href="http://pma.actiknow.com/leaves/" target="_blank"> PMA </a> account for more info.</p>
+</p>

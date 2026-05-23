@@ -238,223 +238,225 @@ if (!empty($projects)) extract($projects[0]);
                             </div>
                         </div>
                     </div>
-                    <div class="block">
-                        <div class="header">
-                            <h4 class="title">Project Milestone <a href="#" data-target="#add_milestone"
-                                    data-toggle="modal" class="v-btn v-btn-primary float-right"><i
-                                        class="fa fa-plus"></i><span>Add Milestone</span></a></h4>
-                            </h4>
-                        </div>
-                        <div class="content table-responsive">
-                            <table class="table table-default" id="table_data">
-                                <thead>
-                                    <tr>
-                                        <th>#</th>
-                                        <th style="width:500px">Title</th>
-                                        <th>Due Date</th>
-                                        <th>Amount</th>
-                                        <th>status</th>
-                                        <th>Action</th>
-                                    </tr>
-                                </thead>
-                                <?php if (!empty($miles)) : ?>
-                                <?php foreach ($miles as $m) : ?>
-                                <tbody id="rowm<?= $m['id']; ?>">
+                    <div id="projectExtraSections" style="<?php echo empty($projects) ? 'display:none;' : 'display:block;'; ?>">
+                        <div class="block">
+                            <div class="header">
+                                <h4 class="title">Project Milestone <a href="#" data-target="#add_milestone"
+                                        data-toggle="modal" class="v-btn v-btn-primary float-right"><i
+                                            class="fa fa-plus"></i><span>Add Milestone</span></a></h4>
+                                </h4>
+                            </div>
+                            <div class="content table-responsive">
+                                <table class="table table-default" id="table_data">
+                                    <thead>
+                                        <tr>
+                                            <th>#</th>
+                                            <th style="width:500px">Title</th>
+                                            <th>Due Date</th>
+                                            <th>Amount</th>
+                                            <th>status</th>
+                                            <th>Action</th>
+                                        </tr>
+                                    </thead>
+                                    <?php if (!empty($miles)) : ?>
+                                    <?php foreach ($miles as $m) : ?>
+                                    <tbody id="rowm<?= $m['id']; ?>">
 
-                                    <tr class="active">
-                                        <td>
-                                            <label class="labels" id="lm<?= $m['id']; ?>"
-                                                onclick="mlabel(<?= $m['id']; ?>)"><i
-                                                    class="fa fa-chevron-up"></i></label>
-                                            <input type="checkbox" name="milestoneOne" id="m<?= $m['id']; ?>"
-                                                data-toggle="toggle">
-                                        </td>
-                                        <td><?= $m['title']; ?></td>
-                                        <td><?= $m['due_date']; ?></td>
-                                        <td>$<?= $m['amount']; ?></td>
-                                        <td>
-                                            <select name="mstatus" class="form-control status" id="<?= $m['id']; ?>"
-                                                data-type="miles" data-url="<?= WEBURL; ?>">
-                                                <option value="Yet to start"
-                                                    <?php if ($m['status'] == 'Yet to start') echo 'selected'; ?>>Yet to
-                                                    start</option>
-                                                <option value="Inprogress"
-                                                    <?php if ($m['status'] == 'Inprogress') echo 'selected'; ?>>In
-                                                    progress</option>
-                                                <option value="Completed"
-                                                    <?php if ($m['status'] == 'Completed') echo 'selected'; ?>>completed
-                                                </option>
-                                            </select>
-                                        </td>
-                                        <td>
-                                            <a href="#" class="icon mtask" data-toggle="modal" data-target="#add_task"
-                                                onclick="taskValue(<?= $m['id']; ?>)" title="Add Task"><i
-                                                    class="fa fa-plus"></i></a>
-                                            <a href="#" class="icon" data-toggle="modal" data-target="#edit_milestone"
-                                                onclick="passValue('edit',<?= $m['id']; ?>)"> <i
-                                                    class="fa fa-pencil-alt"></i> </a>
-                                            <a href="#" class="icon" onclick="passValue('delete',<?= $m['id']; ?>)"> <i
-                                                    class="fa fa-trash-alt"></i> </a>
-                                        </td>
-                                    </tr>
-                                </tbody>
-                                <tbody class="rowtm<?= $m['id']; ?>" id="rowtm<?= $m['id']; ?>">
-                                    <?php if (count($m['task_list']) > 0) : ?>
-                                    <?php foreach ($m['task_list'] as $mt) : ?>
+                                        <tr class="active">
+                                            <td>
+                                                <label class="labels" id="lm<?= $m['id']; ?>"
+                                                    onclick="mlabel(<?= $m['id']; ?>)"><i
+                                                        class="fa fa-chevron-up"></i></label>
+                                                <input type="checkbox" name="milestoneOne" id="m<?= $m['id']; ?>"
+                                                    data-toggle="toggle">
+                                            </td>
+                                            <td><?= $m['title']; ?></td>
+                                            <td><?= $m['due_date']; ?></td>
+                                            <td>$<?= $m['amount']; ?></td>
+                                            <td>
+                                                <select name="mstatus" class="form-control status" id="<?= $m['id']; ?>"
+                                                    data-type="miles" data-url="<?= WEBURL; ?>">
+                                                    <option value="Yet to start"
+                                                        <?php if ($m['status'] == 'Yet to start') echo 'selected'; ?>>Yet to
+                                                        start</option>
+                                                    <option value="Inprogress"
+                                                        <?php if ($m['status'] == 'Inprogress') echo 'selected'; ?>>In
+                                                        progress</option>
+                                                    <option value="Completed"
+                                                        <?php if ($m['status'] == 'Completed') echo 'selected'; ?>>completed
+                                                    </option>
+                                                </select>
+                                            </td>
+                                            <td>
+                                                <a href="#" class="icon mtask" data-toggle="modal" data-target="#add_task"
+                                                    onclick="taskValue(<?= $m['id']; ?>)" title="Add Task"><i
+                                                        class="fa fa-plus"></i></a>
+                                                <a href="#" class="icon" data-toggle="modal" data-target="#edit_milestone"
+                                                    onclick="passValue('edit',<?= $m['id']; ?>)"> <i
+                                                        class="fa fa-pencil-alt"></i> </a>
+                                                <a href="#" class="icon" onclick="passValue('delete',<?= $m['id']; ?>)"> <i
+                                                        class="fa fa-trash-alt"></i> </a>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                    <tbody class="rowtm<?= $m['id']; ?>" id="rowtm<?= $m['id']; ?>">
+                                        <?php if (count($m['task_list']) > 0) : ?>
+                                        <?php foreach ($m['task_list'] as $mt) : ?>
 
 
-                                    <tr id="rowt<?= $mt['id']; ?>">
-                                        <td></td>
-                                        <td><?= $mt['task']; ?></td>
-                                        <td><?= $mt['due_date']; ?></td>
-                                        <td>-</td>
-                                        <td>
-                                            <select name="mtstatus" class="form-control status" id="<?= $mt['id']; ?>"
-                                                data-type="tasks" data-url="<?= WEBURL; ?>">
-                                                <option value="Yet to start"
-                                                    <?php if ($mt['status'] == 'Yet to start') echo 'selected'; ?>>Yet
-                                                    to start</option>
-                                                <option value="Inprogress"
-                                                    <?php if ($mt['status'] == 'Inprogress') echo 'selected'; ?>>In
-                                                    progress</option>
-                                                <option value="Completed"
-                                                    <?php if ($mt['status'] == 'Completed') echo 'selected'; ?>>
-                                                    completed</option>
-                                            </select>
-                                        </td>
-                                        <td>
-                                            <a href="#" class="icon" data-toggle="modal" data-target="#edit_task"
-                                                onclick="passtaskValue('edit',<?= $mt['id']; ?>)"> <i
-                                                    class="fa fa-pencil-alt"></i> </a><a href="#"
-                                                class="icon delete-milestone" data-id="'+response.id+'"
-                                                onclick="passtaskValue('delete',<?= $mt['id']; ?>)"> <i
-                                                    class="fa fa-trash-alt"></i> </a>
-                                        </td>
-                                    </tr>
+                                        <tr id="rowt<?= $mt['id']; ?>">
+                                            <td></td>
+                                            <td><?= $mt['task']; ?></td>
+                                            <td><?= $mt['due_date']; ?></td>
+                                            <td>-</td>
+                                            <td>
+                                                <select name="mtstatus" class="form-control status" id="<?= $mt['id']; ?>"
+                                                    data-type="tasks" data-url="<?= WEBURL; ?>">
+                                                    <option value="Yet to start"
+                                                        <?php if ($mt['status'] == 'Yet to start') echo 'selected'; ?>>Yet
+                                                        to start</option>
+                                                    <option value="Inprogress"
+                                                        <?php if ($mt['status'] == 'Inprogress') echo 'selected'; ?>>In
+                                                        progress</option>
+                                                    <option value="Completed"
+                                                        <?php if ($mt['status'] == 'Completed') echo 'selected'; ?>>
+                                                        completed</option>
+                                                </select>
+                                            </td>
+                                            <td>
+                                                <a href="#" class="icon" data-toggle="modal" data-target="#edit_task"
+                                                    onclick="passtaskValue('edit',<?= $mt['id']; ?>)"> <i
+                                                        class="fa fa-pencil-alt"></i> </a><a href="#"
+                                                    class="icon delete-milestone" data-id="'+response.id+'"
+                                                    onclick="passtaskValue('delete',<?= $mt['id']; ?>)"> <i
+                                                        class="fa fa-trash-alt"></i> </a>
+                                            </td>
+                                        </tr>
 
+                                        <?php endforeach; ?>
+                                        <?php endif; ?>
+                                    </tbody>
                                     <?php endforeach; ?>
                                     <?php endif; ?>
-                                </tbody>
-                                <?php endforeach; ?>
-                                <?php endif; ?>
 
-                            </table>
+                                </table>
+                            </div>
                         </div>
-                    </div>
-                    <div class="block">
-                        <div class="header">
-                            <h4 class="title">Resources Allocation </h4>
-                            <input type="hidden" id="url" value="<?= WEBURL; ?>">
-                        </div>
-                        <div class="content table-responsive">
-                            <table class="table table-default table-sm allocation-table">
-                                <thead>
-                                    <tr>
-                                        <th>#</th>
-                                        <th>Title</th>
+                        <div class="block">
+                            <div class="header">
+                                <h4 class="title">Resources Allocation </h4>
+                                <input type="hidden" id="url" value="<?= WEBURL; ?>">
+                            </div>
+                            <div class="content table-responsive">
+                                <table class="table table-default table-sm allocation-table">
+                                    <thead>
+                                        <tr>
+                                            <th>#</th>
+                                            <th>Title</th>
+                                            <?php if (!empty($projects)) :
+                                                foreach ($reslist as $r) : ?>
+                                            <th><?= $r['name']; ?></th>
+                                            <?php endforeach;
+                                            endif; ?>
+                                            <th>Total</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
                                         <?php if (!empty($projects)) :
-                                            foreach ($reslist as $r) : ?>
-                                        <th><?= $r['name']; ?></th>
-                                        <?php endforeach;
+                                            $i = 1;
+                                            foreach ($resourceList as $rl) : ?>
+                                        <tr>
+                                            <td><?= $i; ?></td>
+                                            <td style="text-align: left;"><?= $rl['title']; ?></td>
+                                            <?php if (count($rl['res']) > 0) : $hrs = 0;
+                                                        $wrk = 0;
+                                                        foreach ($rl['res'] as $r) : ?>
+                                            <td>
+                                                <input type="text"
+                                                    class="form-control aloc-input changeTime hrs_<?= $rl['id']; ?>"
+                                                    data-id="<?= $rl['id']; ?>" value="<?= $r['time']; ?>"
+                                                    data-user="<?= $r['id']; ?>" placeholder="hrs">
+
+                                                <input type="text" class="form-control aloc-input disabled" disabled
+                                                    placeholder="hrs" value="<?= $r['worked']; ?>">
+                                            </td>
+                                            <?php $hrs += $r['time'];
+                                                            $wrk += $r['worked'];
+                                                        endforeach;
+                                                    endif; ?>
+                                            <td>
+                                                <input type="text" value="<?= $hrs; ?>"
+                                                    class="form-control aloc-input disabled totalmgr_<?= $rl['id']; ?>"
+                                                    disabled placeholder="hrs">
+
+                                                <input type="text" class="form-control aloc-input disabled" disabled
+                                                    placeholder="hrs" value="<?= $wrk; ?>">
+                                            </td>
+                                        </tr>
+                                        <?php $i++;
+                                            endforeach;
                                         endif; ?>
-                                        <th>Total</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <?php if (!empty($projects)) :
-                                        $i = 1;
-                                        foreach ($resourceList as $rl) : ?>
-                                    <tr>
-                                        <td><?= $i; ?></td>
-                                        <td style="text-align: left;"><?= $rl['title']; ?></td>
-                                        <?php if (count($rl['res']) > 0) : $hrs = 0;
-                                                    $wrk = 0;
-                                                    foreach ($rl['res'] as $r) : ?>
-                                        <td>
-                                            <input type="text"
-                                                class="form-control aloc-input changeTime hrs_<?= $rl['id']; ?>"
-                                                data-id="<?= $rl['id']; ?>" value="<?= $r['time']; ?>"
-                                                data-user="<?= $r['id']; ?>" placeholder="hrs">
-
-                                            <input type="text" class="form-control aloc-input disabled" disabled
-                                                placeholder="hrs" value="<?= $r['worked']; ?>">
-                                        </td>
-                                        <?php $hrs += $r['time'];
-                                                        $wrk += $r['worked'];
-                                                    endforeach;
-                                                endif; ?>
-                                        <td>
-                                            <input type="text" value="<?= $hrs; ?>"
-                                                class="form-control aloc-input disabled totalmgr_<?= $rl['id']; ?>"
-                                                disabled placeholder="hrs">
-
-                                            <input type="text" class="form-control aloc-input disabled" disabled
-                                                placeholder="hrs" value="<?= $wrk; ?>">
-                                        </td>
-                                    </tr>
-                                    <?php $i++;
-                                        endforeach;
-                                    endif; ?>
-                                </tbody>
-                            </table>
+                                    </tbody>
+                                </table>
+                            </div>
                         </div>
-                    </div>
-                    <div class="block">
-                        <div class="header">
-                            <h4 class="title">Payment History <a href="#" data-target="#add_payment_received"
-                                    data-toggle="modal" class="v-btn v-btn-primary float-right"><i
-                                        class="fa fa-plus"></i><span>Add Payment</span></a></h4>
-                            </h4>
-                        </div>
-                        <div class="content table-responsive">
-                            <table class="table table-default nowarp">
-                                <thead>
-                                    <tr>
-                                        <th></th>
-                                        <th style="width:500px;">Description</th>
-                                        <th>Date</th>
-                                        <th>Amount</th>
-                                        <th>Status</th>
-                                        <th>Action</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="payment_data">
-                                    <?php if (!empty($payments)) : ?>
-                                    <?php foreach ($payments as $p) : ?>
+                        <div class="block">
+                            <div class="header">
+                                <h4 class="title">Payment History <a href="#" data-target="#add_payment_received"
+                                        data-toggle="modal" class="v-btn v-btn-primary float-right"><i
+                                            class="fa fa-plus"></i><span>Add Payment</span></a></h4>
+                                </h4>
+                            </div>
+                            <div class="content table-responsive">
+                                <table class="table table-default nowarp">
+                                    <thead>
+                                        <tr>
+                                            <th></th>
+                                            <th style="width:500px;">Description</th>
+                                            <th>Date</th>
+                                            <th>Amount</th>
+                                            <th>Status</th>
+                                            <th>Action</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="payment_data">
+                                        <?php if (!empty($payments)) : ?>
+                                        <?php foreach ($payments as $p) : ?>
 
-                                    <tr id="rowp<?= $p['id']; ?>">
-                                        <td></td>
-                                        <td><?= $p['description']; ?></td>
-                                        <td><?= $p['payment_date']; ?></td>
-                                        <td>
-                                            $<?= $p['receive_amt']; ?>
-                                        </td>
-                                        <td>
-                                            <select name="pstatus" class="form-control status" id="<?= $p['id']; ?>"
-                                                data-type="payment" data-url="<?= WEBURL; ?>">
-                                                <option value="Billed"
-                                                    <?php if ($p['status'] == 'Billed') echo 'selected'; ?>>Billed
-                                                </option>
-                                                <option value="Paid"
-                                                    <?php if ($p['status'] == 'Paid') echo 'selected'; ?>>Paid</option>
-                                                <option value="Estimated"
-                                                    <?php if ($p['status'] == 'Estimated') echo 'selected'; ?>>Estimated
-                                                </option>
+                                        <tr id="rowp<?= $p['id']; ?>">
+                                            <td></td>
+                                            <td><?= $p['description']; ?></td>
+                                            <td><?= $p['payment_date']; ?></td>
+                                            <td>
+                                                $<?= $p['receive_amt']; ?>
+                                            </td>
+                                            <td>
+                                                <select name="pstatus" class="form-control status" id="<?= $p['id']; ?>"
+                                                    data-type="payment" data-url="<?= WEBURL; ?>">
+                                                    <option value="Billed"
+                                                        <?php if ($p['status'] == 'Billed') echo 'selected'; ?>>Billed
+                                                    </option>
+                                                    <option value="Paid"
+                                                        <?php if ($p['status'] == 'Paid') echo 'selected'; ?>>Paid</option>
+                                                    <option value="Estimated"
+                                                        <?php if ($p['status'] == 'Estimated') echo 'selected'; ?>>Estimated
+                                                    </option>
 
-                                            </select>
-                                        </td>
-                                        <td>
-                                            <a href="#" class="icon" data-toggle="modal" data-target="#edit_payment"
-                                                onclick="passPayment('edit',<?= $p['id']; ?>)"> <i
-                                                    class="fa fa-pencil-alt"></i> </a>
-                                            <a href="#" class="icon" onclick="passPayment('delete',<?= $p['id']; ?>)">
-                                                <i class="fa fa-trash-alt"></i> </a>
-                                        </td>
-                                    </tr>
-                                    <?php endforeach; ?>
-                                    <?php endif; ?>
-                                </tbody>
-                            </table>
+                                                </select>
+                                            </td>
+                                            <td>
+                                                <a href="#" class="icon" data-toggle="modal" data-target="#edit_payment"
+                                                    onclick="passPayment('edit',<?= $p['id']; ?>)"> <i
+                                                        class="fa fa-pencil-alt"></i> </a>
+                                                <a href="#" class="icon" onclick="passPayment('delete',<?= $p['id']; ?>)">
+                                                    <i class="fa fa-trash-alt"></i> </a>
+                                            </td>
+                                        </tr>
+                                        <?php endforeach; ?>
+                                        <?php endif; ?>
+                                    </tbody>
+                                </table>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -1549,4 +1551,18 @@ function upworkDetail() {
         // console.log(upworkId);
     }
 }
+</script>
+
+<script>
+$(document).ready(function () {
+
+    $('#save_project').click(function () {
+
+        setTimeout(function () {
+            $('#projectExtraSections').show();
+        }, 500);
+
+    });
+
+});
 </script>

@@ -85,9 +85,7 @@ class EmployeeAcademicsController extends AppController
             // print_r( $this->request->getData());
             // die;
             // $employeeAcademic = $this->EmployeeAcademics->patchEntity($employeeAcademic, $this->request->getData());
-
-
-            $employeeAcademic->user_id = $this->request->getData('user_id');
+    $employeeAcademic->user_id = $this->request->getData('user_id');
     $employeeAcademic->ac_type = $this->request->getData('ac_type');
     $employeeAcademic->ac_org = $this->request->getData('ac_org');
     $employeeAcademic->ac_education = $this->request->getData('ac_education');
@@ -103,16 +101,12 @@ class EmployeeAcademicsController extends AppController
     $employeeAcademic->acc_mark = $res;
   
     }
+        if ($this->EmployeeAcademics->save($employeeAcademic)) {
+            $this->Flash->success(__('The employee academic has been saved.'));
 
-
-
-
-            if ($this->EmployeeAcademics->save($employeeAcademic)) {
-                $this->Flash->success(__('The employee academic has been saved.'));
-
-                return $this->redirect(['controller'=>'EmployeeDetails','action' => 'edit',$this->request->getData("user_id")]);
-            }
-            $this->Flash->error(__('The employee academic could not be saved. Please, try again.'));
+            return $this->redirect(['controller'=>'EmployeeDetails','action' => 'edit',$this->request->getData("user_id")]);
+        }
+        $this->Flash->error(__('The employee academic could not be saved. Please, try again.'));
         }
         $users = $this->EmployeeAcademics->Users->find('list', ['limit' => 200]);
         $this->set(compact('employeeAcademic', 'users'));
