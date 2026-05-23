@@ -1574,7 +1574,8 @@
             <div class="modal-body">
                 <div class="content">
 
-                    <input type="hidden" name="user_id" value="<?= $user_data['id'] ?>">
+                    <!-- <input type="hidden" name="user_id" value="<?= $user_data['id'] ?>"> -->
+                    <input type="hidden" name="user_id" value="<?= isset($user_data['id']) ? $user_data['id'] : '' ?>">
 
                     <?php
 
@@ -1654,7 +1655,8 @@
                         <?php
                         // echo $this->Form->control('user_id', ['options' => $users,'empty'=>$user_id,'readonly'=>true]);
                         ?>
-                        <input type="hidden" name="user_id" value="<?= $user_data['id'] ?>">
+                        <!-- <input type="hidden" name="user_id" value="<?= $user_data['id'] ?>"> -->
+                        <input type="hidden" name="user_id" value="<?= isset($user_data['id']) ? $user_data['id'] : '' ?>">
                         <?php
                         echo $this->Form->control('ac_type', ['label' => 'Type', 'type' => 'select', 'options' => ['10th' => '10th', '12th' => '12th', 'UG' => 'UG', 'PG' => 'PG'], 'default' => '10th', 'class' => 'form-control']);
                         echo $this->Form->control('ac_org', ['autocomplete' => false, 'label' => 'BOARD/UNIVERSITY', 'class' => 'form-control', 'type' => 'text']);
