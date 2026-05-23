@@ -147,7 +147,7 @@ $menu = $session->read('menu');
                     <?= $this->Html->link('Profile', '/profile', ['class' => 'link']); ?>
                         <?php if (($userSession['role'] == 3) && (array_intersect($userSession['role_name'], array(4)))) { ?>
                         <?= $this->Html->link('Team', '/myteam', ['class' => 'link']); ?>
-                        <?= $this->Html->link('Management Report', ['class' => 'link', 'controller' => 'Companies', 'action' => 'managerReport']) ?>
+                        <!-- <?= $this->Html->link('Management Report', ['class' => 'link', 'controller' => 'Companies', 'action' => 'managerReport']) ?> -->
                         <?= $this->Html->link('Opportunity', '/list-opportunity', ['class' => 'link']); ?>
                         <?php } ?>
                         <?= $this->Html->link('My Leaves', ['class' => 'link', 'controller' => 'Leaves', 'action' => 'index']) ?>
