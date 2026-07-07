@@ -51,7 +51,7 @@ $role = $userSession['role'];
     <!-- PAGE-CONTENT -->
     <div class="page-content">
         <div class="container">
-
+        <?php if (array_intersect($userSession['role_name'], array(4, 6, 9, 10))) { ?>
             <div class="row">
                 <div class="col-md-3">
                     <div class="adon-group form-group">
@@ -89,6 +89,8 @@ $role = $userSession['role'];
                     </div>
                 </div>
             </div>
+        
+        <?php } ?>
 
             <!-- TABLE -->
             <div class="row">
@@ -105,7 +107,8 @@ $role = $userSession['role'];
                                 <th>OD</th>
                                 <!-- <th>Due</th> -->
                                 <?php if (array_intersect($userSession['role_name'], array(4, 6, 9, 10))) { ?>
-                                <th>Amount</th>  
+                                <th>Amount</th> 
+                                <th>Paid</th> 
                                 <th>BH</th>
                                 <th>TH</th>
                                 <th>AH</th>
@@ -141,7 +144,14 @@ $role = $userSession['role'];
                                 </td> -->
                                 <?php if (array_intersect($userSession['role_name'], array(4, 6, 9, 10))) { ?>
                                 <td>$<?= round($p['pm_amount']); ?></td>
-                                <td><?php echo $p['budget'];?></td>
+                                <td>$<?= round($p['paid']); ?></td>
+                                <td>
+                                    <?php
+                                    echo is_numeric($p['budget'])
+                                        ? round($p['budget'])
+                                        : $p['budget'];
+                                    ?>
+                                </td>
                                 <td><?= round($p['actual_hours']); ?></td>
                                 <td><?= round($p['allocated_hours']); ?></td>
                                 <td>
@@ -342,14 +352,14 @@ function changeActivation() {
                                         ${element.overdue} </span>`  :  '-'} 
                                     </td>
                                     <td>
-                                        ${element.due > 0  ? `<span title="due" class="badge badge-warning" style="padding: .85em .84em;"> ${element.due}</span>` : '-' }
-                                    </td>  
-                                    <td>
                                         $${element.amount}
                                     </td>    
                                     <td>
                                         $${element.paid}
-                                    </td>     
+                                    </td> 
+                                    <td>${element.budget}</td>
+                                    <td>${element.actual_hours}</td>
+                                    <td>${element.allocated_hours}</td>      
                                     <td>
                                         <input class="tgl tgl-light" onclick="changeActivationStatus(${element.id},${element.active})" id="${element.id}" type="checkbox" value="${element.active}" ${element.active == '1' ? 'checked' : '' } />
                                         <label class="tgl-btn" for="${element.id}"></label>
@@ -388,16 +398,16 @@ function changeActivation() {
                                     <td>
                                      ${element.overdue > 0 ? `<span class="badge badge-danger" title="Overdue" style="padding: .85em .84em;"> 
                                         ${element.overdue} </span>`  :  '-'} 
-                                    </td>
-                                    <td>
-                                        ${element.due > 0  ? `<span title="due" class="badge badge-warning" style="padding: .85em .84em;"> ${element.due}</span>` : '-' }
-                                    </td>  
+                                    </td> 
                                     <td>
                                         $${element.amount}
                                     </td>    
                                     <td>
                                         $${element.paid}
-                                    </td>     
+                                    </td> 
+                                    <td>${element.budget}</td>
+                                    <td>${element.actual_hours}</td>
+                                    <td>${element.allocated_hours}</td>      
                                     <td>
                                         <input class="tgl tgl-light" onclick="changeActivationStatus(${element.id},${element.active})" id="${element.id}" type="checkbox" value="${element.active}" ${element.active == '1' ? 'checked' : '' } />
                                         <label class="tgl-btn" for="${element.id}"></label>
@@ -461,16 +471,16 @@ function projectDetails() {
                                     <td>
                                      ${element.overdue > 0 ? `<span class="badge badge-danger" title="Overdue" style="padding: .85em .84em;"> 
                                         ${element.overdue} </span>`  :  '-'} 
-                                    </td>
-                                    <td>
-                                        ${element.due > 0  ? `<span title="due" class="badge badge-warning" style="padding: .85em .84em;"> ${element.due}</span>` : '-' }
-                                    </td>  
+                                    </td> 
                                     <td>
                                         $${element.amount}
                                     </td>    
                                     <td>
                                         $${element.paid}
-                                    </td>     
+                                    </td> 
+                                    <td>${element.budget}</td>
+                                    <td>${element.actual_hours}</td>
+                                    <td>${element.allocated_hours}</td>      
                                     <td>
                                         <input class="tgl tgl-light" onclick="changeActivationStatus(${element.id},${element.active})" id="${element.id}" type="checkbox" value="${element.active}" ${element.active == '1' ? 'checked' : '' } />
                                         <label class="tgl-btn" for="${element.id}"></label>
@@ -509,14 +519,14 @@ function projectDetails() {
                                         ${element.overdue} </span>`  :  '-'} 
                                     </td>
                                     <td>
-                                        ${element.due > 0  ? `<span title="due" class="badge badge-warning" style="padding: .85em .84em;"> ${element.due}</span>` : '-' }
-                                    </td>  
-                                    <td>
                                         $${element.amount}
                                     </td>    
                                     <td>
                                         $${element.paid}
-                                    </td>     
+                                    </td> 
+                                    <td>${element.budget}</td>
+                                    <td>${element.actual_hours}</td>
+                                    <td>${element.allocated_hours}</td>      
                                     <td>
                                         <input class="tgl tgl-light" onclick="changeActivationStatus(${element.id},${element.active})" id="${element.id}" type="checkbox" value="${element.active}" ${element.active == '1' ? 'checked' : '' } />
                                         <label class="tgl-btn" for="${element.id}"></label>

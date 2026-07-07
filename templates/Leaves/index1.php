@@ -16,36 +16,6 @@
         height: 20px;
         top: 6px;
     }
-
-    /* wfh instruction css */
-    .instruction-item{
-    display:flex;
-    align-items:flex-start;
-    margin-bottom:20px;
-    }
-
-    .instruction-number{
-        width:35px;
-        height:35px;
-        min-width:35px;
-        border-radius:50%;
-        background:#3fd5db;
-        color:#fff;
-        display:flex;
-        align-items:center;
-        justify-content:center;
-        font-weight:bold;
-        margin-right:15px;
-    }
-
-    .modal-content{
-        border-radius:15px;
-    }
-
-    .modal-body{
-        font-size:15px;
-        line-height:1.8;
-    }
 </style>
 <section class="page page-dashboard">
     <!-- PAGE-TITLE -->
@@ -309,15 +279,12 @@
 <div class="modal fade" tabindex="-1" role="dialog" id="applyLeave">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
-            <?= $this->Form->create($leave, [
-                'id' => 'leaveForm',
-                'url' => [
+            <?= $this->Form->create($leave, ['url' => [
                 'Controller' => 'Leaves',
                 'action' => 'add'
             ]]) ?>
 
             <input type="hidden" name="created_by" value="<?= $user_data->id ?>">
-            <input type="hidden" id="wfh_status" value="0">
             <div class="modal-header">
                 <h5 class="modal-title">Apply Leave</h5>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
@@ -481,7 +448,7 @@
             </div>
             <div class="modal-footer">
                 <button type="button" class="v-btn v-btn-base" data-dismiss="modal" aria-label="Close">Close</button>
-                <button class="v-btn v-btn-primary" type="submit" id="leaveSubmitBtn">Apply Leave</a>
+                <button class="v-btn v-btn-primary" type="submit" id="submit">Apply Leave</a>
             </div>
 
             <?= $this->Form->end() ?>
@@ -776,252 +743,23 @@
 
 <!-- End Holiday -->
 
-<!-- WFH Instruction -->
-
-<div class="modal fade" id="leaveInstructionModal" tabindex="-1" role="dialog">
-    <div class="modal-dialog modal-dialog-centered modal-md" role="document">
-        <div class="modal-content border-0 shadow-lg">
-
-            <div class="modal-header text-white" style="background: #3fd5db;">
-                <h4 class="modal-title">
-                    <i class="fa fa-info-circle mr-2"></i>
-                    Important Instructions
-                </h4>
-            </div>
-
-            <div class="modal-body p-4">
-
-                <div class="alert alert-warning">
-                    <strong>Please read carefully before proceeding.</strong>
-                </div>
-
-                <div class="instruction-list">
-
-                    <div class="instruction-item">
-                        <span class="instruction-number">1</span>
-                        <div>
-                            Please note that <strong>Work From Home (WFH)</strong>
-                            means working from home and being fully available during office hours.
-                        </div>
-                    </div>
-
-                    <div class="instruction-item">
-                        <span class="instruction-number">2</span>
-                        <div>
-                            It should not be used for personal travel, leisure activities, or rest days.
-                        </div>
-                    </div>
-
-                    <div class="instruction-item">
-                        <span class="instruction-number">3</span>
-                        <div>
-                            If you are unable to work, you should apply for leave instead.
-                        </div>
-                    </div>
-
-                </div>
-
-            </div>
-
-            <div class="modal-footer justify-content-center border-0 pb-4">
-
-                <button type="button"
-                        class="btn btn-outline-danger btn-sm px-5"
-                     id="rejectInstruction">
-                    Reject
-                </button>
-
-                <button type="button"
-                        class="btn btn-success btn-sm px-5 ml-3"
-                        id="acceptInstruction">
-                    Accept
-                </button>
-
-            </div>
-
-        </div>
-    </div>
-</div>
-
-<div class="modal fade" id="errorModal">
-    <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content">
-            <div class="modal-header bg-info text-white">
-                <h5 class="modal-title">Submission Not Allowed</h5>
-                <button type="button" id="errclose">
-                    <span>&times;</span>
-                </button>
-            </div>
-
-            <div class="modal-body">
-                <p id="errorMessage"></p>
-            </div>
-
-            <div class="modal-footer">
-                <button type="button"
-                        class="btn btn-secondary"
-                        id="errclose">
-                    Close
-                </button>
-            </div>
-        </div>
-    </div>
-</div>
-
-<!-- End WFH Instruction -->
-
 
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 
 
 <script type="text/javascript">
 // disable button after apply leave
-// document.querySelector("#submit").addEventListener('click', (e) => {
-//     let input = e.target;
-//     console.log('submited');
+document.querySelector("#submit").addEventListener('click', (e) => {
+    let input = e.target;
+    console.log('submited');
+    // return false;
+    setTimeout(() => {
+        input.disabled = true;
+    }, 1000);
 
-//     var leaveType = $('#leave_type').val();
-//     var wfh_status = $('#wfh_status').val();
-
-//     console.log('leaveType',leaveType);
-//     console.log('wfh_status',wfh_status);
-
-//     if (leaveType == 'WFH' && wfh_status != '1') {
-
-//         e.preventDefault();
-//         e.stopPropagation();
-//         e.stopImmediatePropagation();
-
-//         Swal.fire({
-//             icon: 'warning',
-//             title: 'WFH Instruction Not Accepted',
-//             text: 'Please accept the instructions first.'
-//         });
-
-//         return false;
-//     }
-//     // return false;
-//     setTimeout(() => {
-//         input.disabled = true;
-//     }, 1000);
-
-//     setTimeout(() => {
-//         input.disabled = false;
-//     }, 5000); // 5000 milliseconds = 5 seconds
-// });
-
-$('#leaveForm').on('submit', function(e) {
-
-    let leaveType = document.querySelector('#leave').value;
-    var wfh_status = $('#wfh_status').val();
-
-    if (  leaveType !== 'Short Leave' &&
-    leaveType !== 'LWP' &&
-    leaveType !== 'comp_off' &&
-    leaveType !== 'Forgot Card'  ) {
-
-        var fromDate = $('#from_date').val();
-
-        if (fromDate) {
-
-            var parts = fromDate.split('/');
-
-            // MM/DD/YYYY
-            var leaveDate = new Date(
-                parseInt(parts[2]),     // year
-                parseInt(parts[0]) - 1, // month
-                parseInt(parts[1])      // day
-            );
-
-            var today = new Date();
-
-            today.setHours(0, 0, 0, 0);
-            leaveDate.setHours(0, 0, 0, 0);
-
-            var diffDays = Math.floor(
-                (today.getTime() - leaveDate.getTime()) /
-                (1000 * 60 * 60 * 24)
-            );
-
-            // More than 2 days old
-            if (diffDays > 2) {
-
-                e.preventDefault();
-
-                $('#errorMessage').text(
-                    'This Leave/WFH request is past the allowed submission deadline. Applications can only be submitted within 2 days of the requested date. Please contact HR for further assistance.'
-                );
-
-                // $('#errorModal').modal('show');
-                $('#applyLeave').modal('hide');
-
-                $('#applyLeave').one('hidden.bs.modal', function () {
-                    $('#errorModal').modal('show');
-                });
-
-                return false;
-            }
-        }
-
-        // Instruction not accepted
-        if (wfh_status != '1' && leaveType == 'WFH') {
-
-            e.preventDefault();
-            // alert('Please accept the WFH instructions before submitting.');
-
-            $('#applyLeave').modal('hide');
-
-            $('#applyLeave').one('hidden.bs.modal', function () {
-                $('#leaveInstructionModal').modal('show');
-            });
-
-            return false;
-        } else {
-            return
-        }
-    }
-
-});
-
-
-$(document).on('click', '#errclose', function () {
-
-    console.log('error modal closed');
-
-
-    $('#errorModal').modal('hide');
-
-    $('#errorModal').one('hidden.bs.modal', function () {
-        $('#applyLeave').modal('show');
-    });
-
-});
-
-$(document).on('click', '#acceptInstruction', function () {
-
-    $('#wfh_status').val('1');
-
-    $('#leaveInstructionModal').modal('hide');
-
-    $('#leaveInstructionModal').one('hidden.bs.modal', function () {
-
-        document.getElementById('leaveForm').submit();
-
-    });
-
-});
-
-$(document).on('click', '#rejectInstruction', function () {
-
-            $('#leaveInstructionModal').modal('hide');
-
-            $('#leaveInstructionModal').one('hidden.bs.modal', function () {
-
-                $('#applyLeave').modal('show');
-                $('#wfh_status').val('0');
-
-            });
-
+    setTimeout(() => {
+        input.disabled = false;
+    }, 5000); // 5000 milliseconds = 5 seconds
 });
 
 $(function() {
@@ -1054,11 +792,6 @@ function leaveType() {
         $("#alert_wfh").html('');
     } 
     else if(leaveType == 'WFH') {
-        $('#wfh_status').val('0');
-        // wfh instruction reject/accept
-        // $('#applyLeave').modal('hide');
-        // $('#leaveInstructionModal').modal('show');
-
         reason.style.display = 'block';
         wfhtyperadio.style.display = 'block';
         sreason.style.display = 'none';

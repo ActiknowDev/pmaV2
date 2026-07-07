@@ -101,10 +101,6 @@
                                     </option>
                                 </select>
                             </div>
-                            <!-- <div class="col-md-3">
-                                <input type="text" class="form-control" onkeyup="filterLeaveData(this)"
-                                    placeholder="Filter all leaves...">
-                            </div> -->
                         </div>
                         <div class="content ">
                             <table id="example" style="width:100%" class="table table-default table-striped block">
@@ -120,49 +116,48 @@
                                     </tr>
                                 </thead>
                                 <tbody id="filterData">
-                                    <?php
-                  foreach ($leave as $value) :
-                    // dd($value['user']['name']);
-                    if ($value['status'] == 'Approved' || $value['status'] == 'cancelled' ||  $value['status'] == 'Rejected' || $value['status'] == 'Pending') :
-                  ?>
+                                    <?php foreach ($leave as $value) : ?>
                                     <tr>
                                         <td><?= $value['CreatedBy']['name'] ?></td>
+
                                         <td>
-                                        <?php 
-                                        if(!empty($value['user']['name'])) {
-                                            echo $value['user']['name'];
-                                        }
-                                        ?>
+                                            <?php
+                                            if (!empty($value['user']['name'])) {
+                                                echo $value['user']['name'];
+                                            }
+                                            ?>
                                         </td>
+
                                         <td><?= $value['leave_type'] ?></td>
                                         <td><?= $value['subject'] ?></td>
-                                        <td><span style="display:none;"><?= date('Ymd',strtotime($value['applied_on'])) ?></span><?= $value['applied_on'] ?></td>
-                                        <td><span style="display:none;"><?= date('Ymd',strtotime($value['from_date'])) ?></span><?= $value['from_date'] . " to " . $value['to_date'] ?></td>
+
                                         <td>
-                                            <?php
-                          if ($value['status'] == 'cancelled' || $value['status'] == 'Rejected' || $value['status'] == 'Pending') :
-                          ?>
-                                            <span class="badge badge-danger">
-                                                <?= $value['status'] ?>
+                                            <span style="display:none;">
+                                                <?= date('Ymd', strtotime($value['applied_on'])) ?>
                                             </span>
-                                            <?php
-                          endif;
-                          ?>
-                                            <?php
-                          if ($value['status'] == 'Approved') :
-                          ?>
-                                            <span class="badge badge-success">
-                                                <?= $value['status'] ?>
+                                            <?= $value['applied_on'] ?>
+                                        </td>
+
+                                        <td>
+                                            <span style="display:none;">
+                                                <?= date('Ymd', strtotime($value['from_date'])) ?>
                                             </span>
-                                            <?php
-                          endif;
-                          ?>
+                                            <?= $value['from_date'] . " to " . $value['to_date'] ?>
+                                        </td>
+
+                                        <td>
+                                            <?php if ($value['status'] == 'Approved') : ?>
+                                                <span class="badge badge-success">
+                                                    <?= $value['status'] ?>
+                                                </span>
+                                            <?php else : ?>
+                                                <span class="badge badge-danger">
+                                                    <?= $value['status'] ?>
+                                                </span>
+                                            <?php endif; ?>
                                         </td>
                                     </tr>
-                                    <?php
-                    endif;
-                  endforeach;
-                  ?>
+                                    <?php endforeach; ?>
                                 </tbody>
                             </table>
                         </div>

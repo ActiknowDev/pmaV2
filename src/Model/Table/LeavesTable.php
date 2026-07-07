@@ -23,7 +23,7 @@ class LeavesTable extends Table
 
 
         $this->belongsTo('Users', [
-            'foreignKey' => 'approved_by ',
+            'foreignKey' => 'approved_by',
         ]);
 
 

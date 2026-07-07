@@ -90,6 +90,8 @@ $userSession = $session->read('data');
                             <p style="margin-top: 22px; font-weight:600;">Today's Attendance : <b style="font-weight: 600;"><?= $totalemp ?></b></p>
                             <p onclick="forgetCardData();" style="font-weight:600; cursor: pointer;">Today's Forget Card : <b style="font-weight: 600;"><?= $totalForgetCard[0]['totalforgetcard'] ?></b></p>
                         </div>
+                        <input type="hidden" id="pdf_month" value="<?= sprintf('%02d', $month) ?>">
+                        <input type="hidden" id="pdf_year" value="<?= $year ?>">
                 <div class="col-md-12">
                     <?= $this->Flash->render() ?>
                     <div class="content ">

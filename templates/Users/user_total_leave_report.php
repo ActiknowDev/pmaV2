@@ -79,9 +79,6 @@ $userSession = $session->read('data');
                         <span class="icon"><i class="fa fa-building"></i></span>Total Employee Leaves
                     </div>
                 </div>
-                <!-- <div class="col-lg-6 col-md-6 col-sm-12 pb-2">
-                            <a href="javascript::void(0);" data-target="#leave_module" data-toggle="modal" class="btn btn-sm text-white" style="background-color: #3fd5db; margin-top: 2px; float: inline-end;">Manage Leave</a>
-                </div> -->
             </div>
         </div>
     </div>
@@ -114,6 +111,15 @@ $userSession = $session->read('data');
                             ]); ?>
                         </li>
 
+                        <?php if (in_array(12, $userSession['role_name'])) { ?>
+                            <li>
+                                <?= $this->Html->link('Apply Leave', [
+                                    'controller' => 'Leaves',
+                                    'action' => 'hrLeaves'
+                                ]); ?>
+                            </li>
+                        <?php } ?>
+
                     </ul>
                 </div>
             </div>
@@ -128,57 +134,6 @@ $userSession = $session->read('data');
                 
             <!-- TABLE -->
             <div class="row">
-            <!-- <div class="col-md-3 pb-2">
-                    <form id="filter_form">
-                        <div class="filter_month">
-                            <label><strong>Filter By Month</strong></label>
-                            <select name="month" class="form-control" id="month" onchange="FilterData()">
-                            <option value="<?php echo $month; ?>" hidden selected>
-                           <?php
-                        //    $month_name = date("F", mktime(0, 0, 0, $month, 10)); 
-                        //    echo $month_name;
-                           ?>
-                            </option>
-                            <option value="01">January</option>
-                            <option value="02">February</option>
-                            <option value="03">March</option>
-                            <option value="04">April</option>
-                            <option value="05">May</option>
-                            <option value="06">June</option>
-                            <option value="07">July</option>
-                            <option value="08">August</option>
-                            <option value="09">September</option>
-                            <option value="10">October</option>
-                            <option value="11">November</option>
-                            <option value="12">December</option>
-                            </select>
-                        </div>
-                    </form>
-                </div> -->
-                <!-- <div class="col-md-3 pb-2">
-                    <form id="filter_form">
-                        <div class="filter_year">
-                            <select name="year" class="form-control" id="year" onchange="FilterData()">
-                            <option value="<?= $year ?>" hidden selected>
-                           <?= $year; ?>
-                            </option>
-                            <option value="2023">2023</option>
-                            <option value="2022">2022</option>
-                            <option value="2021">2021</option>
-                            <option value="2020">2020</option>
-                            <option value="2019">2019</option>
-                            <option value="2018">2018</option>
-                            <option value="2017">2017</option>
-                            <option value="2016">2016</option>
-                            <option value="2015">2015</option>
-                            <option value="2014">2014</option>
-                            <option value="2013">2013</option>
-                            <option value="2012">2012</option>
-                            </select>
-                        </div>
-                    </form>
-                </div> -->
-                        
                 <div class="col-md-12">
                     <?= $this->Flash->render() ?>
                     <div class="content">
@@ -187,12 +142,6 @@ $userSession = $session->read('data');
                                             <tr>
                                                 <th>Emp.Id</th>
                                                 <th>Emp.Name</th>
-                                                <!-- <th>User CL</th>
-                                                <th>User SL</th>
-                                                <th>User EL</th>
-                                                <th>Taken CL</th>
-                                                <th>Taken SL</th>
-                                                <th>Taken EL</th> -->
                                                 <th>Total CL</th>
                                                 <th>Total SL</th>
                                                 <th>Total EL</th>
@@ -209,12 +158,6 @@ $userSession = $session->read('data');
                                         <tr data-id="<?= $data['uid'] ?>">
                                             <td><?= $data['uid'] ?></td>
                                             <td><?= $data['name'] ?></td>
-                                            <!-- <td contenteditable='true' col-name="cl"><?= $data['ucl'] ?></td>
-                                            <td contenteditable='true' col-name="sl"><?= $data['usl'] ?></td>
-                                            <td contenteditable='true' col-name="el"><?= $data['uel'] ?></td>
-                                            <td><?= $data['cl'] ?></td>
-                                            <td><?= $data['sl'] ?></td>
-                                            <td><?= $data['el'] ?></td> -->
                                             <?php foreach ($data['leaves'] as $val) : ?>
                                             <td><?= number_format($val['cl']-$val['sumCL'],2) ?></td>
                                             <td><?= number_format($val['sl']-$val['sumSL'],2) ?></td>
@@ -239,12 +182,6 @@ $userSession = $session->read('data');
         </div>
     </div>
 </section>
-<!-- CREATE CLIENT -->
-
-<!-- <div class="modal fade" id="project_show" role="dialog">
-    
-  </div> -->
-
   <div class="modal fade" tabindex="-1" role="dialog" id="leave_module">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
@@ -262,19 +199,6 @@ $userSession = $session->read('data');
             </div>
             <div class="modal-body">
                 <div class="content">
-                    <!-- <div class="form-group row">
-                        <div class="col-md-12">
-                            <label for="">Employee</label>
-                            <div class="adon-group res">
-                                <select name="emp[]" class="form-control" id="emp">
-                                    <?php foreach ($leave_data as $empdata) : ?>
-
-                                    <option value="<?= $empdata['uid'] ?>"><?= $empdata['name'] ?></option>
-                                    <?php endforeach; ?>
-                                </select>
-                            </div>
-                        </div>
-                    </div> -->
                     <input type="hidden" name="id" id="uid">
                     <table class="table table-bordered">
                         <tr>
@@ -349,12 +273,6 @@ $userSession = $session->read('data');
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
 <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
-<!-- <script>
-    $("input[type=text]").on("focus", function() {
-        if ($(this).val() == 0)
-            $(this).val('');
-    });
-</script> -->
 <script>
     $(document).ready(function ($) {
         $("#emp").select2({
@@ -369,17 +287,6 @@ $userSession = $session->read('data');
 </script>
 
 <script>
-//    $(document).ready(function() {
-//     $('#example1').dataTable({
-//         /* Disable initial sort */
-//         "aaSorting": [],
-//         "lengthMenu": [[100, "All", 50, 25], [100, "All", 50, 25]],
-//         // stateSave: true
-//     });
-
-   
-// });
-
 $(document).ready(function() {
     $.ajaxSetup({
         headers: {
@@ -410,30 +317,4 @@ $(document).ready(function () {
         }
     });
 });
-
-
-// $(document).ready(function() {
-//     $('td[contenteditable=true]').blur(function() {
-//         var value = $(this).text();
-//         var colName = $(this).attr('col-name');
-//         var userId = $(this).closest('tr').data('id');
-//         $.ajax({
-//             url: '<?= $this->Url->build(['controller' => 'Users', 'action' => 'updateLeaveData']) ?>',
-//             type: 'POST',
-//             data: {
-//                 userId: userId,
-//                 colName: colName,
-//                 value: value
-//             },
-//             success: function(response) {
-//                 // Handle success response
-//                 console.log(response);
-//             },
-//             error: function(xhr, status, error) {
-//                 // Handle error
-//                 console.error(xhr.responseText);
-//             }
-//         });
-//     });
-// });
 </script>

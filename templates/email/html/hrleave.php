@@ -5,6 +5,10 @@
     <strong>Leave Applicant:</strong>
     <?= $name ?>
 </p>
+<p>
+    <strong>Request Submitted By:</strong>
+    <?= $appliedByHr ?>
+</p>
 <p><strong>Leave Deduction Details:</strong> </p>
    <?php
    foreach($cut_leave as $key=>$value){

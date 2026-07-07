@@ -726,7 +726,8 @@ class LeavesController extends AppController
                 } else if ($this->request->getData("leave_type") == "WFH") {
                    
                     $run = true;
-                } else if ($this->request->getData("leave_type") == "comp_off") {
+                } 
+                else if ($this->request->getData("leave_type") == "comp_off") {
 
                     if ($user['comp_off'] - $takenLeave['sumComp']  >= $days_count && $totalPendingLeave <= $user['comp_off'] - $takenLeave['sumComp']) {
                         $run  = true;
@@ -1187,11 +1188,79 @@ class LeavesController extends AppController
     //     $this->set(compact('leave', 'selectStatus'));
     // }
 
-    public function allLeaves()
+    // public function allLeaves()
+    // {
+    //     $selectStatus = '';
+
+    //     $query = $this->Leaves->find()
+    //         ->contain([
+    //             'Users' => function ($q) {
+    //                 return $q->select(['id', 'name', 'email']);
+    //             },
+    //             'CreatedBy' => function ($q) {
+    //                 return $q->select(['id', 'name', 'email']);
+    //             }
+    //         ])
+    //         ->limit(100);
+
+    //     if ($this->request->getQuery('status') == 'Approved') {
+
+    //         $query->where(['Leaves.status' => 'Approved']);
+    //         $selectStatus = 'Approved';
+
+    //     } elseif ($this->request->getQuery('status') == 'Cancelled') {
+
+    //         $query->where(['Leaves.status' => 'Cancelled']);
+    //         $selectStatus = 'Cancelled';
+
+    //     } elseif ($this->request->getQuery('status') == 'Rejected') {
+
+    //         $query->where(['Leaves.status' => 'Rejected']);
+    //         $selectStatus = 'Rejected';
+
+    //     } elseif ($this->request->getQuery('status') == 'Pending') {
+
+    //         $query->where(['Leaves.status' => 'Pending']);
+    //         $selectStatus = 'Pending';
+
+    //     } else {
+
+    //         $query->orderAsc('Leaves.status');
+    //     }
+
+    //     $leave = $query->toArray();
+
+    //     $this->set(compact('leave', 'selectStatus'));
+    // }
+
+     public function allLeaves()
     {
         $selectStatus = '';
 
+        // $query = $this->Leaves->find()
+        //     ->contain([
+        //         'Users' => function ($q) {
+        //             return $q->select(['id', 'name', 'email']);
+        //         },
+        //         'CreatedBy' => function ($q) {
+        //             return $q->select(['id', 'name', 'email']);
+        //         }
+        //     ])
+        //     ->limit(100);
+        // $query = $this->Leaves->find()
+        //     ->contain([
+        //         'Users' => function ($q) {
+        //             return $q->select(['id', 'name', 'email']);
+        //         },
+        //         'CreatedBy' => function ($q) {
+        //             return $q->select(['id', 'name', 'email']);
+        //         }
+        //     ]);
+
         $query = $this->Leaves->find()
+            ->innerJoinWith('CreatedBy', function ($q) {
+                return $q->where(['CreatedBy.status' => 1]);
+            })
             ->contain([
                 'Users' => function ($q) {
                     return $q->select(['id', 'name', 'email']);
@@ -1199,39 +1268,19 @@ class LeavesController extends AppController
                 'CreatedBy' => function ($q) {
                     return $q->select(['id', 'name', 'email']);
                 }
-            ])
-            ->limit(100);
+            ]);
 
-        if ($this->request->getQuery('status') == 'Approved') {
+        $status = $this->request->getQuery('status');
 
-            $query->where(['Leaves.status' => 'Approved']);
-            $selectStatus = 'Approved';
-
-        } elseif ($this->request->getQuery('status') == 'Cancelled') {
-
-            $query->where(['Leaves.status' => 'Cancelled']);
-            $selectStatus = 'Cancelled';
-
-        } elseif ($this->request->getQuery('status') == 'Rejected') {
-
-            $query->where(['Leaves.status' => 'Rejected']);
-            $selectStatus = 'Rejected';
-
-        } elseif ($this->request->getQuery('status') == 'Pending') {
-
-            $query->where(['Leaves.status' => 'Pending']);
-            $selectStatus = 'Pending';
-
-        } else {
-
-            $query->orderAsc('Leaves.status');
+        if (!empty($status)) {
+            $query->where(['Leaves.status' => $status]);
+            $selectStatus = $status;
         }
 
         $leave = $query->toArray();
 
         $this->set(compact('leave', 'selectStatus'));
     }
-
     // WFH
 
     public function workFromHome($id = null)
@@ -2059,4 +2108,569 @@ class LeavesController extends AppController
             die;
         }
     }
+
+    //     public function hrLeaves()
+    // {
+    //     $session = new \Cake\Http\Session();
+
+    //     $selectedEmployeeId = $this->request->getQuery('employee_id');
+    //     $leave = $this->Leaves->newEmptyEntity();
+
+    //     if (!empty($selectedEmployeeId)) {
+    //         $userId = $selectedEmployeeId;
+    //     } else {
+    //         $userId = $session->read('user_data')['id'];
+    //     }
+
+    //     $leaved_data = $this->Leaves->findByCreatedBy($userId)->contain(['Users'])->orderAsc('Leaves.status');
+
+    //     $resources = $this->Users->find()
+    //         ->where(['role' => 3, 'deleted' => 1, 'status' => 1])
+    //         ->select(['name', 'id'])
+    //         ->toArray();
+    //     $user_data = $this->Users->get($userId, [
+    //         'contain' => ['EmpDetail']
+    //     ]);
+
+    //     // $rmId = $session->read('user_data')['reporting_manager'];
+    //     $rmId = $user_data->reporting_manager;
+
+    //     $myLeave = $this->sumOfApprovedLeave($userId);
+
+    //     $users_data = $this->Users->find()
+    //         ->select(['id', 'name'])
+    //         ->where([
+    //             'role' => 3,
+    //             'status' => 1,
+    //             'deleted' => 1
+    //         ])
+    //         ->order(['name' => 'ASC'])
+    //         ->toArray();
+
+    //     $this->set(compact(
+    //         'user_data',
+    //         'myLeave',
+    //         'users_data',
+    //         'selectedEmployeeId',
+    //         'leave',
+    //         'leaved_data',
+    //         'resources',
+    //         'rmId'
+    //     ));
+    // }
+
+        public function hrLeaves()
+    {
+        $selectedEmployeeId = $this->request->getQuery('employee_id');
+
+        $leave = $this->Leaves->newEmptyEntity();
+
+        $resources = $this->Users->find()
+            ->where([
+                'role' => 3,
+                'deleted' => 1,
+                'status' => 1
+            ])
+            ->select(['id', 'name'])
+            ->toArray();
+
+        $users_data = $this->Users->find()
+            ->select(['id', 'name'])
+            ->where([
+                'role' => 3,
+                'status' => 1,
+                'deleted' => 1
+            ])
+            ->order(['name' => 'ASC'])
+            ->toArray();
+
+        // Default values
+        $user_data = null;
+        $rmId = '';
+        $leaved_data = [];
+        $myLeave = [
+            'cl' => 0,
+            'sl' => 0,
+            'el' => 0,
+            'comp_off' => 0,
+            'sumCL' => 0,
+            'sumSL' => 0,
+            'sumEL' => 0,
+            'sumComp' => 0,
+            'sumLWP' => 0
+        ];
+
+        // Only load data when employee is selected
+        if (!empty($selectedEmployeeId)) {
+
+            $user_data = $this->Users->get($selectedEmployeeId, [
+                'contain' => ['EmpDetail']
+            ]);
+
+            $rmId = $user_data->reporting_manager;
+
+            $leaved_data = $this->Leaves->findByCreatedBy($selectedEmployeeId)
+                ->contain(['Users'])
+                ->orderAsc('Leaves.status');
+
+            $myLeave = $this->sumOfApprovedLeave($selectedEmployeeId);
+        }
+
+        $this->set(compact(
+            'user_data',
+            'myLeave',
+            'users_data',
+            'selectedEmployeeId',
+            'leave',
+            'leaved_data',
+            'resources',
+            'rmId'
+        ));
+    }
+
+
+    public function hrLeavesAdd()
+    {
+        $conn = ConnectionManager::get('default');
+        $session = new \Cake\Http\Session();
+        $userSession = $session->read('data');
+
+        $hrId = $userSession['id'];
+        $hrName = $userSession['name'];
+       
+        $leave = $this->Leaves->newEmptyEntity();
+        if ($this->request->is('post')) {
+           // dd($this->request->getSession()->read());
+            $run = false;
+
+            $data=$this->request->getData();
+            // dd($data);
+            // $id = $this->request->getSession()->read("user_data")['id'];
+            $id = $this->request->getData('created_by'); 
+            $user = $this->Users->findById($id)->firstOrFail();
+            $takenLeave = $this->sumOfApprovedLeave($id);
+            // dd($takenLeave);
+
+            $from_date = date("Y-m-d", strtotime($this->request->getData("from_date")));
+            $to_date = date("Y-m-d", strtotime($this->request->getData("to_date")));
+
+            $from_date_create = date_create((string)$from_date);
+            $from_month_date = date_format($from_date_create, "m");
+            $from_year_date = date_format($from_date_create, "Y");
+            // dd($from_date);
+
+            $days_count = $this->getDateDiff($from_date, $to_date);
+            // $totalPendingLeave =  $days_count + $this->pendingLeave($id, $this->request->getData("leave_type"));
+             $totalPendingLeave =  $days_count;
+            $wfh=$this->Leaves->find()->select([
+                'totalwfh'=>'SUM(Leaves.wfh)'
+            ])->where([
+                'Leaves.created_by'=>$id,
+                'month(from_date)'=>$from_month_date,
+                'YEAR(from_date)'=>$from_year_date,
+                'Leaves.wfh_type'=>'WFH'
+            ])
+            ->first();
+
+            $pre_leave = $this->Leaves->find()
+            ->where([
+                'Leaves.created_by' => $id,
+                'OR' => [
+                    ['Leaves.status' => 'Pending'],
+                    ['Leaves.status' => 'Approved']
+                ],
+                'NOT' => ['Leaves.leave_type IN' => ['WFH','Short Leave', 'Forgot Card']]
+            ])
+            ->order(['id' => 'DESC'])
+            ->limit(1)
+            ->first();
+            $query = "SELECT `start` FROM `holidays` WHERE `deleted` = 0 ORDER BY start ASC";
+            $stmtList = $conn->execute($query);
+            $holidaylist = $stmtList->fetchAll('assoc');
+            // dd($holidaylist);
+
+            $holidayDates = array_map(function($holiday) {
+                return date('Y-m-d', strtotime($holiday['start']));
+            }, $holidaylist);
+            if (!empty($pre_leave)) {
+                $last_leave_date = $pre_leave->to_date->format('Y-m-d');
+                $previousDay = date('Y-m-d', strtotime('-1 day', strtotime($last_leave_date)));
+                $nextDay = date('Y-m-d', strtotime('+1 day', strtotime($last_leave_date)));
+                $last_leave_day = date('l', strtotime($last_leave_date));
+                // check monday pre leave
+                $last_leave_mdate = $pre_leave->from_date->format('Y-m-d');
+                $last_leave_mday = date('l', strtotime($last_leave_mdate));
+                // end
+                $current_from_day = date('l', strtotime($from_date));
+                $date_diff = $this->getDateDiff($last_leave_date, $from_date);
+                $check_leave_type = $pre_leave->leave_type;
+                $halfday_type = $pre_leave->halfday_type;
+                // $check_leave_type = $pre_leave->leave_type;
+            } else {
+                $last_leave_day='';
+                $last_leave_mday='';
+                $current_from_day='';
+                $date_diff='';
+                $check_leave_type = '';
+                $halfday_type = '';
+            }
+            // dd($check_leave_type);
+            // dd($wfh->totalwfh);
+            $totalwfh=$wfh->totalwfh;
+            $lreason = $this->request->getData("reason");
+            $sreason = $this->request->getData("sreason");
+            if(!empty($lreason)) {
+                $reason = $this->request->getData("reason");
+            } else {
+                $reason = $this->request->getData("sreason"); 
+            }
+            if(($this->request->getData("leave_type") == "WFH")) {
+                $wfhtype = $this->request->getData("wfhtype");
+            } else {
+                $wfhtype = '';
+            }
+            if(($this->request->getData("leave_type") == "Half Day")) {
+                $halfdaytype = $this->request->getData("halfdaytype");
+            } else {
+                $halfdaytype = '';
+            }
+            // dd($reason);
+
+                    // finacial year restricted
+                    $curr_month  = date('m');
+                    $curr_year   = date('Y');
+                    $start_year  = date('Y', strtotime($from_date));
+                    $end_year    = date('Y', strtotime($to_date));
+                   
+                    // Define financial year start and end
+                    $fy_start = ($curr_month >= 4) ? $curr_year : $curr_year - 1;  // Financial year starts in April
+                    $fy_end = $fy_start + 1;  // Ends in March next year
+                   
+                    $start_fy = strtotime("$fy_start-04-01");  // April 1st of current FY
+                    $end_fy = strtotime("$fy_end-03-31");      // March 31st of current FY
+                    $start_leave = strtotime($from_date);
+                    $end_leave = strtotime($to_date);
+           
+            if ($days_count > 0) {
+               if($last_leave_day=='Friday' && $current_from_day=='Monday' && $date_diff==4) {
+                    $cut_weekend_leave = 2;
+                    $data['weekend']='true';
+                  }
+                  elseif($last_leave_mday=='Monday' && $current_from_day=='Friday' && $date_diff==4) {
+                      $cut_weekend_leave = 2;
+                      $data['weekend']='true';
+                  }
+                  elseif(in_array($previousDay, $holidayDates) && $date_diff==3){
+                    $cut_weekend_leave = 1;
+                    $data['weekend']='true';
+                  }
+                  elseif(in_array($nextDay, $holidayDates) && $date_diff==3){
+                    $cut_weekend_leave = 1;
+                    $data['weekend']='true';
+                  }
+                  elseif($last_leave_date=='2024-10-30' && $from_date=='2024-11-04'){
+                    $cut_weekend_leave = 2;
+                    $data['weekend']='true';
+                  }
+                  elseif(($last_leave_date=='2024-11-04' && $from_date=='2024-10-30') || $last_leave_mdate=='2024-11-04' && $from_date=='2024-10-30'){
+                    $cut_weekend_leave = 2; 
+                    $data['weekend']='true';
+                  }
+                  else {
+                      $cut_weekend_leave = 0;  
+                      $data['weekend']='false';
+                  }
+                //   dd($cut_weekend_leave);
+                  if ($this->request->getData("leave_type") == "Casual Leave") {
+                
+                    // Restrict CL if leave dates fall in the next financial year
+                    if ($start_leave > $end_fy || $end_leave > $end_fy) {
+                        $this->Flash->error(__("Casual leave cannot be applied for the new financial year as it is only valid until the current financial year."));
+                    } else {
+                        if ($user['cl'] - $takenLeave['sumCL'] >= ($days_count + $cut_weekend_leave) && $totalPendingLeave <= $user['cl'] - $takenLeave['sumCL']) {
+                            $run = true;
+                        } else {
+                            $this->Flash->error(__("You don't have enough leaves"));
+                        }
+                    }
+                } else if ($this->request->getData("leave_type") == "Paid Leave") {
+
+                    $doj = new FrozenTime($user['doj']);
+                    $sixMonthsAfterDoj = $doj->addMonths(6);
+                    $currentDate = FrozenTime::now();
+                    if ($currentDate < $sixMonthsAfterDoj) {
+                        $this->Flash->error(__("You can't apply paid leave."));
+                    } else {
+                        if ($user['el'] - $takenLeave['sumEL']  >= ($days_count+$cut_weekend_leave) && $totalPendingLeave <= $user['el'] - $takenLeave['sumEL']) {
+                            $run = true;
+                        } else {
+                            $this->Flash->error(__("You Don't have enough leaves"));
+                        }
+                    }
+                } else if ($this->request->getData("leave_type") == "Sick Leave") {
+
+                    if ($user['sl'] - $takenLeave['sumSL']  >= ($days_count+$cut_weekend_leave) && $totalPendingLeave <= $user['sl'] - $takenLeave['sumSL']) {
+                        $run = true;
+                    } else {
+                        $this->Flash->error(__("You Don't have enough leaves"));
+                    }
+                } else if ($this->request->getData("leave_type") == "Half Day") {
+                        // dd($days_count);
+                    if ($days_count == 1) {
+                        $run = true;
+                    } else {
+                        $this->Flash->error(__("You Don't have take two half days at a time."));
+                    }
+                } else if ($this->request->getData("leave_type") == "WFH") {
+                   
+                    $run = true;
+                } else if ($this->request->getData("leave_type") == "comp_off") {
+
+                    if ($user['comp_off'] - $takenLeave['sumComp']  >= $days_count && $totalPendingLeave <= $user['comp_off'] - $takenLeave['sumComp']) {
+                        $run  = true;
+                    } else {
+                        $this->Flash->error(__("You Don't have enough comp_off"));
+                    }
+                } else if ($this->request->getData("leave_type") == "LWP" || $this->request->getData("leave_type") == "Forgot Card" || $this->request->getData("leave_type") == "Short Leave") {
+                    $run = true; 
+                }
+            } else {
+                $this->Flash->error(__("You can't apply previous day leave."));
+            }
+
+            if ($run) {
+                $resources = $this->request->getData('resources');
+                 
+                    $leave = $this->Leaves->patchEntity($leave, $this->request->getData());
+                    $leave->reason = $reason;
+                    $leave->from_date = $from_date;
+                    $leave->to_date = $to_date;
+                    // $leave->wfh =$totalwfh;
+                    $leave->wfh_flag =$wfhtype;
+                    $leave->halfday_type =$halfdaytype;
+                    $leave->resources = json_encode($resources);
+                    $leave->leave_details = 'Applied by: ' . $hrName;
+               
+
+                if ($this->Leaves->save($leave)) {
+
+                    $employee = $this->Users->get($id);
+
+                    $reportingManagerId = $employee->reporting_manager;
+
+                    $applyBy = $user->name;
+                    // $applyBy = $this->request->getSession()->read("user_data")['name'];
+                    // $reportingManagerId = $this->request->getSession()->read("user_data")['reporting_manager'];
+                    $reportingManagerEmial = $this->Users->get($reportingManagerId)->email;
+
+                    $email = $this->Users
+                        ->find()
+                        ->select(['email', 'id'])
+                        ->where([
+                            'id in ' => $resources,
+                            // 'OR' => [
+                            //     'id !=' => $reportingManagerId
+                            // ]
+                        ])
+                        ->toArray();
+
+                    $subject = $this->request->getData('subject');
+                   
+                    $ids=$this->Leaves->find()->select(['id'])->order(['id'=>'desc'])->limit(1)->toarray();
+                    // dd($ids[0]['id']);
+                    $lastid=$ids[0]['id'];
+                    $data['id'] =$lastid;
+                    // dd($data);
+                    $leave = $data['id'];
+                    $leaveById = $this->Leaves->get($leave);
+                    $from_date = date_create((string)$data['from_date']);
+                    $to_date = date_create((string)$data['to_date']);
+
+                    $from_date  = date_format($from_date, "Y-m-d");
+                    $to_date = date_format($to_date, "Y-m-d");
+
+                    $fromDate = date_create((string)$data['from_date']);
+                    $toDate = date_create((string)$data['to_date']);
+                    $year = date_format($fromDate, "Y");
+                    $fromDateCheck = date_format($fromDate, 'm');
+                    $toDateCheck = date_format($toDate, 'm');
+                    $user = $this->Users->get($data['created_by']);
+                    $leaveType =  $data['leave_type'];
+                    // $from_month_date = date_format($leaveById->from_date, "m");
+                    // $from_year_date = date_format($leaveById->from_date, "Y");
+                    $from_month_date = $leaveById->from_date->format('m');
+                    $from_year_date = $leaveById->from_date->format('Y');
+                    $takenLeave = $this->sumOfApprovedLeave($data['created_by']);
+
+                    $leaveCount = $this->getTableLocator()->get('LeaveCount');
+                    $leaveCountInsert = $leaveCount->newEmptyEntity();
+                    $leaveCountInsert->user_id  = $data['created_by'];
+                    $leaveCountInsert->leave_id = $data['id'];
+                    $leaveCountInsert->leave_date =date("Y-m-d", strtotime($data['from_date']));
+                    $date_got = $this->getDateDiff((string)$data['from_date'], (string)$data['to_date']);
+                    if($data['weekend']=='true') {
+                        $extra_weekend_leave = $cut_weekend_leave;
+                    } else {
+                        $extra_weekend_leave = $cut_weekend_leave;
+                    }
+                    
+                    if ($leaveType == "Paid Leave") {
+                        $leaveCountInsert->el = $date_got+$extra_weekend_leave;
+                    } else if ($leaveType == "Casual Leave") {
+                        // dd($leaveCountInsert->cl);
+                        $leaveCountInsert->cl = $date_got+$extra_weekend_leave;
+                    } else if ($leaveType == "Sick Leave") {
+                        $leaveCountInsert->sl = $date_got+$extra_weekend_leave;
+                    } else if ($leaveType == "comp_off") {
+                        $leaveCountInsert->comp_off = $date_got;
+                    } else if ($leaveType == "LWP") {
+                        $leaveCountInsert->lwp = $date_got+$extra_weekend_leave;
+                    } else if ($leaveType == "Half Day") {
+                        $allTypeLeave = [];
+                        if ($user->cl - $takenLeave['sumCL'] >= 0.5+$extra_weekend_leave) {
+                            $allTypeLeave[] = ['cl' => 0.5];
+                            $leaveCountInsert->cl = ($date_got / 2)+$extra_weekend_leave;
+                        } else if ($user->sl - $takenLeave['sumSL'] >= 0.5+$extra_weekend_leave) {
+                            $allTypeLeave[] = ['sl' => 0.5];
+                            $leaveCountInsert->sl = ($date_got / 2)+$extra_weekend_leave;
+                        } else if ($user->el - $takenLeave['sumEL'] >= 0.5+$extra_weekend_leave) {
+                            $allTypeLeave[] = ['el' => 0.5];
+                            $leaveCountInsert->el = ($date_got / 2)+$extra_weekend_leave;
+                        } else if ($user->comp_off - $takenLeave['sumComp'] >= 0.5+$extra_weekend_leave) {
+                            $allTypeLeave[] = ['comp_off' => 0.5];
+                            $leaveCountInsert->el = ($date_got / 2)+$extra_weekend_leave;
+                        } else {
+                            $allTypeLeave[] = ['lwp' => 0.5+$extra_weekend_leave];
+                            $leaveCountInsert->lwp = ($date_got / 2)+$extra_weekend_leave;
+                        }
+                        // // dd($allTypeLeave);
+                        // $cutLeave = json_encode($allTypeLeave);
+                        // // dd($leave->leave_details = $cutLeave);
+                        // $this->Leaves->save($leave);
+                    }
+                    else if($leaveType == "WFH") {
+                        // $leaveDuration = ($date_got / 2)+$extra_weekend_leave; // Convert to 0.5 increments
+                        // dd($leaveDuration);
+                        $leaveDuration = ($date_got / 2);
+    
+                        // Initialize leave count
+                        $leaveCountInsert->cl = 0;
+                        $leaveCountInsert->sl = 0;
+                        $leaveCountInsert->el = 0;
+                        $leaveCountInsert->lwp = 0;
+                       
+                        while ($leaveDuration > 0) {
+                            if ($start_leave > $end_fy || $end_leave > $end_fy) {
+                                if ($leaveDuration >= 0.5) {
+                                    if ($user->sl - $takenLeave['sumSL'] >= 0.5) {
+                                        $leaveCountInsert->sl += 0.5;
+                                        $takenLeave['sumSL'] += 0.5;
+                                        $leaveDuration -= 0.5;
+                                    } 
+                                    // Deduct from Earned Leave
+                                    elseif ($user->el - $takenLeave['sumEL'] >= 0.5) {
+                                        $leaveCountInsert->el += 0.5;
+                                        $takenLeave['sumEL'] += 0.5;
+                                        $leaveDuration -= 0.5;
+                                    } 
+                                    // Deduct from Leave Without Pay
+                                    else {
+                                        $leaveCountInsert->lwp += $leaveDuration; // Remaining duration
+                                        $leaveDuration = 0; // End loop
+                                    }
+                                } else {
+                                    if ($leaveDuration > 0 && $user->sl - $takenLeave['sumSL'] >= $leaveDuration) {
+                                        $leaveCountInsert->sl += $leaveDuration;
+                                        $takenLeave['sumSL'] += $leaveDuration;
+                                        $leaveDuration = 0;
+                                    } elseif ($leaveDuration > 0 && $user->el - $takenLeave['sumEL'] >= $leaveDuration) {
+                                        $leaveCountInsert->el += $leaveDuration;
+                                        $takenLeave['sumEL'] += $leaveDuration;
+                                        $leaveDuration = 0;
+                                    } else {
+                                        $leaveCountInsert->lwp += $leaveDuration; // Remaining duration
+                                        $leaveDuration = 0; // End loop
+                                    }
+                                }
+                            } else {
+                                if ($leaveDuration >= 0.5) {
+                                    // Deduct from Casual Leave
+                                    if ($user->cl - $takenLeave['sumCL'] >= 0.5) {
+                                        $leaveCountInsert->cl += 0.5;
+                                        $takenLeave['sumCL'] += 0.5;
+                                        $leaveDuration -= 0.5;
+                                    } 
+                                    // Deduct from Sick Leave
+                                    elseif ($user->sl - $takenLeave['sumSL'] >= 0.5) {
+                                        $leaveCountInsert->sl += 0.5;
+                                        $takenLeave['sumSL'] += 0.5;
+                                        $leaveDuration -= 0.5;
+                                    } 
+                                    // Deduct from Earned Leave
+                                    elseif ($user->el - $takenLeave['sumEL'] >= 0.5) {
+                                        $leaveCountInsert->el += 0.5;
+                                        $takenLeave['sumEL'] += 0.5;
+                                        $leaveDuration -= 0.5;
+                                    } 
+                                    // Deduct from Leave Without Pay
+                                    else {
+                                        $leaveCountInsert->lwp += $leaveDuration; // Remaining duration
+                                        $leaveDuration = 0; // End loop
+                                    }
+                                } else {
+                                    // Handle remaining leave less than 0.5
+                                    if ($leaveDuration > 0 && $user->cl - $takenLeave['sumCL'] >= $leaveDuration) {
+                                        $leaveCountInsert->cl += $leaveDuration;
+                                        $takenLeave['sumCL'] += $leaveDuration;
+                                        $leaveDuration = 0;
+                                    } elseif ($leaveDuration > 0 && $user->sl - $takenLeave['sumSL'] >= $leaveDuration) {
+                                        $leaveCountInsert->sl += $leaveDuration;
+                                        $takenLeave['sumSL'] += $leaveDuration;
+                                        $leaveDuration = 0;
+                                    } elseif ($leaveDuration > 0 && $user->el - $takenLeave['sumEL'] >= $leaveDuration) {
+                                        $leaveCountInsert->el += $leaveDuration;
+                                        $takenLeave['sumEL'] += $leaveDuration;
+                                        $leaveDuration = 0;
+                                    } else {
+                                        $leaveCountInsert->lwp += $leaveDuration; // Remaining duration
+                                        $leaveDuration = 0; // End loop
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    // dd($leaveCountInsert);
+                   $insert_l = $leaveCount->save($leaveCountInsert);
+
+                   $cut_leave=[];
+                   if($insert_l) {
+                    $cut_leave = ['CL'=>$insert_l->cl,'SL'=>$insert_l->sl,'EL'=>$insert_l->el,'LWP'=>$insert_l->lwp];
+                   }
+                //    dd($cut_leave);
+
+                if ($this->request->getData("leave_type") == "WFH") {
+                    $leaveType = "Work From Home ";
+                  $this->sendApplyLeaveNoticHr($reportingManagerEmial, $leaveType, $subject, $applyBy, $from_date, $to_date, $email,$reason,$cut_leave,$hrId,$hrName);
+                } else {
+                    $leaveType = $this->request->getData('leave_type');
+                   $this->sendApplyLeaveNoticHr($reportingManagerEmial, $leaveType, $subject, $applyBy, $from_date, $to_date, $email,$reason,$cut_leave,$hrId,$hrName);
+                }
+
+                    // $this->leavecheck($data);
+
+                    $this->Flash->success(__('The leave has been saved.'));
+                    // return $this->redirect(['action' => 'index']);
+                    return $this->redirect(['action' => 'hrLeaves']);
+                }
+              
+            }
+            
+            
+        }
+        $this->redirect(
+            ['controller' => 'Leaves', 'action' => 'index']
+        );
+    }
+
+
 }

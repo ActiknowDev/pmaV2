@@ -1563,7 +1563,12 @@ class CompaniesController extends AppController
 
 			$stmtProduct = $conn->execute($pm_amount);
 			$pm_amount = $stmtProduct->fetchAll('assoc');
-			$total_pm_amount=$pm_amount[0]['t_amount'];
+			$total_pm_amount = 0;
+
+			if (!empty($pm_amount)) {
+				$total_pm_amount = $pm_amount[0]['t_amount'];
+			}
+			// $total_pm_amount=$pm_amount[0]['t_amount'];
 				// dd($pm_amount[0]['t_amount']);
 				// dd($total_pm_amount);
 
@@ -2338,7 +2343,7 @@ class CompaniesController extends AppController
 				//calculate total amount from milestone
 				$amount = $overdue = $due = 0;
 				if ($l['milestone_id']) {
-					$query = "SELECT p.amount FROM project_milestones p WHERE p.id IN (" . $l['milestone_id'] . ")";
+					$query = "SELECT p.amount FROM project_milestones p WHERE p.id IN (" . $l['milestone_id'] . ") and deleted = 0";
 					$stmtProduct = $conn->execute($query);
 					$mlist = $stmtProduct->fetchAll('assoc');
 
@@ -2365,13 +2370,40 @@ class CompaniesController extends AppController
 					}
 				}
 
+				// new function
+
+				$pm_amount = "SELECT 
+								SUM(project_milestones.amount) AS t_amount,
+								projects.id AS projId,
+								projects.project_name 
+							FROM project_milestones 
+							LEFT JOIN projects 
+								ON projects.id = project_milestones.project_id 
+							WHERE projects.id = :id 
+								AND project_milestones.deleted = 0";
+
+				$stmtProduct = $conn->execute($pm_amount, [
+					'id' => $l['id']
+				]);
+
+				$pm_amount = $stmtProduct->fetchAll('assoc');
+				// dd($pm_amount[0]['t_amount']);
+
+				$actual_hours = "SELECT sum(user_timesheets.time_used) as time_used FROM `user_timesheets` LEFT JOIN project_milestones ON project_milestones.id=user_timesheets.milestone_id LEFT JOIN projects ON projects.id=project_milestones.project_id WHERE projects.id=".$l['id'];
+				$stmtProduct = $conn->execute($actual_hours);
+				$actual_hours = $stmtProduct->fetchAll('assoc');
+				
+				$allocated_hours = "SELECT sum(project_allocations.time_slot) as time_slot FROM `project_allocations` LEFT JOIN project_milestones ON project_allocations.milestone_id=project_milestones.id LEFT JOIN projects ON project_milestones.project_id=projects.id WHERE projects.id=".$l['id'];
+				$stmtProduct = $conn->execute($allocated_hours);
+				$allocated_hours = $stmtProduct->fetchAll('assoc');
+
 				$p['id'] = $l['id'];
 				$p['project_name'] = $l['project_name'];
 				$p['client_id']    = $l['client_id'];
 				$p['client']    = $l['client_name'];
 				$p['project_manager']    = $l['project_manager'];
 				$p['award']   = date('d F Y', strtotime($l['awarded_on']));
-				$p['due_date'] = date('d F Y', strtotime($l['due_date']));
+				$p['due_date'] = date('d-m-Y', strtotime($l['due_date']));
 				$p['type'] = $l['project_type'];
 				$p['amount'] = $amount;
 				$p['paid'] = $paid;
@@ -2379,6 +2411,14 @@ class CompaniesController extends AppController
 				$p['active'] = $l['active'];
 				$p['overdue'] = $overdue;
 				$p['due'] = $due;
+				$p['pm_amount']=$pm_amount[0]['t_amount'];
+				$p['actual_hours']= round($actual_hours[0]['time_used']);
+				$p['allocated_hours']= round($allocated_hours[0]['time_slot']);
+				if($l['hourly_rate']==0){
+					$p['budget']='Na';
+				} else {
+					$p['budget'] = round($pm_amount[0]['t_amount']/$l['hourly_rate']);
+				}
 
 				$projects[] = $p;
 
@@ -2420,7 +2460,7 @@ class CompaniesController extends AppController
 				//calculate total amount from milestone
 				$amount = $overdue = $due = 0;
 				if ($l['milestone_id']) {
-					$query = "SELECT p.amount FROM project_milestones p WHERE p.id IN (" . $l['milestone_id'] . ")";
+					$query = "SELECT p.amount FROM project_milestones p WHERE p.id IN (" . $l['milestone_id'] . ") and deleted = 0";
 					$stmtProduct = $conn->execute($query);
 					$mlist = $stmtProduct->fetchAll('assoc');
 
@@ -2447,13 +2487,40 @@ class CompaniesController extends AppController
 					}
 				}
 
+				// new function
+
+				$pm_amount = "SELECT 
+								SUM(project_milestones.amount) AS t_amount,
+								projects.id AS projId,
+								projects.project_name 
+							FROM project_milestones 
+							LEFT JOIN projects 
+								ON projects.id = project_milestones.project_id 
+							WHERE projects.id = :id 
+								AND project_milestones.deleted = 0";
+
+				$stmtProduct = $conn->execute($pm_amount, [
+					'id' => $l['id']
+				]);
+
+				$pm_amount = $stmtProduct->fetchAll('assoc');
+				// dd($pm_amount[0]['t_amount']);
+
+				$actual_hours = "SELECT sum(user_timesheets.time_used) as time_used FROM `user_timesheets` LEFT JOIN project_milestones ON project_milestones.id=user_timesheets.milestone_id LEFT JOIN projects ON projects.id=project_milestones.project_id WHERE projects.id=".$l['id'];
+				$stmtProduct = $conn->execute($actual_hours);
+				$actual_hours = $stmtProduct->fetchAll('assoc');
+				
+				$allocated_hours = "SELECT sum(project_allocations.time_slot) as time_slot FROM `project_allocations` LEFT JOIN project_milestones ON project_allocations.milestone_id=project_milestones.id LEFT JOIN projects ON project_milestones.project_id=projects.id WHERE projects.id=".$l['id'];
+				$stmtProduct = $conn->execute($allocated_hours);
+				$allocated_hours = $stmtProduct->fetchAll('assoc');
+
 				$p['id'] = $l['id'];
 				$p['project_name'] = $l['project_name'];
 				$p['client_id']    = $l['client_id'];
 				$p['client']    = $l['client_name'];
 				$p['project_manager']    = $l['project_manager'];
 				$p['award']   = date('d F Y', strtotime($l['awarded_on']));
-				$p['due_date'] = date('d F Y', strtotime($l['due_date']));
+				$p['due_date'] = date('d-m-Y', strtotime($l['due_date']));
 				$p['type'] = $l['project_type'];
 				$p['amount'] = $amount;
 				$p['paid'] = $paid;
@@ -2461,6 +2528,14 @@ class CompaniesController extends AppController
 				$p['active'] = $l['active'];
 				$p['overdue'] = $overdue;
 				$p['due'] = $due;
+				$p['pm_amount']=$pm_amount[0]['t_amount'];
+				$p['actual_hours']= round($actual_hours[0]['time_used']);
+				$p['allocated_hours']= round($allocated_hours[0]['time_slot']);
+				if($l['hourly_rate']==0){
+					$p['budget']='Na';
+				} else {
+					$p['budget'] = round($pm_amount[0]['t_amount']/$l['hourly_rate']);
+				}
 
 				$projects[] = $p;
 

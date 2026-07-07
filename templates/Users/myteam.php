@@ -151,7 +151,7 @@
                     </div> 
                 </div>
                 <div class="col-md-4 offset-md-4">
-                    <?=$this->form->select("team_filter",$team_select_data,["class"=>"form-control","id"=>"team_filter","empty"=>["all"=>"All"]]);?>
+                    <?=$this->Form->select("team_filter",$team_select_data,["class"=>"form-control","id"=>"team_filter","empty"=>["all"=>"All"]]);?>
                     <!-- <select  id="" class="form-control">
                         <option value="all">All</option>
                         <option value="">Project Management App</option>

@@ -121,6 +121,15 @@ $userSession = $session->read('data');
                             ]); ?>
                         </li>
 
+                        <?php if (in_array(12, $userSession['role_name'])) { ?>
+                            <li>
+                                <?= $this->Html->link('Apply Leave', [
+                                    'controller' => 'Leaves',
+                                    'action' => 'hrLeaves'
+                                ]); ?>
+                            </li>
+                        <?php } ?>
+
                     </ul>
                 </div>
             </div>
