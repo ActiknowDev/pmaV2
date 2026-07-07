@@ -336,7 +336,7 @@ class UsersController extends AppController
 
 		$result = [];
 		foreach ($userResult as $col) {
-			if ($col['Field'] != 'id' && $col['Field'] != 'password' && $col['Field'] != 'token' && $col['Field'] != 'company_id' && $col['Field'] != 'company_name' && $col['Field'] != 'company_website_link' && $col['Field'] != 'contact_person_name' && $col['Field'] != 'country_code' && $col['Field'] != 'total_cl' && $col['Field'] != 'total_sl' && $col['Field'] != 'point_of_contact' && $col['Field'] != 'role_type' && $col['Field'] != 'teamid'  && $col['Field'] != 'user_image' && $col['Field'] != 'team' && $col['Field'] != 'client_name' && $col['Field'] != 'role_name' && $col['Field'] != 'role' && $col['Field'] != 'created' && $col['Field'] != 'modified' && $col['Field'] != 'deleted' && $col['Field'] != 'location' && $col['Field'] != 'pf_no' && $col['Field'] != 'emp_type' && $col['Field'] != 'dol') {
+			if ($col['Field'] != 'id' && $col['Field'] != 'password' && $col['Field'] != 'token' && $col['Field'] != 'company_id' && $col['Field'] != 'company_name' && $col['Field'] != 'company_website_link' && $col['Field'] != 'contact_person_name' && $col['Field'] != 'country_code' && $col['Field'] != 'total_cl' && $col['Field'] != 'total_sl' && $col['Field'] != 'point_of_contact' && $col['Field'] != 'role_type' && $col['Field'] != 'teamid'  && $col['Field'] != 'user_image' && $col['Field'] != 'team' && $col['Field'] != 'client_name' && $col['Field'] != 'role' && $col['Field'] != 'created' && $col['Field'] != 'modified' && $col['Field'] != 'deleted' && $col['Field'] != 'location' && $col['Field'] != 'pf_no' && $col['Field'] != 'emp_type' && $col['Field'] != 'dol') {
 				$result[] = $col['Field'];
 			}
 		}
@@ -813,18 +813,25 @@ class UsersController extends AppController
 					$data['mtime'] = $data['tutime'] = $data['wtime'] = $data['thtime'] = $data['ftime'] = $data['stime'] = "";
 					$data['mnotes'] = $data['tunotes'] = $data['wnotes'] = $data['thnotes'] = $data['fnotes'] = $data['snotes'] = "";
 
-					$n = date('N') - 1;
-					$data['monday'] = (date('N') == 1) ? date('Y-m-d') : date('Y-m-d', strtotime('-' . $n . 'days'));
-					$n = date('N') - 2;
-					$data['tuesday'] = (date('N') == 2) ? date('Y-m-d') : date('Y-m-d', strtotime('-' . $n . 'days'));
-					$n = date('N') - 3;
-					$data['wednesday'] = (date('N') == 3) ? date('Y-m-d') : date('Y-m-d', strtotime('-' . $n . 'days'));
-					$n = date('N') - 4;
-					$data['thursday'] = (date('N') == 4) ? date('Y-m-d') : date('Y-m-d', strtotime('-' . $n . 'days'));
-					$n = date('N') - 5;
-					$data['friday'] = (date('N') == 5) ? date('Y-m-d') : date('Y-m-d', strtotime('-' . $n . 'days'));
-					$n = date('N') - 6;
-					$data['saturday'] = (date('N') == 6) ? date('Y-m-d') : date('Y-m-d', strtotime('-' . $n . 'days'));
+					// $n = date('N') - 1;
+					// $data['monday'] = (date('N') == 1) ? date('Y-m-d') : date('Y-m-d', strtotime('-' . $n . 'days'));
+					// $n = date('N') - 2;
+					// $data['tuesday'] = (date('N') == 2) ? date('Y-m-d') : date('Y-m-d', strtotime('-' . $n . 'days'));
+					// $n = date('N') - 3;
+					// $data['wednesday'] = (date('N') == 3) ? date('Y-m-d') : date('Y-m-d', strtotime('-' . $n . 'days'));
+					// $n = date('N') - 4;
+					// $data['thursday'] = (date('N') == 4) ? date('Y-m-d') : date('Y-m-d', strtotime('-' . $n . 'days'));
+					// $n = date('N') - 5;
+					// $data['friday'] = (date('N') == 5) ? date('Y-m-d') : date('Y-m-d', strtotime('-' . $n . 'days'));
+					// $n = date('N') - 6;
+					// $data['saturday'] = (date('N') == 6) ? date('Y-m-d') : date('Y-m-d', strtotime('-' . $n . 'days'));
+
+					$data['monday']    = $weekStart;
+					$data['tuesday']   = date('Y-m-d', strtotime($weekStart . ' +1 day'));
+					$data['wednesday'] = date('Y-m-d', strtotime($weekStart . ' +2 day'));
+					$data['thursday']  = date('Y-m-d', strtotime($weekStart . ' +3 day'));
+					$data['friday']    = date('Y-m-d', strtotime($weekStart . ' +4 day'));
+					$data['saturday']  = date('Y-m-d', strtotime($weekStart . ' +5 day'));
 
 					$query = "SELECT notes,time_used FROM user_timesheets WHERE milestone_id=" . $m['id'] . " AND resource_id=" . $user_id . " AND work_date='" . $data['monday'] . "'";
 					$stmtProduct = $conn->execute($query);
@@ -923,6 +930,260 @@ class UsersController extends AppController
 
 		$this->set(compact('projects', 'pdate', 'ndate'));
 	}
+
+	// 	public function timesheet($weekDate = null)
+	// {
+	// 	$this->Authorization->skipAuthorization();
+	// 	$this->viewBuilder()->setLayout('default_new');
+
+	// 	$conn = ConnectionManager::get('default');
+
+	// 	$session = new \Cake\Http\Session();
+	// 	$userSession = $session->read('data');
+
+	// 	$user_id = $userSession['id'];
+
+	// 	$this->request->getSession()->write('page', 'timesheet');
+
+	// 	/*
+	// 	|--------------------------------------------------------------------------
+	// 	| SELECTED WEEK LOGIC
+	// 	|--------------------------------------------------------------------------
+	// 	*/
+
+	// 	// Current date if no week selected
+	// 	$selectedDate = !empty($weekDate)
+	// 		? date('Y-m-d', strtotime($weekDate))
+	// 		: date('Y-m-d');
+
+	// 	// Monday of selected week
+	// 	$weekStart = date('Y-m-d', strtotime('monday this week', strtotime($selectedDate)));
+
+	// 	// Saturday of selected week
+	// 	$weekEnd = date('Y-m-d', strtotime($weekStart . ' +5 days'));
+
+	// 	// Prev / Next navigation
+	// 	$pdate = date('Y-m-d', strtotime($weekStart . ' -7 days'));
+	// 	$ndate = date('Y-m-d', strtotime($weekStart . ' +7 days'));
+
+	// 	/*
+	// 	|--------------------------------------------------------------------------
+	// 	| HEADER DATES
+	// 	|--------------------------------------------------------------------------
+	// 	*/
+
+	// 	$headerDates = [
+	// 		'monday' => date('D d M', strtotime($weekStart)),
+	// 		'tuesday' => date('D d M', strtotime($weekStart . ' +1 day')),
+	// 		'wednesday' => date('D d M', strtotime($weekStart . ' +2 day')),
+	// 		'thursday' => date('D d M', strtotime($weekStart . ' +3 day')),
+	// 		'friday' => date('D d M', strtotime($weekStart . ' +4 day')),
+	// 		'saturday' => date('D d M', strtotime($weekStart . ' +5 day')),
+	// 	];
+
+	// 	/*
+	// 	|--------------------------------------------------------------------------
+	// 	| PROJECTS
+	// 	|--------------------------------------------------------------------------
+	// 	*/
+
+	// 	$query = "
+	// 		SELECT 
+	// 			p.id,
+	// 			p.project_name,
+	// 			p.milestone_id,
+	// 			u.client_name
+	// 		FROM projects p
+	// 		JOIN users u ON p.client_id = u.id
+	// 		WHERE p.deleted = 1
+	// 		AND p.status != 'Completed'
+	// 		AND p.active = 1
+	// 		AND FIND_IN_SET(" . $user_id . ", resources) != 0
+	// 	";
+
+	// 	$stmtProduct = $conn->execute($query);
+
+	// 	$list = $stmtProduct->fetchAll('assoc');
+
+	// 	$projects = [];
+
+	// 	// Month filter
+	// 	$startMonth = date('m', strtotime($weekStart));
+	// 	$endMonth = date('m', strtotime($weekEnd));
+
+	// 	foreach ($list as $l) {
+
+	// 		$p = [];
+
+	// 		$p['id'] = $l['id'];
+	// 		$p['project_name'] = $l['project_name'];
+	// 		$p['client_name'] = $l['client_name'];
+	// 		$p['miles'] = [];
+
+	// 		if (!empty($l['milestone_id'])) {
+
+	// 			$query = "
+	// 				SELECT 
+	// 					p.id,
+	// 					p.title,
+	// 					p.due_date,
+	// 					pr.client_id
+	// 				FROM project_milestones p
+	// 				JOIN projects pr ON p.project_id = pr.id
+	// 				WHERE p.id IN (" . $l['milestone_id'] . ")
+	// 				AND p.deleted = 0
+	// 				AND p.status != 'Completed'
+	// 				AND (
+	// 					(
+	// 						pr.client_id != '144'
+	// 						AND (
+	// 							MONTH(p.due_date) = " . $startMonth . "
+	// 							OR MONTH(p.due_date) = " . $endMonth . "
+	// 						)
+	// 					)
+	// 					OR pr.client_id = '144'
+	// 				)
+	// 			";
+
+	// 			$stmtProduct = $conn->execute($query);
+
+	// 			$mlist = $stmtProduct->fetchAll('assoc');
+
+	// 			foreach ($mlist as $m) {
+
+	// 				$data = [];
+
+	// 				$data['id'] = $m['id'];
+	// 				$data['title'] = $m['title'];
+
+	// 				/*
+	// 				|--------------------------------------------------------------------------
+	// 				| ALLOCATED HOURS
+	// 				|--------------------------------------------------------------------------
+	// 				*/
+
+	// 				$query = "
+	// 					SELECT time_slot
+	// 					FROM project_allocations
+	// 					WHERE milestone_id = " . $m['id'] . "
+	// 					AND resource_id = " . $user_id;
+
+	// 				$stmtProduct = $conn->execute($query);
+
+	// 				$allot = $stmtProduct->fetchAll('assoc');
+
+	// 				$data['alot'] = (count($allot) > 0)
+	// 					? $allot[0]['time_slot']
+	// 					: 0;
+
+	// 				/*
+	// 				|--------------------------------------------------------------------------
+	// 				| USED HOURS
+	// 				|--------------------------------------------------------------------------
+	// 				*/
+
+	// 				$query = "
+	// 					SELECT IFNULL(SUM(time_used),0) as time_used
+	// 					FROM user_timesheets
+	// 					WHERE milestone_id = " . $m['id'] . "
+	// 					AND resource_id = " . $user_id;
+
+	// 				$stmtProduct = $conn->execute($query);
+
+	// 				$used = $stmtProduct->fetchAll('assoc');
+
+	// 				$data['used'] = (count($used) > 0)
+	// 					? $used[0]['time_used']
+	// 					: 0;
+
+	// 				/*
+	// 				|--------------------------------------------------------------------------
+	// 				| WEEK DAYS
+	// 				|--------------------------------------------------------------------------
+	// 				*/
+
+	// 				$data['monday'] = date('Y-m-d', strtotime($weekStart));
+	// 				$data['tuesday'] = date('Y-m-d', strtotime($weekStart . ' +1 day'));
+	// 				$data['wednesday'] = date('Y-m-d', strtotime($weekStart . ' +2 day'));
+	// 				$data['thursday'] = date('Y-m-d', strtotime($weekStart . ' +3 day'));
+	// 				$data['friday'] = date('Y-m-d', strtotime($weekStart . ' +4 day'));
+	// 				$data['saturday'] = date('Y-m-d', strtotime($weekStart . ' +5 day'));
+
+	// 				/*
+	// 				|--------------------------------------------------------------------------
+	// 				| DEFAULT VALUES
+	// 				|--------------------------------------------------------------------------
+	// 				*/
+
+	// 				$data['mtime'] = "";
+	// 				$data['tutime'] = "";
+	// 				$data['wtime'] = "";
+	// 				$data['thtime'] = "";
+	// 				$data['ftime'] = "";
+	// 				$data['stime'] = "";
+
+	// 				$data['mnotes'] = "";
+	// 				$data['tunotes'] = "";
+	// 				$data['wnotes'] = "";
+	// 				$data['thnotes'] = "";
+	// 				$data['fnotes'] = "";
+	// 				$data['snotes'] = "";
+
+	// 				/*
+	// 				|--------------------------------------------------------------------------
+	// 				| FETCH DAILY DATA
+	// 				|--------------------------------------------------------------------------
+	// 				*/
+
+	// 				$days = [
+	// 					'monday' => ['time' => 'mtime', 'note' => 'mnotes'],
+	// 					'tuesday' => ['time' => 'tutime', 'note' => 'tunotes'],
+	// 					'wednesday' => ['time' => 'wtime', 'note' => 'wnotes'],
+	// 					'thursday' => ['time' => 'thtime', 'note' => 'thnotes'],
+	// 					'friday' => ['time' => 'ftime', 'note' => 'fnotes'],
+	// 					'saturday' => ['time' => 'stime', 'note' => 'snotes'],
+	// 				];
+
+	// 				foreach ($days as $dayKey => $fields) {
+
+	// 					$workDate = $data[$dayKey];
+
+	// 					$query = "
+	// 						SELECT notes, time_used
+	// 						FROM user_timesheets
+	// 						WHERE milestone_id = " . $m['id'] . "
+	// 						AND resource_id = " . $user_id . "
+	// 						AND work_date = '" . $workDate . "'
+	// 					";
+
+	// 					$stmtProduct = $conn->execute($query);
+
+	// 					$result = $stmtProduct->fetchAll('assoc');
+
+	// 					if (count($result) > 0) {
+
+	// 						$data[$fields['time']] = $result[0]['time_used'];
+
+	// 						$data[$fields['note']] = $result[0]['notes'];
+	// 					}
+	// 				}
+
+	// 				$p['miles'][] = $data;
+	// 			}
+	// 		}
+
+	// 		$projects[] = $p;
+	// 	}
+
+	// 	$this->set(compact(
+	// 		'projects',
+	// 		'pdate',
+	// 		'ndate',
+	// 		'weekStart',
+	// 		'weekEnd',
+	// 		'headerDates'
+	// 	));
+	// }
 
 
 	public function timesheetReport($month=null,$year=null) {
@@ -1085,6 +1346,7 @@ class UsersController extends AppController
 		// $year=date('Y');
 	$this->Authorization->skipAuthorization();
 	// $this->viewBuilder()->setLayout('default_new');
+	$this->viewBuilder()->disableAutoLayout();
 	$conn = ConnectionManager::get('default');
 	$session = new \Cake\Http\Session();
 	$userSession = $session->read('data');
@@ -1957,127 +2219,83 @@ class UsersController extends AppController
 
 	// 	$this->set(compact("project_manager", "my_team_data", "resource_arr", "edit_res_arr", 'pdate', 'ndate', "project_user", "data", "role_type_glob", "team_select_data"));
 	// }
-
 	public function myteam($value = null, $date = null)
-	{
+	{ 
 		$this->Authorization->skipAuthorization();
 		$this->viewBuilder()->setLayout('default_new');
-
 		$conn = ConnectionManager::get('default');
 
 		$session = new \Cake\Http\Session();
 
 		$userSession = $session->read('user_data');
 		$userSes = $session->read('data');
-
 		$user_id = $userSession['id'];
-
 		// validation for valid user
 		$roleArray = $userSes['role_name'];
 		$validList = [4];
-		$this->routeValidation($roleArray, $validList);
-
+		$this->routeValidation($roleArray,$validList);
 		$role_type_glob = $userSession['role_type'];
-
 		$this->MyTeams = $this->fetchTable("MyTeams");
 		$this->MyTeamResources = $this->fetchTable("MyTeamResources");
-		$this->Users = $this->fetchTable("Users");
-
-		/*
-		|--------------------------------------------------------------------------
-		| MY TEAM DATA
-		|--------------------------------------------------------------------------
-		*/
 
 		if ($role_type_glob == 2) {
 
-			$my_team_data = $this->MyTeams->find()
-				->contain([
-					"MyTeamResources",
-					"MyTeamResources.Resource",
-					"TechLeadData",
-					"ProjectManagerData"
-				])
-				->toArray();
-
+			$my_team_data = $this->MyTeams->find("all")->contain(["MyTeamResources", "MyTeamResources.Resource", "TechLeadData", "ProjectManagerData"])->toArray();
 		} else {
 
-			$my_team_data = $this->MyTeams->find()
-				->contain([
-					"MyTeamResources",
-					"MyTeamResources.Resource",
-					"TechLeadData",
-					"ProjectManagerData"
-				])
-				->where([
+			$my_team_data = $this->MyTeams->find("all", [
+				"contain" => ["MyTeamResources", "MyTeamResources.Resource", "TechLeadData", "ProjectManagerData"],
+				"conditions" => [
 					"OR" => [
 						"tech_lead" => $user_id,
 						"project_manager" => $user_id
 					]
-				])
-				->toArray();
+				]
+
+			])->toArray();
 		}
 
-		/*
-		|--------------------------------------------------------------------------
-		| ASSIGNED USER IDS
-		|--------------------------------------------------------------------------
-		*/
 
-		$assigned_user_id = $this->MyTeamResources->find()
-			->select(['resid'])
-			->where([
-				'resid IS NOT' => null
-			])
-			->all()
-			->extract('resid')
-			->toArray();
+		$assigned_user_id = $this->MyTeamResources->find("list", [
+			"valueField" => "resid"
+		])->toArray();
 
-		/*
-		|--------------------------------------------------------------------------
-		| MY TEAM RESOURCE IDS
-		|--------------------------------------------------------------------------
-		*/
+
+		// $my_team_res_ids = $this->MyTeamResources->find("list", [
+		// 	"contain" => ["MyTeams"],
+		// 	"conditions" => [
+		// 		"OR" => [
+		// 			"tech_lead" => $user_id,
+		// 			"project_manager" => $user_id
+		// 		]
+		// 	],
+		// 	"valueField" => "resid",
+		// 	"select" => ["resid"]
+		// ])->toArray();
 
 		$my_team_res_ids = $this->MyTeamResources->find()
-			->contain(["MyTeams"])
-			->select(['resid'])
+			->contain(['MyTeams'])
 			->where([
-				"OR" => [
-					"tech_lead" => $user_id,
-					"project_manager" => $user_id
-				],
-				'resid IS NOT' => null
+				'OR' => [
+					'MyTeams.tech_lead' => $user_id,
+					'MyTeams.project_manager' => $user_id
+				]
 			])
+			->select(['resid'])
 			->all()
 			->extract('resid')
-			->toArray();
+			->toList();
+		$project_manager = $this->Users->find("list", [
+			"conditions" => ["status" => 1, "role" => 3, "deleted" => 1],
+			"select" => ["id", "name"],
+			"order" => ["name" => "ASC"],
+			"valueField" => "name",
+			"keyField" => "id",
+			"order" => [
+				"name" => "ASC"
+			]
+		])->toArray();
 
-		/*
-		|--------------------------------------------------------------------------
-		| PROJECT MANAGER LIST
-		|--------------------------------------------------------------------------
-		*/
-
-		$project_manager = $this->Users->find('list', [
-			'keyField' => 'id',
-			'valueField' => 'name'
-		])
-		->where([
-			"status" => 1,
-			"role" => 3,
-			"deleted" => 1
-		])
-		->order([
-			"name" => "ASC"
-		])
-		->toArray();
-
-		/*
-		|--------------------------------------------------------------------------
-		| RESOURCE ARRAY
-		|--------------------------------------------------------------------------
-		*/
 
 		$res_arr_cond = [
 			"status" => 1,
@@ -2086,171 +2304,157 @@ class UsersController extends AppController
 		];
 
 		if (!empty($assigned_user_id)) {
-			$res_arr_cond["id NOT IN"] = $assigned_user_id;
+
+			$res_arr_cond["ID NOT IN"] = $assigned_user_id;
 		}
 
-		$resource_arr = $this->Users->find('list', [
-			'keyField' => 'id',
-			'valueField' => 'name'
-		])
-		->where($res_arr_cond)
-		->order([
-			"name" => "ASC"
-		])
-		->toArray();
+		$resource_arr = $this->Users->find("list", [
+			"valueField" => "name",
+			"keyField" => "id",
+			'conditions' => $res_arr_cond,
+			"select" => [
+				"id", "name"
+			],
+			"order" => [
+				"name" => "ASC"
+			]
+		])->toArray();
 
-		/*
-		|--------------------------------------------------------------------------
-		| EDIT RESOURCE ARRAY
-		|--------------------------------------------------------------------------
-		*/
-
-		$edit_or_cond = [];
-
-		if (!empty($my_team_res_ids)) {
-			$edit_or_cond[] = [
-				"id IN" => $my_team_res_ids
-			];
-		}
-
-		if (!empty($assigned_user_id)) {
-			$edit_or_cond[] = [
-				"id NOT IN" => $assigned_user_id
-			];
-		}
-
-		$edit_res_conditions = [
+		$edit_or_cond = [
 			"status" => 1,
 			"role" => 3,
 			"deleted" => 1
 		];
 
-		if (!empty($edit_or_cond)) {
-			$edit_res_conditions['OR'] = $edit_or_cond;
+
+		if ($role_type_glob != 2) {
+
+			if (!empty($my_team_res_ids)) {
+
+				$edit_or_cond["ID IN"] = $my_team_res_ids;
+			}
+
+			if (!empty($assigned_user_id)) {
+
+
+				$edit_or_cond["ID NOT IN"] = $assigned_user_id;
+			}
 		}
 
-		$edit_res_arr = $this->Users->find('list', [
-			'keyField' => 'id',
-			'valueField' => 'name'
-		])
-		->where($edit_res_conditions)
-		->order([
-			"name" => "ASC"
-		])
-		->toArray();
-
-		/*
-		|--------------------------------------------------------------------------
-		| DATE SECTION
-		|--------------------------------------------------------------------------
-		*/
+		$edit_res_arr = $this->Users->find("list", [
+			"valueField" => "name",
+			"keyField" => "id",
+			'conditions' => [
+				"status" => 1,
+				"role" => 3,
+				"deleted" => 1,
+				"or" => $edit_or_cond
+			],
+			"select" => [
+				"id", "name"
+			],
+			"order" => [
+				"name" => "ASC"
+			]
+		])->toArray();
 
 		if ($date == null) {
 
-			$n = date('N') - 1;
-			$data['first'] = (date('N') == 1)
-				? date('Y-m-d')
-				: date('Y-m-d', strtotime('-' . $n . 'days'));
+		  // Current week Monday
+			$monday = strtotime('monday this week');
 
-			$n = date('N') - 2;
-			$data['second'] = (date('N') == 2)
-				? date('Y-m-d')
-				: date('Y-m-d', strtotime('-' . $n . 'days'));
+			$data['first']  = date('Y-m-d', strtotime('+0 day', $monday));
+			$data['second'] = date('Y-m-d', strtotime('+1 day', $monday));
+			$data['third']  = date('Y-m-d', strtotime('+2 day', $monday));
+			$data['fourth'] = date('Y-m-d', strtotime('+3 day', $monday));
+			$data['fifth']  = date('Y-m-d', strtotime('+4 day', $monday));
+			$data['sixth']  = date('Y-m-d', strtotime('+5 day', $monday));
 
-			$n = date('N') - 3;
-			$data['third'] = (date('N') == 3)
-				? date('Y-m-d')
-				: date('Y-m-d', strtotime('-' . $n . 'days'));
+			// Previous week
+			$pdate = date('Y-m-d', strtotime('-1 week', $monday));
 
-			$n = date('N') - 4;
-			$data['fourth'] = (date('N') == 4)
-				? date('Y-m-d')
-				: date('Y-m-d', strtotime('-' . $n . 'days'));
+			// Next week
+			$ndate = date('Y-m-d', strtotime('+1 week', $monday));
 
-			$n = date('N') - 5;
-			$data['fifth'] = (date('N') == 5)
-				? date('Y-m-d')
-				: date('Y-m-d', strtotime('-' . $n . 'days'));
+			// $n = date('N') - 1;
+			// $data['first'] = (date('N') == 1) ? date('Y-m-d') : date('Y-m-d', strtotime('-' . $n . 'days'));
+			// $n = date('N') - 2;
+			// $data['second'] = (date('N') == 2) ? date('Y-m-d') : date('Y-m-d', strtotime('-' . $n . 'days'));
+			// $n = date('N') - 3;
+			// $data['third'] = (date('N') == 3) ? date('Y-m-d') : date('Y-m-d', strtotime('-' . $n . 'days'));
+			// $n = date('N') - 4;
+			// $data['fourth'] = (date('N') == 4) ? date('Y-m-d') : date('Y-m-d', strtotime('-' . $n . 'days'));
+			// $n = date('N') - 5;
+			// $data['fifth'] = (date('N') == 5) ? date('Y-m-d') : date('Y-m-d', strtotime('-' . $n . 'days'));
+			// $n = date('N') - 6;
+			// $data['sixth'] = (date('N') == 6) ? date('Y-m-d') : date('Y-m-d', strtotime('-' . $n . 'days'));
 
-			$n = date('N') - 6;
-			$data['sixth'] = (date('N') == 6)
-				? date('Y-m-d')
-				: date('Y-m-d', strtotime('-' . $n . 'days'));
 
-			$pdate = date('Y-m-d', strtotime('last saturday'));
-			$ndate = date('Y-m-d', strtotime('next monday'));
-
-		} else {
+			// $pdate = date('Y-m-d', strtotime('last saturday'));
+			// $ndate = date('Y-m-d', strtotime('next monday'));
+		} else if ($date != null && $value != null) {
 
 			if ($value == "prev") {
 
-				$data['first'] = date('Y-m-d', strtotime('-5 days', strtotime($date)));
-				$data['second'] = date('Y-m-d', strtotime('-4 days', strtotime($date)));
-				$data['third'] = date('Y-m-d', strtotime('-3 days', strtotime($date)));
-				$data['fourth'] = date('Y-m-d', strtotime('-2 days', strtotime($date)));
-				$data['fifth'] = date('Y-m-d', strtotime('-1 days', strtotime($date)));
-				$data['sixth'] = $date;
 
-			} else {
+				$data['first'] = date('Y-m-d', strtotime('-5 days', strtotime($date)));
+
+				$data['second'] = date('Y-m-d', strtotime('-4 days', strtotime($date)));
+
+				$data['third'] = date('Y-m-d', strtotime('-3 days', strtotime($date)));
+
+				$data['fourth'] = date('Y-m-d', strtotime('-2 days', strtotime($date)));
+
+				$data['fifth'] = date('Y-m-d', strtotime('-1 days', strtotime($date)));
+
+				$data['sixth'] = $date;
+			} else if ($value == "next") {
 
 				$data['first'] = $date;
+
 				$data['second'] = date('Y-m-d', strtotime('+1 days', strtotime($date)));
+
 				$data['third'] = date('Y-m-d', strtotime('+2 days', strtotime($date)));
+
 				$data['fourth'] = date('Y-m-d', strtotime('+3 days', strtotime($date)));
+
 				$data['fifth'] = date('Y-m-d', strtotime('+4 days', strtotime($date)));
-				$data['sixth'] = date('Y-m-d', strtotime('+5 days', strtotime($date)));
+
+				$data['sixth'] = date('Y-m-d', strtotime('+5 days', strtotime($date)));;
 			}
+
 
 			$pdate = date('Y-m-d', strtotime('last saturday', strtotime($date)));
 			$ndate = date('Y-m-d', strtotime('next monday', strtotime($date)));
 		}
 
-		/*
-		|--------------------------------------------------------------------------
-		| TEAM CONDITIONS
-		|--------------------------------------------------------------------------
-		*/
 
 		$conditions_arr = [];
 
 		if ($userSession["role_type"] != 2) {
 
 			$conditions_arr = [
+
 				"OR" => [
 					"MyTeams.tech_lead" => $user_id,
 					"MyTeams.project_manager" => $user_id
 				]
+
 			];
 		}
-
-		/*
-		|--------------------------------------------------------------------------
-		| TEAM SELECT DATA
-		|--------------------------------------------------------------------------
-		*/
-
-		$team_select_data = $this->MyTeams->find('list', [
-			'keyField' => 'id',
-			'valueField' => 'team_name'
-		])
-		->where($conditions_arr)
-		->toArray();
-
-		/*
-		|--------------------------------------------------------------------------
-		| TEAM IDS
-		|--------------------------------------------------------------------------
-		*/
-
-		$team_id_get = $this->MyTeams->find()
-			->select(['id'])
-			->where($conditions_arr)
-			->all()
-			->extract('id')
-			->filter(function ($id) {
-				return !empty($id);
-			})
-			->toList();
+		$team_select_data = $this->MyTeams->find("list", [
+			"valueField" => "team_name",
+			"keyField" => "id",
+			"conditions" => $conditions_arr
+		])->toArray();
+		// $team_id_get = $this->MyTeams->find("list", [
+		// 	"valueField" => "id",
+		// 	"conditions" => $conditions_arr
+		// ])->toList();
+		$team_id_get = $this->MyTeams->find("list", [
+			"valueField" => "id",
+			"conditions" => $conditions_arr
+		])->toArray();
 
 		$condition_array = [];
 
@@ -2258,168 +2462,120 @@ class UsersController extends AppController
 			$condition_array["id IN"] = $team_id_get;
 		}
 
-		/*
-		|--------------------------------------------------------------------------
-		| TECH LEAD IDS
-		|--------------------------------------------------------------------------
-		*/
+		// $tech_lead_arr = $this->MyTeams->find("list", [
+		// 	"valueField" => "tech_lead",
+		// 	"conditions" => $condition_array
+		// ])->toList();
 
-		$tech_lead_arr = $this->MyTeams->find()
-			->select(['tech_lead'])
-			->where($condition_array)
-			->all()
-			->extract('tech_lead')
-			->filter(function ($id) {
-				return !empty($id);
-			})
-			->toList();
+		// $project_manager_list = $this->MyTeams->find("list", [
+		// 	"valueField" => "project_manager",
+		// 	"conditions" => $condition_array
+		// ])->toList();
+		$tech_lead_arr = $this->MyTeams->find("list", [
+			"valueField" => "tech_lead",
+			"conditions" => $condition_array
+		])->toArray();
 
-		/*
-		|--------------------------------------------------------------------------
-		| PROJECT MANAGER IDS
-		|--------------------------------------------------------------------------
-		*/
-
-		$project_manager_list = $this->MyTeams->find()
-			->select(['project_manager'])
-			->where($condition_array)
-			->all()
-			->extract('project_manager')
-			->filter(function ($id) {
-				return !empty($id);
-			})
-			->toList();
-
-		/*
-		|--------------------------------------------------------------------------
-		| MANAGER USERS
-		|--------------------------------------------------------------------------
-		*/
+		$project_manager_list = $this->MyTeams->find("list", [
+			"valueField" => "project_manager",
+			"conditions" => $condition_array
+		])->toArray();
 
 		if (!empty($team_id_get)) {
 
-			$query = "SELECT users.* 
-					FROM users 
-					WHERE (
-							users.id IN (
-								SELECT resid 
-								FROM my_team_resources 
-								WHERE my_team_id IN (" . implode(',', $team_id_get) . ")
-							)";
-
-			if (!empty($tech_lead_arr)) {
-				$query .= " OR users.id IN (" . implode(",", $tech_lead_arr) . ")";
-			}
-
-			if (!empty($project_manager_list)) {
-				$query .= " OR users.id IN (" . implode(",", $project_manager_list) . ")";
-			}
-
-			$query .= ") 
-					AND users.status = 1 
-					AND users.deleted = 1";
+			$query = "SELECT users.* from users where (users.id IN (select resid from my_team_resources where  my_team_id IN (" . implode(',', $team_id_get) . ") ) OR users.id IN (" . implode(",", $tech_lead_arr) . ") OR users.id IN (" . implode(",", $project_manager_list) . ")) AND users.status=1 AND users.deleted=1 ";
 
 			$stmtUsers2 = $conn->execute($query);
-			$Manager_users = $stmtUsers2->fetchAll('assoc');
-
+			$Manager_users = $stmtUsers2->fetchAll("assoc");
 		} else {
 
 			$Manager_users = [];
 		}
 
-		/*
-		|--------------------------------------------------------------------------
-		| PROJECT USER DATA
-		|--------------------------------------------------------------------------
-		*/
-
 		$project_user = [];
-
 		foreach ($Manager_users as $key) {
-
-			$p = [];
-
 			$p['id'] = $key['id'];
 			$p['name'] = $key['name'];
-			$p['teamid'] = $key['teamid'] ?? '';
-			$p['last_login'] = $key['last_login'] ?? '';
-			$p['projects'] = [];
+			$p["teamid"] = $key["teamid"];
+			$p["last_login"] = $key["last_login"];
+			$p['projects'] = array();
 
-			$query = "SELECT 
-						p.id,
-						p.project_name,
-						p.milestone_id,
-						u.client_name
-					FROM projects p
-					JOIN users u ON p.client_id = u.id
-					WHERE p.deleted = 1
-					AND p.status != 'Completed'
-					AND (
-							FIND_IN_SET(" . $key['id'] . ", resources) != 0
-							OR project_manager_id = " . $key['id'] . "
-							OR tech_lead_id = " . $key['id'] . "
-							OR bd_id = " . $key['id'] . "
-					)";
-
+			$query = "SELECT p.id,p.project_name,p.milestone_id,u.client_name FROM projects p JOIN users u ON p.client_id=u.id WHERE p.deleted=1 AND p.status != 'Completed' AND ((FIND_IN_SET(" . $key['id'] . ",resources)!=0) OR (project_manager_id=" . $key['id'] . ") OR (tech_lead_id=" . $key['id'] . ") OR (bd_id=" . $key['id'] . "))";
 			$stmtProduct = $conn->execute($query);
 			$list = $stmtProduct->fetchAll('assoc');
-
+			$project_info = array();
 			foreach ($list as $l) {
-
-				$project_info = [];
-
 				$project_info['id'] = $l['id'];
 				$project_info['project_name'] = $l['project_name'];
 				$project_info['client_name'] = $l['client_name'];
-				$project_info['miles'] = [];
+				$project_info['miles'] = array();
 
-				$dates = [
-					'first',
-					'second',
-					'third',
-					'fourth',
-					'fifth',
-					'sixth'
-				];
+				if ($l['milestone_id']) {
 
-				foreach ($dates as $d) {
+					$query = "SELECT SUM(time_used) as work FROM user_timesheets p WHERE p.milestone_id IN (" . $l['milestone_id'] . ") AND work_date='" . $data['first'] . "' AND resource_id=" . $key['id'];
+					$stmtwork = $conn->execute($query);
+					$res = $stmtwork->fetchAll('assoc');
+					if (count($res) > 0) {
+						$project_info['miles']['first'] = $res[0]['work'];
+					} else {
+						$project_info['miles']['first'] = 0;
+					}
 
-					$project_info['miles'][$d] = 0;
 
-					if (!empty($l['milestone_id'])) {
+					$query = "SELECT SUM(time_used) as work FROM user_timesheets p WHERE p.milestone_id IN (" . $l['milestone_id'] . ") AND work_date='" . $data['second'] . "' AND resource_id=" . $key['id'];
+					$stmtwork = $conn->execute($query);
+					$res = $stmtwork->fetchAll('assoc');
+					if (count($res) > 0) {
+						$project_info['miles']['second'] = $res[0]['work'];
+					} else {
+						$project_info['miles']['second'] = 0;
+					}
 
-						$query = "SELECT SUM(time_used) as work
-								FROM user_timesheets
-								WHERE milestone_id IN (" . $l['milestone_id'] . ")
-								AND work_date = '" . $data[$d] . "'
-								AND resource_id = " . $key['id'];
+					$query = "SELECT SUM(time_used) as work FROM user_timesheets p WHERE p.milestone_id IN (" . $l['milestone_id'] . ") AND work_date='" . $data['third'] . "' AND resource_id=" . $key['id'];
+					$stmtwork = $conn->execute($query);
+					$res = $stmtwork->fetchAll('assoc');
+					if (count($res) > 0) {
+						$project_info['miles']['third'] = $res[0]['work'];
+					} else {
+						$project_info['miles']['third'] = 0;
+					}
 
-						$stmtwork = $conn->execute($query);
-						$res = $stmtwork->fetch('assoc');
+					$query = "SELECT SUM(time_used) as work FROM user_timesheets p WHERE p.milestone_id IN (" . $l['milestone_id'] . ") AND work_date='" . $data['fourth'] . "' AND resource_id=" . $key['id'];
+					$stmtwork = $conn->execute($query);
+					$res = $stmtwork->fetchAll('assoc');
+					if (count($res) > 0) {
+						$project_info['miles']['fourth'] = $res[0]['work'];
+					} else {
+						$project_info['miles']['fourth'] = 0;
+					}
 
-						$project_info['miles'][$d] = $res['work'] ?? 0;
+
+					$query = "SELECT SUM(time_used) as work FROM user_timesheets p WHERE p.milestone_id IN (" . $l['milestone_id'] . ") AND work_date='" . $data['fifth'] . "' AND resource_id=" . $key['id'];
+					$stmtwork = $conn->execute($query);
+					$res = $stmtwork->fetchAll('assoc');
+					if (count($res) > 0) {
+						$project_info['miles']['fifth'] = $res[0]['work'];
+					} else {
+						$project_info['miles']['fifth'] = 0;
+					}
+
+					$query = "SELECT SUM(time_used) as work FROM user_timesheets p WHERE p.milestone_id IN (" . $l['milestone_id'] . ") AND work_date='" . $data['sixth'] . "' AND resource_id=" . $key['id'];
+					$stmtwork = $conn->execute($query);
+					$res = $stmtwork->fetchAll('assoc');
+					if (count($res) > 0) {
+						$project_info['miles']['sixth'] = $res[0]['work'];
+					} else {
+						$project_info['miles']['sixth'] = 0;
 					}
 				}
-
 				$p['projects'][] = $project_info;
 			}
 
 			$project_user[] = $p;
 		}
-
-		$this->set(compact(
-			"project_manager",
-			"my_team_data",
-			"resource_arr",
-			"edit_res_arr",
-			"pdate",
-			"ndate",
-			"project_user",
-			"data",
-			"role_type_glob",
-			"team_select_data"
-		));
+		$this->set(compact("project_manager", "my_team_data", "resource_arr", "edit_res_arr", 'pdate', 'ndate', "project_user", "data", "role_type_glob", "team_select_data"));
 	}
+
 
 	public function empNotesData($projectId,$userId,$date){
 		$this->Authorization->skipAuthorization();
@@ -4000,34 +4156,36 @@ class UsersController extends AppController
 			$all = [];
 			$all[] = "id";
 			$userDetails[] = "id";
-			foreach ($userData['resources'] as $value) {
-				if ($value == "dob") {
-					$all[] = $value;
-				}
-				if ($value == "ctc") {
-					$all[] = $value;
-				}
-				if ($value == "prev_appraisal") {
-					$all[] = $value;
-				}
-				if ($value == "next_appraisal") {
-					$all[] = $value;
-				}
-				if ($value == "team_name") {
-					$all[] = $value;
-				}
-				if ($value == "blood_group") {
-					$all[] = $value;
-				}
-				if ($value == "aadhar_card") {
-					$all[] = $value;
-				}
-				if ($value == "note") {
-					$all[] = $value;
-				}
-				if ($value != "dob" && $value != "ctc" && $value != "prev_appraisal" && $value != "next_appraisal" && $value != "team_name" && $value != "blood_group" && $value != "aadhar_card" && $value != "note") {
-					$userDetails[] = $value;
-					$all[] = $value;
+			if (!empty($userData['resources']) && is_array($userData['resources'])) {
+				foreach ($userData['resources'] as $value) {
+					if ($value == "dob") {
+						$all[] = $value;
+					}
+					if ($value == "ctc") {
+						$all[] = $value;
+					}
+					if ($value == "prev_appraisal") {
+						$all[] = $value;
+					}
+					if ($value == "next_appraisal") {
+						$all[] = $value;
+					}
+					if ($value == "team_name") {
+						$all[] = $value;
+					}
+					if ($value == "blood_group") {
+						$all[] = $value;
+					}
+					if ($value == "aadhar_card") {
+						$all[] = $value;
+					}
+					if ($value == "note") {
+						$all[] = $value;
+					}
+					if ($value != "dob" && $value != "ctc" && $value != "prev_appraisal" && $value != "next_appraisal" && $value != "team_name" && $value != "blood_group" && $value != "aadhar_card" && $value != "note") {
+						$userDetails[] = $value;
+						$all[] = $value;
+					}
 				}
 			}
 				// dd($all);
@@ -4062,6 +4220,10 @@ class UsersController extends AppController
 			foreach ($userAllData as $data) {
 
 				foreach ($all as $value) {
+					$user = $this->Users->find()
+						->select(['teamid','role_name'])
+						->where(['id' => $data->id])
+						->first();
 					if ($value == 'id') {
 						$userRow = [$data->id];
 					}
@@ -4166,10 +4328,15 @@ class UsersController extends AppController
 					if ($value == 'team_name') {
 						//Helper class used for reporting team Name
 						$customdtfhelper = new \App\View\Helper\ReportingMNameHelper(new \Cake\View\View());
-						$teamName = $customdtfhelper->teamName($data->id);
+						// $teamName = $customdtfhelper->teamName($data->id);
 						// echo $teamName . "<br>";
-
+						$teamName = $customdtfhelper->teamName($user->teamid);
 						$userRow = array_merge($userRow, [$teamName]);
+					}
+					if ($value == 'role_name') {
+						$customdtfhelper = new \App\View\Helper\ReportingMNameHelper(new \Cake\View\View());
+						$roleName = $customdtfhelper->roleName($user->role_name);
+						$userRow = array_merge($userRow, [$roleName]);
 					}
 				}
 				fputcsv($output, $userRow, ",", '"');

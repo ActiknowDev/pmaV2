@@ -98,7 +98,7 @@ $userSession = $session->read('data');
                             <!-- <tbody> -->
                                 <tr class="active">
                                     <td style="text-align: left;">
-                                            <a href="javascript::void()" onclick="timesheetReportData(<?= $p['userid'] ?>,<?= $month ?>,<?= $year ?>)" style="color:#1391bb;"> <p><strong><?= $p['username'] ?>
+                                            <a href="javascript:void(0)" onclick="timesheetReportData(<?= $p['userid'] ?>,<?= $month ?>,<?= $year ?>)" style="color:#1391bb;"> <p><strong><?= $p['username'] ?>
                                             </strong></p></a>
 
                                     </td>

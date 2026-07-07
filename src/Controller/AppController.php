@@ -196,6 +196,34 @@ class AppController extends Controller
         $mailer->deliver();
     }
 
+    public function sendApplyLeaveNoticHr($reportingManagerEmial, $leaveType, $subject, $applyBy, $from_date, $to_date, $email = null,$reason=null,$cut_leave=null, $hrId = null, $hrName = null)
+    {
+        // dd($reason);
+        $mailer = new Mailer();
+
+        $emailCc = [];
+
+        foreach ($email as $value) {
+            $emailCc[] = $value['email'];
+        }
+
+        // print_r($emailCc);
+        // die;
+
+        $mailer->setTransport('default');
+        $mailer
+            ->setEmailFormat('html')
+            ->setTo($reportingManagerEmial)
+            // ->setTo("sanjay.kumar@actiknow.com")
+            ->setCc($emailCc)
+            ->setSubject($subject . ' Request - ' . $applyBy . ' - ' . $from_date . ' to ' . $to_date)
+            ->viewBuilder()
+            ->setTemplate('hrleave');
+
+        $mailer->setViewVars(['name' => $applyBy, 'leaveType' => $leaveType, 'from_date' => $from_date, 'to_date' => $to_date,'reason'=>$reason,'cut_leave'=>$cut_leave,'appliedByHr' => $hrName,]);
+        $mailer->deliver();
+    }
+
     public function approveLeaveNotic($empEmail, $status, $managerName, $from_date, $to_date)
     {
         $mailer = new Mailer();

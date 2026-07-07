@@ -95,7 +95,18 @@ class ScoreCardController extends AppController
 		$userId=$emp_details->id;
 		$userName = $emp_details->name;
 
-		$emp_list = $this->Users->find()->select(['id','name'])->where(['deleted'=>1,'role'=>3,'status'=>1,'company_id'=>10])->toArray();
+		$emp_list = $this->Users->find()
+			->select(['id', 'name'])
+			->where([
+				'deleted' => 1,
+				'role' => 3,
+				'status' => 1,
+				'company_id' => 10
+			])
+			->order(['name' => 'ASC']) // Alphabetical order (A-Z)
+			->toArray();
+
+		// $emp_list = $this->Users->find()->select(['id','name'])->where(['deleted'=>1,'role'=>3,'status'=>1,'company_id'=>10])->toArray();
 
 		$project_assigned = "SELECT p.*,c.client_name,pm.name as project_manager FROM projects p LEFT JOIN users c ON p.client_id = c.id LEFT JOIN users pm ON p.project_manager_id=pm.id WHERE p.deleted=1 AND p.status != 'Completed' AND (p.project_manager_id=".$userId." OR p.tech_lead_id=".$userId." OR p.bd_id=".$userId." OR FIND_IN_SET(".$userId.",resources)!=0)";
 		$stmtProject = $conn->execute($project_assigned);
@@ -335,27 +346,12 @@ class ScoreCardController extends AppController
 				}
 			}
 		}
-		//  $summary_query = "
-        // SELECT 
-        //     ANY_VALUE(projects.id) AS project_id,
-        //     projects.project_name,
-        //     ANY_VALUE(projects.bill) AS bill,
-        //     ANY_VALUE(users.id) AS userid,
-        //     users.name AS username,
-        //     SUM(user_timesheets.time_used) AS time_used
-        // FROM user_timesheets
-        // LEFT JOIN project_milestones ON user_timesheets.milestone_id = project_milestones.id
-        // LEFT JOIN projects ON projects.id = project_milestones.project_id
-        // LEFT JOIN users ON users.id = user_timesheets.resource_id
-        // WHERE MONTH(work_date) = :month AND YEAR(work_date) = :year AND user_timesheets.resource_id = :userId
-        // GROUP BY projects.project_name, users.name";
-
-			 $summary_query = "
+		 $summary_query = "
         SELECT 
-            (projects.id) AS project_id,
+            ANY_VALUE(projects.id) AS project_id,
             projects.project_name,
-            (projects.bill) AS bill,
-            (users.id) AS userid,
+            ANY_VALUE(projects.bill) AS bill,
+            ANY_VALUE(users.id) AS userid,
             users.name AS username,
             SUM(user_timesheets.time_used) AS time_used
         FROM user_timesheets
@@ -364,6 +360,21 @@ class ScoreCardController extends AppController
         LEFT JOIN users ON users.id = user_timesheets.resource_id
         WHERE MONTH(work_date) = :month AND YEAR(work_date) = :year AND user_timesheets.resource_id = :userId
         GROUP BY projects.project_name, users.name";
+
+		// 	 $summary_query = "
+        // SELECT 
+        //     (projects.id) AS project_id,
+        //     projects.project_name,
+        //     (projects.bill) AS bill,
+        //     (users.id) AS userid,
+        //     users.name AS username,
+        //     SUM(user_timesheets.time_used) AS time_used
+        // FROM user_timesheets
+        // LEFT JOIN project_milestones ON user_timesheets.milestone_id = project_milestones.id
+        // LEFT JOIN projects ON projects.id = project_milestones.project_id
+        // LEFT JOIN users ON users.id = user_timesheets.resource_id
+        // WHERE MONTH(work_date) = :month AND YEAR(work_date) = :year AND user_timesheets.resource_id = :userId
+        // GROUP BY projects.project_name, users.name";
 
 
 		$summary_list = $conn->execute($summary_query, compact('month', 'year', 'userId'))->fetchAll('assoc');
@@ -392,7 +403,9 @@ class ScoreCardController extends AppController
 		$query2 = "SELECT title, start, end 
 		FROM holidays 
 		WHERE (MONTH(start) = " . $month . ") 
-		AND YEAR(start) = " . $year . "";
+		AND YEAR(start) = " . $year . "
+		AND deleted = 0
+		";
 		$stmtProduct2 = $conn->execute($query2);
 		$holidays = $stmtProduct2->fetchAll('assoc');
 
