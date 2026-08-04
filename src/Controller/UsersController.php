@@ -5151,4 +5151,22 @@ class UsersController extends AppController
 				}
 			}
 		}
+
+	public function poshTraining()
+	{
+
+		$this->Authorization->skipAuthorization();
+		$user = $this->request->getAttribute('identity');
+		// $url = "http://localhost:3000/posh/?employeeId={$user['id']}&email=" . urlencode($user['email']);
+		$url = "https://pma.actiknow.com/posh/?employeeId={$user['id']}&email=" . urlencode($user['email']);
+
+		$baseUrl = Router::url('/', true);
+		// $basePath = $this->request->getAttribute('base');
+		echo "<script>
+			window.open('$url', '_blank');
+			 window.location.href = " . json_encode($baseUrl) . ";
+		</script>";
+		exit;
+
+	}
 }

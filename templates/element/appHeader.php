@@ -197,6 +197,11 @@ $menu = $session->read('menu');
                         <?php
                         }
                         ?>
+                        <?= $this->Html->link(
+                            'POSH Training',
+                            ['controller' => 'Users', 'action' => 'poshTraining'],
+                            ['class' => 'link']
+                        ); ?>
 
                         <?= $this->Html->link('Logout', '/logout', ['class' => 'link']); ?>
                     </div>
