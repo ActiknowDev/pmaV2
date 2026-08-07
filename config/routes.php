@@ -154,6 +154,8 @@ return function (RouteBuilder $routes): void {
         $builder->connect('/edit-profile', ['controller' => 'EmployeeDetails', 'action' => 'editProfile']);
         // Dashboard 
         $builder->connect('/score-card/*', ['controller' => 'ScoreCard', 'action' => 'index']);
+        $builder->connect('/assets-list/*', ['controller' => 'AssetAssignedEntries', 'action' => 'assetsList']);
+
 
         $builder->fallbacks();
     });

@@ -131,7 +131,8 @@ $menu = $session->read('menu');
                 if (array_intersect($userSession['role_name'], array(4, 6, 9, 10))) {
                     // echo $this->Html->link("Assets", ["class" => "index", "controller" => "AssetAssignedEntries"]);
                 ?>
-                <a href="<?= $this->Url->build('/asset-assigned-entries') ?>">Assets</a>
+                <!-- <a href="<?//= $this->Url->build('/asset-assigned-entries') ?>">Assets</a> -->
+                <a href="<?= $this->Url->build('/assets-list') ?>">Assets</a>
                 <?php
                 }
                 ?>
@@ -193,7 +194,7 @@ $menu = $session->read('menu');
                         if (array_intersect($userSession['role_name'], array(4, 6, 12))) {
                             // echo $this->Html->link("Assets", ["class" => "index", "controller" => "AssetAssignedEntries"]);
                         ?>
-                        <a href="<?= $this->Url->build('/holidays') ?>">Holidays</a>
+                        <?= $this->Html->link('Holidays', '/holidays', ['class' => 'link']); ?>
                         <?php
                         }
                         ?>

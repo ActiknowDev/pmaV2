@@ -65,7 +65,8 @@
                                 <th>Configuration</th>
                                 <th>Amount</th>
                                 <th>Expenses</th>
-                                <th>Date</th>
+                                <th>Created At</th>
+                                <th>Date Of Assign</th>
                                 <th>Action</th>
                             </tr>
                         </thead>
@@ -91,8 +92,8 @@
                                 <td>₹<?= $ase->expenses_amount ? $ase->expenses_amount : 0 ?>
                                 </td>
                                 <td><?= date("Y-m-d", strtotime($ase->created_at)) ?></td>
-                                <!-- <td><?= date("Y-m-d", strtotime($ase->created_at)) != "1970-01-01" ? date("Y-m-d", strtotime($ase->created_at)) : "--" ?>
-                                </td> -->
+                                <td><?= date("Y-m-d", strtotime($ase->date_of_assign)) != "1970-01-01" ? date("Y-m-d", strtotime($ase->date_of_assign)) : "--" ?>
+                                </td>
                                 <td>
                                     <a onclick="return confirm('Are you sure')"
                                         href="<?= $this->Url->build(["controller" => 'AssetAssignedEntries', "action" => "delete", $ase->asset_id]) ?>"

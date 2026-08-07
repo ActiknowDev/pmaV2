@@ -83,7 +83,8 @@ class AssetAssignedEntriesController extends AppController
                 'AssetDatas' => [
                     'table' => 'asset_datas',
                     'type' => 'INNER',
-                    'conditions' => 'AssetDatas.asset_categorie_id = AssetCategories.id'
+                    'conditions' => ['AssetDatas.asset_categorie_id = AssetCategories.id',
+                    'AssetDatas.free_asset_status IS NULL']
                 ],
                 'AssetAssignedEntries' => [
                     'table' => 'asset_assigned_entries',
@@ -654,4 +655,41 @@ class AssetAssignedEntriesController extends AppController
             $this->render("filter_data_table", "ajax");
         }
     }
+
+
+    public function assetsList(){
+        $this->layout = 'default';
+        $this->AssetDatas = $this->fetchTable('AssetDatas');
+        $assets = $this->AssetDatas->find();
+
+        $assets->select([
+            'AssetDatas.id',
+            'AssetDatas.product_name',
+            'AssetDatas.serial_number',
+            'AssetDatas.configuration',
+            'AssetDatas.asset_price',
+            'AssetDatas.free_asset_status',
+            'AssetDatas.created_at',
+            
+            'cat_name' => 'AssetCategories.cat_name',
+
+            'expense_id' => 'AssetExpenses.id',
+            'expense_amount' => 'AssetExpenses.expenses_amount',
+        ])
+        ->leftJoin(
+            ['AssetCategories' => 'asset_categories'],
+            ['AssetCategories.id = AssetDatas.asset_categorie_id']
+        )
+        ->leftJoin(
+            ['AssetExpenses' => 'asset_expenses'],
+            ['AssetExpenses.asset_id = AssetDatas.id']
+        )
+        ->order([
+            'AssetDatas.id' => 'DESC'
+        ]);
+
+        $assets = $assets->all();
+        $this->set(compact('assets'));
+    }
+
 }
