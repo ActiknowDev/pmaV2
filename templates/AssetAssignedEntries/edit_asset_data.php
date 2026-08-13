@@ -487,6 +487,15 @@
                     <input type="text" id="release_asset_name" class="form-control" readonly>
                 </div>
                 <div class="form-group">
+                    <label for="release_free_asset_status"> Asset Status </label>
+                    <select name="free_asset_status" id="release_free_asset_status" class="form-control" required>
+                        <option value="">Select Asset Status</option>
+                        <option value='Free & Available'>Free & Available</option>
+                        <option value='Free & Need to Repair'>Free & Need to Repair</option>
+                        <option value='Dead'>Dead</option>
+                    </select>
+                </div>
+                <div class="form-group">
                     <label for="release_asset_remark"> Release Description </label>
                     <textarea name="asset_release_remark" id="release_asset_remark" class="form-control" rows="4" placeholder="Enter reason or description for releasing this asset..." required></textarea>
                 </div>

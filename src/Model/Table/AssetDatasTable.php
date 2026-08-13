@@ -84,7 +84,8 @@ class AssetDatasTable extends Table
 
         $validator
             ->date('date_of_purchase')
-            ->notEmptyDate('date_of_purchase');
+            // ->notEmptyDate('date_of_purchase');
+            ->allowEmptyString('date_of_purchase');
 
         $validator
             ->scalar('description')

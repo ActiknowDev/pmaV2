@@ -72,27 +72,33 @@ class AssetDatasController extends AppController
     {
         $assetData = $this->AssetDatas->newEmptyEntity();
         if ($this->request->is('post')) {
-
-            // echo "<pre>";
-            // print_r($this->request->getData());
-            // die;
-
+            // echo "<pre>"; print_r($this->request->getData()); die;
+            $dateOfPurchase = $this->request->getData('date_of_purchase');
             $assetData = $this->AssetDatas->patchEntity($assetData, $this->request->getData());
             $assetData->configuration = $this->request->getData('configuration');
             $assetData->asset_price = $this->request->getData('asset_price');
             $assetData->free_asset_status = $this->request->getData('free_asset_status');
-            $assetData->date_of_purchase = date('Y-m-d', strtotime($this->request->getData('date_of_purchase')) );
+            $assetData->date_of_purchase = $dateOfPurchase ? date('Y-m-d', strtotime($dateOfPurchase)) : date('Y-m-d');
+            $assetData->description =$this->request->getData('description');
 
             if ($this->AssetDatas->save($assetData)) {
                 $this->Flash->success(__('The asset data has been saved.'));
 
+                if ($this->request->getData('redirect_page') === 'list') {
+                    return $this->redirect(['controller' => 'AssetAssignedEntries', 'action' => 'assetsList']);
+                }
                 return $this->redirect(['controller' => 'AssetAssignedEntries', 'action' => 'index']);
             }
 
+$errors = $assetData->getErrors();
 
+echo "<pre>";
+print_r($errors);
+die;
             $this->Flash->error(__('The asset data could not be saved. Please, try again.'));
             return $this->redirect(['controller' => 'AssetAssignedEntries', 'action' => 'index']);
         }
+        
         $this->set(compact('assetData'));
     }
 

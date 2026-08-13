@@ -32,68 +32,82 @@
         font-style: italic;
         margin-top: 2px;
     }
-
+   .lable{
+        font-weight:600!important;
+   }
+    .release-asset-btn{
+        display: inline-flex;
+        align-items: center;
+        font-size: 12px;
+    }
+    .assign-asset-btn{
+        display: inline-flex;
+        align-items: center;
+        font-size: 12px;
+        line-height: 25px;
+    }
+    
     /* view assets modal */
     .asset-title{
-    font-size:24px;
-    font-weight:600;
-    color:#2d3748;
-    margin-bottom:25px;
-    border-bottom:1px solid #ececec;
-    padding-bottom:15px;
-}
-
-.asset-grid{
-    display:grid;
-    grid-template-columns:repeat(2,1fr);
-    gap:18px 30px;
-}
-
-.asset-item label{
-    display:block;
-    font-size:12px;
-    text-transform:uppercase;
-    letter-spacing:.5px;
-    color:#8b8b8b;
-    margin-bottom:5px;
-    font-weight:600;
-}
-
-.asset-item div{
-    font-size:15px;
-    color:#2d3748;
-    font-weight:500;
-    word-break:break-word;
-}
-
-.asset-description{
-    margin-top:25px;
-    padding-top:20px;
-    border-top:1px solid #ececec;
-}
-
-.asset-description label{
-    display:block;
-    font-size:12px;
-    text-transform:uppercase;
-    color:#8b8b8b;
-    margin-bottom:8px;
-    font-weight:600;
-}
-
-.asset-description div{
-    color:#444;
-    line-height:1.7;
-    white-space:pre-wrap;
-}
-
-@media(max-width:768px){
-
-    .asset-grid{
-        grid-template-columns:1fr;
+        font-size:24px;
+        font-weight:600;
+        color:#2d3748;
+        margin-bottom:25px;
+        border-bottom:1px solid #ececec;
+        padding-bottom:15px;
     }
 
-}
+    .asset-grid{
+        display:grid;
+        grid-template-columns:repeat(2,1fr);
+        gap:18px 30px;
+    }
+
+    .asset-item label{
+        display:block;
+        font-size:12px;
+        text-transform:uppercase;
+        letter-spacing:.5px;
+        color:#8b8b8b;
+        margin-bottom:5px;
+        font-weight:600;
+    }
+
+    .asset-item div{
+        font-size:15px;
+        color:#2d3748;
+        font-weight:500;
+        word-break:break-word;
+    }
+
+    .asset-description{
+        margin-top:25px;
+        padding-top:20px;
+        border-top:1px solid #ececec;
+    }
+
+    .asset-description label{
+        display:block;
+        font-size:12px;
+        text-transform:uppercase;
+        color:#8b8b8b;
+        margin-bottom:8px;
+        font-weight:600;
+    }
+
+    .asset-description div{
+        color:#444;
+        line-height:1.7;
+        white-space:pre-wrap;
+    }
+
+    @media(max-width:768px){
+
+        .asset-grid{
+            grid-template-columns:1fr;
+        }
+
+    }
     /* view assets modal end */
 </style>
 
@@ -141,13 +155,19 @@
         <div class="row">
                 <div class="col">
                     <label>Category</label>
-                     <input type="text" class="form-control" onkeyup="filterData(this.value,'category')"
-                        autocomplete="off" placeholder="Category filter...">
+                    <select id="categoryFilter" class="form-control" onchange="filterData(this.value,'category')">
+                        <option value="">Select Category</option>
+                        <?php foreach ($assetCategories as $catVal) { ?>
+                            <option value="<?= $catVal->cat_name ?>">
+                                <?= $catVal->cat_name ?>
+                            </option>
+                        <?php } ?>
+                    </select>
                 </div>
 
                 <div class="col">
                     <label>Assigned To</label>
-                    <select class="form-control" data-live-search="true" onchange="filterData(this.value,'assign')">
+                    <select id="assignFilter" class="form-control" data-live-search="true" onchange="filterData(this.value,'assign')">
                         <option value="">Select Employee</option>                        
                         <?php foreach ($user_data as $id => $name): ?>
                             <option value="<?= h($name) ?>">
@@ -159,8 +179,8 @@
 
                 <div class="col">
                     <label>Status</label>
-                    <select class="form-control" onChange="filterData(this.value,'status')">
-                        <option value='' selected>Select</option>
+                    <select id="statusFilter"class="form-control" onChange="filterData(this.value,'status')">
+                        <option value=''>Select</option>
                         <option value='Free & Available'>Free & Available</option>
                         <option value='Free & Need to Repair'>Free & Need to Repair</option>
                         <option value='Dead'>Dead</option>
@@ -218,37 +238,28 @@
                                         $class="status-free";
                             ?>
                             <tr>
-                                <td><?= $i++; ?></td>
-                                <!-- <td>
-                                    <a href="<?= $this->Url->build('/asset-assigned-entries/editAssetData/' . $asset->id) ?>" class="link"><?= $asset->product_name ?></a>
-                                </td> -->
+                                <td><?= $i; ?></td>
                                 <td>
                                     <a href="javascript:void(0)" 
-                                    class="view-asset link"
-                                    
-                                    data-product="<?= h($asset->product_name) ?>"
-                                    data-category="<?= h($asset->cat_name) ?>"
-                                    data-serial="<?= h($asset->serial_number) ?>"
-                                    data-configuration="<?= h($asset->configuration) ?>"
-                                    data-amount="<?= number_format($asset->asset_price) ?>"
-                                    data-expense="<?= number_format($asset->expense_amount) ?>"
-                                    data-date="<?= date('d M Y',strtotime($asset->date_of_assign)) ?>"
-                                    data-date-of-purchase="<?= date('d M Y',strtotime($asset->date_of_purchase)) ?>"
-                                    data-status="<?= h($asset->free_asset_status ?: 'Available') ?>"
-                                    data-description="<?= h($asset->description) ?>"
-                                    >
+                                        class="view-asset link"                                        
+                                        data-product="<?= h($asset->product_name) ?>"
+                                        data-category="<?= h($asset->cat_name) ?>"
+                                        data-serial="<?= h($asset->serial_number) ?>"
+                                        data-configuration="<?= h($asset->configuration) ?>"
+                                        data-amount="<?= number_format($asset->asset_price) ?>"
+                                        data-expense="<?= number_format($asset->expense_amount) ?>"
+                                        data-date="<?= date('d M Y',strtotime($asset->date_of_assign)) ?>"
+                                        data-date-of-purchase="<?= date('d M Y',strtotime($asset->date_of_purchase)) ?>"
+                                        data-status="<?= h($asset->free_asset_status ?: 'Available') ?>"
+                                        data-description="<?= h($asset->description) ?>"
+                                        >
                                         <?= h($asset->product_name) ?>
                                     </a>
                                 </td>
 
                                 <td><?= h($asset->cat_name); ?></td>
-                                <!-- <td><?= h($asset->serial_number); ?></td>
-                                <td><?=$asset->configuration!='' ? h($asset->configuration) : '--'; ?></td> -->
                                 <td>₹<?= number_format($asset->asset_price); ?></td>
                                 <td>₹<?= number_format($asset->expense_amount); ?></td>
-                                <!-- <td>
-                                    <span class="<?= $class; ?>"><?= $status!='' ? h($status) : 'Available'; ?></span>
-                                </td> -->
                                <td>
                                     <?php if (!empty($asset->user_name)): ?>
                                         <span class="status-assigned"><strong>Assigned</strong><small>Owner: <?= h($asset->user_name) ?></small> </span>                                    
@@ -258,39 +269,31 @@
                                         <span class="<?= $class; ?>"> Free </span>
                                     <?php endif; ?>
                                 </td>
-                                <!-- <td><?= $asset->date_of_assign ? date('Y-m-d',strtotime($asset->date_of_assign)) : "--" ?></td> -->
                                 <td><?= date('Y-m-d',strtotime($asset->date_of_purchase)); ?></td>
                                 <td>
                                     <?php if (!empty($asset->user_name)): ?>
-
                                         <!-- Assigned -->
                                         <a href="javascript:void(0)"
                                             class="btn btn-sm btn-outline-danger release-asset-btn"
                                             data-asset-id="<?= h($asset->id) ?>"
                                             data-asset-assignment-id="<?= h($asset->assignment_id) ?>"
                                             data-asset-name="<?= h($asset->product_name) ?>"
-                                            data-description="<?= h($asset->description ?? '') ?>"
+                                            data-asset_release_remark="<?= h($asset->asset_release_remark ?? '') ?>"
                                             title="Release Asset">
-                                                <i class="fa fa-sign-out-alt mr-1"></i>
-                                                <span>Release Asset</span>
+                                                <i class="fa fa-sign-out-alt mr-1"></i><span>Release Asset</span>
                                         </a>
-
                                     <?php elseif ($asset->free_asset_status == 'Free & Available'): ?>
-
                                         <!-- Available -->
                                         <a href="javascript:void(0)"
-                                        class="v-btn v-btn-primary assign-asset-btn"
-                                        data-target="#assign_asset"
-                                        data-toggle="modal"
-                                        data-asset-id="<?= h($asset->id) ?>"
-                                        data-product="<?= h($asset->product_name) ?>"
-                                        data-category-id="<?= h($asset->category_id) ?>"
-                                        data-category="<?= h($asset->cat_name) ?>">
-
-                                            <i class="fa fa-plus"></i>
-                                            <span>Assign Asset</span>
+                                            class="v-btn v-btn-primary assign-asset-btn"
+                                            data-target="#assign_asset"
+                                            data-toggle="modal"
+                                            data-asset-id="<?= h($asset->id) ?>"
+                                            data-product="<?= h($asset->product_name) ?>"
+                                            data-category-id="<?= h($asset->category_id) ?>"
+                                            data-category="<?= h($asset->cat_name) ?>">
+                                                <i class="fa fa-plus"></i><span>Assign Asset</span>
                                         </a>
-
                                     <?php endif; ?>
 
                                     <a href="<?= $this->Url->build('/asset-assigned-entries/editAssetData/' . $asset->id) ?>" title="Edit Asset" class="icon icon-sm"><i class="fa fa-pencil-alt"></i></a>
@@ -318,7 +321,9 @@
                     'action' => 'add'
                 ]
             ]) ?>
-
+            <?= $this->Form->hidden('redirect_page', [
+                'value' => 'list'
+            ]) ?>
             <div class="modal-header">
                 <h5 class="modal-title">Add Asset</h5>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
@@ -333,16 +338,12 @@
                             <div class="adon-group">
                                 <span class="icon ft-primary"><i class="fa fa-toolbox"></i></span>
                                 <select name="asset_categorie_id" class="form-control" required>
-                                    <option>Select Category</option>
-                                    <?php echo "<pre>";print_r($assetCategories);
-                                    foreach ($assetCategories as $catVal) {
-                                    ?>
-                                    <option value="<?= $catVal->id ?>">
-                                        <?= $catVal->cat_name ?>
-                                    </option>
-                                    <?php
-                                    }
-                                    ?>
+                                    <option value="">Select Category</option>
+                                    <?php foreach ($assetCategories as $catVal) { ?>
+                                        <option value="<?= $catVal->id ?>">
+                                            <?= $catVal->cat_name ?>
+                                        </option>
+                                    <?php } ?>
                                 </select>
                             </div>
                         </div>
@@ -397,7 +398,7 @@
                             <label for="">Amount</label>
                             <div class="adon-group">
                                 <span class="icon ft-primary"><i class="">₹</i></span>
-                                <?= $this->form->text("asset_price", [
+                                <?= $this->form->number("asset_price", [
                                     "class" => "form-control",
                                     "required" => true,
                                     "autocomplete" => "off",
@@ -413,7 +414,7 @@
                             <div class="adon-group">
                                 <span class="icon ft-primary"><i class="fa fa-toolbox"></i></span>
                                 <select name="free_asset_status" id="free_asset_status" class="form-control" required>
-                                    <option>Select Asset</option>
+                                    <option value="">Select Asset Status</option>
                                     <option value='Free & Available'>Free & Available</option>
                                     <option value='Free & Need to Repair'>Free & Need to Repair</option>
                                     <option value='Dead'>Dead</option>
@@ -427,7 +428,7 @@
                             <label for="">Date of Purchase</label>
                             <div class="adon-group">
                                 <span class="icon ft-primary"><i class="fas fa-calendar-alt"></i></span>
-                                <?= $this->form->text("date_of_purchase", [
+                                <?= $this->form->date("date_of_purchase", [
                                     "class" => "datepicker1 form-control",
                                     "autocomplete" => "off",
                                     "placeholder" => "Enter Asset date of purchase",
@@ -653,8 +654,17 @@
                     <input type="text" id="release_asset_name" class="form-control" readonly>
                 </div>
                 <div class="form-group">
-                    <label for="release_description"> Release Description </label>
-                    <textarea name="description" id="release_description" class="form-control" rows="4" placeholder="Enter reason or description for releasing this asset..." required></textarea>
+                    <label for="release_free_asset_status"> Asset Status </label>
+                    <select name="free_asset_status" id="release_free_asset_status" class="form-control" required>
+                        <option value="">Select Asset Status</option>
+                        <option value='Free & Available'>Free & Available</option>
+                        <option value='Free & Need to Repair'>Free & Need to Repair</option>
+                        <option value='Dead'>Dead</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="asset_release_remark"> Release Description </label>
+                    <textarea name="asset_release_remark" id="asset_release_remark" class="form-control" rows="4" placeholder="Enter reason or description for releasing this asset..." required></textarea>
                 </div>
                 <input type="hidden" name="asset_id" id="release_asset_id">
                 <input type="hidden" name="assignment_id" id="release_asset_assignment_id">
@@ -681,17 +691,17 @@
 <script>
     $(document).ready(() => {
 
-    $(".datepicker1").datepicker({
-        dateFormat: "yy-mm-dd",
-        changeMonth: true,
-        changeYear: true
-    });
+        $(".datepicker1").datepicker({
+            dateFormat: "yy-mm-dd",
+            changeMonth: true,
+            changeYear: true
+        });
 
-    $(document).on("click", ".datepicker1", function () {
-        $(this).datepicker("show");
-    });
+        $(document).on("click", ".datepicker1", function () {
+            $(this).datepicker("show");
+        });
 
-})
+    })
     $(document).on("click",".view-asset",function(e){
 
         e.preventDefault();
@@ -757,19 +767,59 @@
         $("#release_asset_id").val(assetId);
         $("#release_asset_assignment_id").val(assetAssignmentId);
         $("#release_asset_name").val(assetName);
-        $("#release_description").val(description);
+        $("#asset_release_remark").val(description);
 
         // Open modal
         $("#releaseAssetModal").modal("show");
     });
     function filterData(value, type) {
-        var to ;
-        if (type == 'date_of_purchase') {
-            var from = $("#date_from").val();
+        var from = "";
+        var to = "";
+
+        if (type == 'category') {
+            $("#assignFilter").val("");
+            $("#statusFilter").val("");
+            $("#date_from").val("");
+            $("#date_to").val("");
+        }
+
+        // Assigned To filter
+        else if (type == 'assign') {
+            $("#categoryFilter").val("");
+            $("#statusFilter").val("");
+            $("#date_from").val("");
+            $("#date_to").val("");
+        }
+
+        // Status filter
+        else if (type == 'status') {
+            $("#categoryFilter").val("");
+            $("#assignFilter").val("");
+            $("#date_from").val("");
+            $("#date_to").val("");
+        }
+
+        // Date of Purchase filter
+        else if (type == 'date_of_purchase') {
+
+            // Reset OTHER filters
+            $("#categoryFilter").val("");
+            $("#assignFilter").val("");
+            $("#statusFilter").val("");
+
+            // Keep both date fields
+            from = $("#date_from").val();
             to = $("#date_to").val();
 
             value = from;
         }
+
+        // var to ;
+        // if (type == 'date_of_purchase') {
+        //     var from = $("#date_from").val();
+        //     to = $("#date_to").val();
+        //     value = from;
+        // }
 
         $.ajax({
             url: "<?= $this->Url->build(['controller' => 'AssetAssignedEntries', 'action' => 'assetsDataFilter']) ?>",

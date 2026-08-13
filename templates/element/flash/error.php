@@ -8,4 +8,15 @@ if (!isset($params['escape']) || $params['escape'] !== false) {
     $message = h($message);
 }
 ?>
-<div class="message error" onclick="this.classList.add('hidden');"><?= $message ?></div>
+<!-- <div class="message error" onclick="this.classList.add('hidden');"><?= $message ?></div> -->
+ <div class="alert alert-danger alert-dismissible fade show mx-3 mt-3" role="alert">
+    <i class="fas fa-exclamation-circle mr-2"></i>
+    <?= $message ?>
+
+    <button type="button"
+            class="close"
+            data-dismiss="alert"
+            aria-label="Close">
+        <span aria-hidden="true">&times;</span>
+    </button>
+</div>
