@@ -81,6 +81,7 @@ class AssetDatasController extends AppController
             $assetData->configuration = $this->request->getData('configuration');
             $assetData->asset_price = $this->request->getData('asset_price');
             $assetData->free_asset_status = $this->request->getData('free_asset_status');
+            $assetData->date_of_purchase = date('Y-m-d', strtotime($this->request->getData('date_of_purchase')) );
 
             if ($this->AssetDatas->save($assetData)) {
                 $this->Flash->success(__('The asset data has been saved.'));

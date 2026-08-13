@@ -50,6 +50,10 @@ class AssetDatasTable extends Table
         $this->hasMany('AssetExpenses', [
             'foreignKey' => 'asset_id',
         ]);
+
+         $this->hasMany('AssetAssignedEntries', [
+            'foreignKey' => 'asset_id'
+        ]);
     }
 
     /**
@@ -77,6 +81,14 @@ class AssetDatasTable extends Table
             ->scalar('serial_number')
             ->maxLength('serial_number', 255)
             ->allowEmptyString('serial_number');
+
+        $validator
+            ->date('date_of_purchase')
+            ->notEmptyDate('date_of_purchase');
+
+        $validator
+            ->scalar('description')
+            ->allowEmptyString('description');
 
         return $validator;
     }

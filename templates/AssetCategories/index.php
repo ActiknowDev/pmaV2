@@ -8,16 +8,26 @@
                         <span class="icon"><i class="fa fa-project-diagram"></i></span>Asset Categories
                     </div>
                 </div>
-                <div class="col-md-2"></div>
+                
                 <div class="col-md-2">
-                    <div class="actions-ctrl text-md-right">
-                        <?= $this->Html->link("<i class=''></i><span>Back</span>", [
-                            "controller" => "AssetAssignedEntries",
-                            "action" => "index",
-                        ], [
-                            'class' => "v-btn v-btn",
-                            "escape" => false
-                        ]) ?>
+                     <div class="actions-ctrl text-md-right">
+                        <?= $this->Html->link('<span>Asset Assigned List</span>', '/asset-assigned-entries', ['class' => 'v-btn', 'escape' => false]); ?>
+                    </div>
+                    <!-- <div class="actions-ctrl text-md-right">
+                        <?//= 
+                        //     $this->Html->link("<i class=''></i><span>Back</span>", [
+                        //     "controller" => "AssetAssignedEntries",
+                        //     "action" => "index",
+                        // ], [
+                        //     'class' => "v-btn v-btn",
+                        //     "escape" => false
+                        // ]) 
+                        ?>
+                    </div> -->
+                </div>
+                <div class="col-md-2">
+                     <div class="actions-ctrl text-md-right">
+                        <?= $this->Html->link('<span>Asset List</span>', '/assets-list', ['class' => 'v-btn', 'escape' => false]); ?>
                     </div>
                 </div>
                 <div class="col-md-2">

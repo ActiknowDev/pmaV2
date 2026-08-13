@@ -49,6 +49,7 @@ class AssetAssignedEntriesTable extends Table
         ]);
         $this->belongsTo('AssetDatas', [
             'foreignKey' => 'asset_id',
+            'joinType' => 'INNER',
         ]);
         $this->hasMany('AssetAssignedLogs', [
             'foreignKey' => 'asset_assigned_entry_id',
@@ -78,6 +79,10 @@ class AssetAssignedEntriesTable extends Table
         $validator
             ->integer('active')
             ->notEmptyString('active');
+        
+        $validator
+            ->scalar('asset_release_remark')
+            ->allowEmptyString('asset_release_remark');
 
         return $validator;
     }

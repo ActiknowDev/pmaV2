@@ -112,7 +112,7 @@ class AssetAssignedEntriesController extends AppController
             // print_r($asset_data);
             // die();
 
-        // $assigned_entries = $this->AssetAssignedEntries->find("all")->contain(["AssetDatas", "AssetDatas.AssetCategories", "AssetDatas.AssetExpenses", "Users"])->where(["AssetAssignedEntries.active" => 1])->toArray();
+        $assigned_entries = $this->AssetAssignedEntries->find("all")->contain(["AssetDatas", "AssetDatas.AssetCategories", "AssetDatas.AssetExpenses", "Users"])->where(["AssetAssignedEntries.active" => 1])->toArray();
         // echo "<pre>";
         // print_r($asset_data);
         // die;
@@ -156,9 +156,13 @@ class AssetAssignedEntriesController extends AppController
             $assetAssignedEntry->asset_id = $this->request->getData('asset_id');
             $assetAssignedEntry->user_id = $this->request->getData('user_id');
             $assetAssignedEntry->date_of_assign = date("Y-m-d", strtotime($this->request->getData('assign_date')));
+            
             if ($this->AssetAssignedEntries->save($assetAssignedEntry)) {
                 $this->Flash->success(__('The asset assigned entry has been saved.'));
-                return $this->redirect('/asset-assigned-entries/editAssetData/' . $this->request->getData('asset_id'));
+                if ($this->request->getData('redirect_page') === 'list') {
+                    return $this->redirect([ 'action' => 'assetsList' ]);
+            }
+            return $this->redirect([ 'action' => 'editAssetData', $this->request->getData('asset_id') ]);
             }
             $this->Flash->error(__('The asset assigned entry could not be saved. This Serial Number already exists.'));
 
@@ -375,6 +379,7 @@ class AssetAssignedEntriesController extends AppController
             'asset_id' => 'AssetAssignedEntries.asset_id',
             'date_of_release' => 'AssetAssignedEntries.dor',
             'active' => 'AssetAssignedEntries.active',
+            'asset_release_remark' => 'AssetAssignedEntries.asset_release_remark',
         ])->contain(["Users"])->where(['AssetAssignedEntries.asset_id' => $asset_id])->toArray();
 
         // echo '<pre>';
@@ -409,20 +414,52 @@ class AssetAssignedEntriesController extends AppController
         $this->set(compact('asset_id', 'user_data', 'assetCategories', 'AssetCategory', 'AssetDatas', 'AssetAssignedEntries', 'assigned_entries', 'totalAssetExpenses', 'allAssignedEntries'));
     }
 
-    public function releaseAsset($id, $asset_id)
-    {
+    // public function releaseAsset($id, $asset_id)
+    // {
+    //     $releaseDate = date("Y-m-d");
+    //     $AssetAssignedEntries = $this->AssetAssignedEntries->find()->where(['id' => $id])->first();
+    //     $AssetAssignedEntries->dor = $releaseDate;
+    //     $AssetAssignedEntries->active = 0;
+
+    //     // echo $asset_id;
+    //     // echo '<pre>';
+    //     // print_r($AssetAssignedEntries);
+    //     // die;
+
+    //     if ($this->AssetAssignedEntries->save($AssetAssignedEntries)) {
+    //         $this->Flash->success(__('The asset has been released.'));
+    //     }
+    //     return $this->redirect('/asset-assigned-entries/editAssetData/' . $asset_id);
+    // }
+    public function releaseAsset() {
+        
         $releaseDate = date("Y-m-d");
-        $AssetAssignedEntries = $this->AssetAssignedEntries->find()->where(['id' => $id])->first();
+        $id = $this->request->getData('assignment_id');
+        $asset_id = $this->request->getData('asset_id');
+        $remark = $this->request->getData('asset_release_remark');
+
+        $AssetAssignedEntries = $this->AssetAssignedEntries ->find() ->where(['id' => $id]) ->first();
+
         $AssetAssignedEntries->dor = $releaseDate;
         $AssetAssignedEntries->active = 0;
-
-        // echo $asset_id;
-        // echo '<pre>';
-        // print_r($AssetAssignedEntries);
-        // die;
+        $AssetAssignedEntries->asset_release_remark = $remark;        
 
         if ($this->AssetAssignedEntries->save($AssetAssignedEntries)) {
+
+            // Update description in AssetDatas table
+            // $assetData = $this->AssetAssignedEntries->AssetDatas ->find()->where(['AssetDatas.id' => $asset_id]) ->first();
+
+            // if ($assetData) {
+            //     $assetData->description = $description;
+            //     $this->AssetAssignedEntries->AssetDatas->save($assetData);
+            // }
+
             $this->Flash->success(__('The asset has been released.'));
+        } else {
+            $this->Flash->error(__('The asset could not be released.'));
+        }
+        if ($this->request->getData('redirect_page') == 'list') {
+            return $this->redirect('/asset-assigned-entries');
         }
         return $this->redirect('/asset-assigned-entries/editAssetData/' . $asset_id);
     }
@@ -450,117 +487,190 @@ class AssetAssignedEntriesController extends AppController
         }
     }
 
-    public function editAssignAssetData()
-    {
-        if ($this->request->is(['post', 'put', 'patch'])) {
-            // echo '<pre>';
-            // print_r($this->request->getData());
-            // die;
-            $asset_assign_id = $this->request->getData('asset_assign_id');
-            if(!empty($asset_assign_id)){
-                $asset_assign_id = $this->request->getData('asset_assign_id');  
-            } else {
-                $asset_assign_id='';
-            }
-            $asset_id = $this->request->getData('asset_id');
+    // public function editAssignAssetData()
+    // {
+    //     if ($this->request->is(['post', 'put', 'patch'])) {
+    //         // echo '<pre>';
+    //         // print_r($this->request->getData());
+    //         // die;
+    //         $asset_assign_id = $this->request->getData('asset_assign_id');
+    //         if(!empty($asset_assign_id)){
+    //             $asset_assign_id = $this->request->getData('asset_assign_id');  
+    //         } else {
+    //             $asset_assign_id='';
+    //         }
+    //         $asset_id = $this->request->getData('asset_id');
 
-            $isAssignedEntries = $this->AssetAssignedEntries->exists(['id' => $asset_assign_id]);
-            $isAssetDatas = $this->AssetDatas->exists(['id' => $asset_id]);
+    //         $isAssignedEntries = $this->AssetAssignedEntries->exists(['id' => $asset_assign_id]);
+    //         $isAssetDatas = $this->AssetDatas->exists(['id' => $asset_id]);
 
-            if ($isAssignedEntries) {
-                $AssetAssignedEntries = $this->AssetAssignedEntries->find()
-                    ->where(['id' => $asset_assign_id])
-                    ->first();
-                    if(!empty($this->request->getData('user_id'))){
-                        $AssetAssignedEntries->user_id = $this->request->getData('user_id');
-                    }
-                $AssetAssignedEntries->asset_id = $asset_id;
-                $AssetAssignedEntries->categories_id = $this->request->getData('categories_id');
-                if(!empty($this->request->getData('date_of_assign'))) {
-                    $AssetAssignedEntries->date_of_assign = date("Y-m-d", strtotime($this->request->getData('date_of_assign')));
-                }
+    //         if ($isAssignedEntries) {
+    //             $AssetAssignedEntries = $this->AssetAssignedEntries->find()
+    //                 ->where(['id' => $asset_assign_id])
+    //                 ->first();
+    //                 if(!empty($this->request->getData('user_id'))){
+    //                     $AssetAssignedEntries->user_id = $this->request->getData('user_id');
+    //                 }
+    //             $AssetAssignedEntries->asset_id = $asset_id;
+    //             $AssetAssignedEntries->categories_id = $this->request->getData('categories_id');
+    //             if(!empty($this->request->getData('date_of_assign'))) {
+    //                 $AssetAssignedEntries->date_of_assign = date("Y-m-d", strtotime($this->request->getData('date_of_assign')));
+    //             }
 
-                if ($this->AssetAssignedEntries->save($AssetAssignedEntries)) {
+    //             if ($this->AssetAssignedEntries->save($AssetAssignedEntries)) {
 
-                    if ($isAssetDatas) {
-                        $AssetDatas = $this->AssetDatas->find()
-                            ->where(['id' => $asset_id])
-                            ->first();
-                        $AssetDatas->asset_categorie_id = $this->request->getData('categories_id');
-                        $AssetDatas->product_name = $this->request->getData('product_name');
-                        $AssetDatas->serial_number     = $this->request->getData('serial_number');
-                        $AssetDatas->configuration = $this->request->getData('configuration');
-                        $AssetDatas->asset_price = $this->request->getData('asset_price');
-                        if($this->request->getData('free_asset_status')){
-                            $AssetDatas->free_asset_status = $this->request->getData('free_asset_status');
-                        }
+    //                 if ($isAssetDatas) {
+    //                     $AssetDatas = $this->AssetDatas->find()
+    //                         ->where(['id' => $asset_id])
+    //                         ->first();
+    //                     $AssetDatas->asset_categorie_id = $this->request->getData('categories_id');
+    //                     $AssetDatas->product_name = $this->request->getData('product_name');
+    //                     $AssetDatas->serial_number     = $this->request->getData('serial_number');
+    //                     $AssetDatas->configuration = $this->request->getData('configuration');
+    //                     $AssetDatas->asset_price = $this->request->getData('asset_price');
+    //                     if($this->request->getData('free_asset_status')){
+    //                         $AssetDatas->free_asset_status = $this->request->getData('free_asset_status');
+    //                     }
 
-                        $this->AssetDatas->save($AssetDatas);
-                    } else {
-                        $AssetDatas = $this->AssetDatas->newEmptyEntity();
-                        $AssetDatas->asset_categorie_id = $this->request->getData('categories_id');
-                        $AssetDatas->product_name = $this->request->getData('product_name');
-                        $AssetDatas->serial_number     = $this->request->getData('serial_number');
-                        $AssetDatas->configuration = $this->request->getData('configuration');
-                        $AssetDatas->asset_price = $this->request->getData('asset_price');
-                        if($this->request->getData('free_asset_status')){
-                            $AssetDatas->free_asset_status = $this->request->getData('free_asset_status');
-                        }
-                        $this->AssetDatas->save($AssetDatas);
-                    }
+    //                     $this->AssetDatas->save($AssetDatas);
+    //                 } else {
+    //                     $AssetDatas = $this->AssetDatas->newEmptyEntity();
+    //                     $AssetDatas->asset_categorie_id = $this->request->getData('categories_id');
+    //                     $AssetDatas->product_name = $this->request->getData('product_name');
+    //                     $AssetDatas->serial_number     = $this->request->getData('serial_number');
+    //                     $AssetDatas->configuration = $this->request->getData('configuration');
+    //                     $AssetDatas->asset_price = $this->request->getData('asset_price');
+    //                     if($this->request->getData('free_asset_status')){
+    //                         $AssetDatas->free_asset_status = $this->request->getData('free_asset_status');
+    //                     }
+    //                     $this->AssetDatas->save($AssetDatas);
+    //                 }
 
-                    $this->Flash->success(__('The asset data has been updated.'));
-                    return $this->redirect('/asset-assigned-entries/editAssetData/' . $asset_id);
-                }
-            } else {
-                // $AssetAssignedEntries = $this->AssetAssignedEntries->newEmptyEntity();
-                // if(!empty($this->request->getData('user_id'))){
-                //     $AssetAssignedEntries->user_id = $this->request->getData('user_id');
-                // }
-                // $AssetAssignedEntries->asset_id = $asset_id;
-                // $AssetAssignedEntries->categories_id = $this->request->getData('categories_id');
-                // if(!empty($this->request->getData('date_of_assign'))) {
-                //     $AssetAssignedEntries->date_of_assign = date("Y-m-d", strtotime($this->request->getData('date_of_assign')));
-                // }
+    //                 $this->Flash->success(__('The asset data has been updated.'));
+    //                 return $this->redirect('/asset-assigned-entries/editAssetData/' . $asset_id);
+    //             }
+    //         } else {
+    //             // $AssetAssignedEntries = $this->AssetAssignedEntries->newEmptyEntity();
+    //             // if(!empty($this->request->getData('user_id'))){
+    //             //     $AssetAssignedEntries->user_id = $this->request->getData('user_id');
+    //             // }
+    //             // $AssetAssignedEntries->asset_id = $asset_id;
+    //             // $AssetAssignedEntries->categories_id = $this->request->getData('categories_id');
+    //             // if(!empty($this->request->getData('date_of_assign'))) {
+    //             //     $AssetAssignedEntries->date_of_assign = date("Y-m-d", strtotime($this->request->getData('date_of_assign')));
+    //             // }
 
-                // if ($this->AssetAssignedEntries->save($AssetAssignedEntries)) {
+    //             // if ($this->AssetAssignedEntries->save($AssetAssignedEntries)) {
 
-                    if ($isAssetDatas) {
-                        $AssetDatas = $this->AssetDatas->find()
-                            ->where(['id' => $asset_id])
-                            ->first();
-                        $AssetDatas->asset_categorie_id = $this->request->getData('categories_id');
-                        $AssetDatas->product_name = $this->request->getData('product_name');
-                        $AssetDatas->serial_number     = $this->request->getData('serial_number');
-                        $AssetDatas->configuration = $this->request->getData('configuration');
-                        $AssetDatas->asset_price = $this->request->getData('asset_price');
-                        if($this->request->getData('free_asset_status')){
-                            $AssetDatas->free_asset_status = $this->request->getData('free_asset_status');
-                        }
+    //                 if ($isAssetDatas) {
+    //                     $AssetDatas = $this->AssetDatas->find()
+    //                         ->where(['id' => $asset_id])
+    //                         ->first();
+    //                     $AssetDatas->asset_categorie_id = $this->request->getData('categories_id');
+    //                     $AssetDatas->product_name = $this->request->getData('product_name');
+    //                     $AssetDatas->serial_number     = $this->request->getData('serial_number');
+    //                     $AssetDatas->configuration = $this->request->getData('configuration');
+    //                     $AssetDatas->asset_price = $this->request->getData('asset_price');
+    //                     if($this->request->getData('free_asset_status')){
+    //                         $AssetDatas->free_asset_status = $this->request->getData('free_asset_status');
+    //                     }
 
-                        $this->AssetDatas->save($AssetDatas);
-                    } else {
-                        $AssetDatas = $this->AssetDatas->newEmptyEntity();
-                        $AssetDatas->asset_categorie_id = $this->request->getData('categories_id');
-                        $AssetDatas->product_name = $this->request->getData('product_name');
-                        $AssetDatas->serial_number     = $this->request->getData('serial_number');
-                        $AssetDatas->configuration = $this->request->getData('configuration');
-                        $AssetDatas->asset_price = $this->request->getData('asset_price');
-                        if($this->request->getData('free_asset_status')){
-                            $AssetDatas->free_asset_status = $this->request->getData('free_asset_status');
-                        }
-                        $this->AssetDatas->save($AssetDatas);
-                    }
+    //                     $this->AssetDatas->save($AssetDatas);
+    //                 } else {
+    //                     $AssetDatas = $this->AssetDatas->newEmptyEntity();
+    //                     $AssetDatas->asset_categorie_id = $this->request->getData('categories_id');
+    //                     $AssetDatas->product_name = $this->request->getData('product_name');
+    //                     $AssetDatas->serial_number     = $this->request->getData('serial_number');
+    //                     $AssetDatas->configuration = $this->request->getData('configuration');
+    //                     $AssetDatas->asset_price = $this->request->getData('asset_price');
+    //                     if($this->request->getData('free_asset_status')){
+    //                         $AssetDatas->free_asset_status = $this->request->getData('free_asset_status');
+    //                     }
+    //                     $this->AssetDatas->save($AssetDatas);
+    //                 }
 
-                    $this->Flash->success(__('The asset data has been updated.'));
-                    return $this->redirect('/asset-assigned-entries/editAssetData/' . $asset_id);
-                // }
-            }
+    //                 $this->Flash->success(__('The asset data has been updated.'));
+    //                 return $this->redirect('/asset-assigned-entries/editAssetData/' . $asset_id);
+    //             // }
+    //         }
 
-            $this->Flash->error(__('The asset data not updated.'));
-            return $this->redirect('/asset-assigned-entries/editAssetData/' . $asset_id);
+    //         $this->Flash->error(__('The asset data not updated.'));
+    //         return $this->redirect('/asset-assigned-entries/editAssetData/' . $asset_id);
+    //     }
+    // }
+
+    public function editAssignAssetData() {
+        if (!$this->request->is(['post', 'put', 'patch'])) {
+            return;
         }
+
+        $data = $this->request->getData();
+
+        $assetAssignId = $data['asset_assign_id'] ?? null;
+        $assetId       = $data['asset_id'] ?? null;
+
+        if (empty($assetId)) {
+            $this->Flash->error(__('Invalid asset ID.'));
+            return $this->redirect('/asset-assigned-entries');
+        }
+        $asset = $this->AssetDatas->find()->where(['id' => $assetId])->first();
+        if (!$asset) {
+            $asset = $this->AssetDatas->newEmptyEntity();
+        }
+        if (!empty($assetAssignId)) {
+            $assignedAsset = $this->AssetAssignedEntries->find()->where(['id' => $assetAssignId])->first();
+            if ($assignedAsset) {
+                if (isset($data['user_id']) && $data['user_id'] !== '') {
+                    $assignedAsset->user_id = $data['user_id'];
+                }
+                if (isset($data['asset_id'])) {
+                    $assignedAsset->asset_id = $assetId;
+                }
+                if (isset($data['categories_id'])) {
+                    $assignedAsset->categories_id = $data['categories_id'];
+                }
+                if (!empty($data['date_of_assign'])) {
+                    $assignedAsset->date_of_assign = date( 'Y-m-d', strtotime($data['date_of_assign']) );
+                }
+                if (!$this->AssetAssignedEntries->save($assignedAsset)) {
+                    $this->Flash->error( __('The assigned asset could not be updated.') );
+                    return $this->redirect( '/asset-assigned-entries/editAssetData/' . $assetId );
+                }
+            }
+        }
+
+        if (isset($data['categories_id'])) {
+            $asset->asset_categorie_id = $data['categories_id'];
+        }
+        if (isset($data['product_name'])) {
+            $asset->product_name = $data['product_name'];
+        }
+        if (isset($data['serial_number'])) {
+            $asset->serial_number = $data['serial_number'];
+        }
+        if (isset($data['configuration'])) {
+            $asset->configuration = $data['configuration'];
+        }
+        if (isset($data['asset_price'])) {
+            $asset->asset_price = $data['asset_price'];
+        }
+        if (array_key_exists('free_asset_status', $data)) {
+            $asset->free_asset_status = $data['free_asset_status'];
+        }
+        if (!empty($data['date_of_purchase'])) {
+            $asset->date_of_purchase = date('Y-m-d', strtotime($data['date_of_purchase']) );
+        } 
+        if (array_key_exists('description', $data)) {
+            $asset->description = $data['description'];
+        }
+        if (!$this->AssetDatas->save($asset)) {
+            $this->Flash->error(__('The asset data could not be updated.'));
+            return $this->redirect('/asset-assigned-entries/editAssetData/' . $assetId);
+        }
+        $this->Flash->success(__('The asset data has been updated.'));
+        return $this->redirect('/asset-assigned-entries/editAssetData/' . $assetId);
     }
+
 
     public function addExpenses()
     {
@@ -638,18 +748,63 @@ class AssetAssignedEntriesController extends AppController
     {
         if ($this->request->is("GET")) {
             $type = $this->request->getQuery('type');
-            $value = $this->request->getQuery('value');
+            $value = $this->request->getQuery('value'); // it has from value when type = date_of_purchase
+            $to = $this->request->getQuery('to');
+
+            $query = $this->AssetAssignedEntries->find("all")
+            ->contain(["AssetDatas", "AssetDatas.AssetCategories", "AssetDatas.AssetExpenses", "Users"])
+            ->where([ "AssetAssignedEntries.active" => 1 ]);
+
             if ($type == 'category') {
-                $assigned_entries = $this->AssetAssignedEntries->find("all")
-                    ->contain(["AssetDatas", "AssetDatas.AssetCategories", "AssetDatas.AssetExpenses", "Users"])
-                    ->where(["AssetAssignedEntries.active" => 1, "AssetCategories.cat_name LIKE" => "%" . $value . "%"])
-                    ->toArray();
+                // $query->where(["AssetCategories.cat_name LIKE" => "%" . $value . "%" ]);
+                if ($type == 'category') {
+                    $query->matching('AssetDatas.AssetCategories', function ($q) use ($value) {
+                        return $q->where([
+                            'AssetCategories.cat_name LIKE' => '%' . $value . '%'
+                        ]);
+                    });
+                }
+            } elseif ($type == 'date_of_purchase') {                
+                $conditions = [];
+
+                if (!empty($value)) {
+                    $conditions["AssetDatas.date_of_purchase >="] = $value . " 00:00:00";
+                }                
+                if (!empty($to)) {
+                    $conditions["AssetDatas.date_of_purchase <="] = $to . " 23:59:59";
+                }
+                
+                if (!empty($conditions)) {
+                    $query->where($conditions);
+                }
+            } elseif ($type == 'status') {
+                // $query->where(["AssetDatas.free_asset_status LIKE" => "%" . $value . "%"]);
+                $query->matching('AssetDatas', function ($q) use ($value) {
+                    return $q->where([
+                        'AssetDatas.free_asset_status LIKE' => '%' . $value . '%'
+                    ]);
+                });
             } else {
-                $assigned_entries = $this->AssetAssignedEntries->find("all")
-                    ->contain(["AssetDatas", "AssetDatas.AssetCategories", "AssetDatas.AssetExpenses", "Users"])
-                    ->where(["AssetAssignedEntries.active" => 1, "Users.name LIKE" => "%" . $value . "%"])
-                    ->toArray();
+                $query->where(["Users.name LIKE" => "%" . $value . "%"]);
             }
+            // echo "<pre>";
+            // print_r($query);die();
+
+            $assigned_entries = $query->toArray();
+            // echo "<pre>";
+            // print_r($assigned_entries);
+            // die();
+            // if ($type == 'category') {
+            //     $assigned_entries = $this->AssetAssignedEntries->find("all")
+            //         ->contain(["AssetDatas", "AssetDatas.AssetCategories", "AssetDatas.AssetExpenses", "Users"])
+            //         ->where(["AssetAssignedEntries.active" => 1, "AssetCategories.cat_name LIKE" => "%" . $value . "%"])
+            //         ->toArray();
+            // } else {
+            //     $assigned_entries = $this->AssetAssignedEntries->find("all")
+            //         ->contain(["AssetDatas", "AssetDatas.AssetCategories", "AssetDatas.AssetExpenses", "Users"])
+            //         ->where(["AssetAssignedEntries.active" => 1, "Users.name LIKE" => "%" . $value . "%"])
+            //         ->toArray();
+            // }
 
             $this->set(compact("assigned_entries"));
             $this->render("filter_data_table", "ajax");
@@ -669,12 +824,26 @@ class AssetAssignedEntriesController extends AppController
             'AssetDatas.configuration',
             'AssetDatas.asset_price',
             'AssetDatas.free_asset_status',
+            'AssetDatas.date_of_purchase',
+            'AssetDatas.description',
             'AssetDatas.created_at',
             
             'cat_name' => 'AssetCategories.cat_name',
 
             'expense_id' => 'AssetExpenses.id',
             'expense_amount' => 'AssetExpenses.expenses_amount',
+
+            // Assignment
+            'assignment_id' => 'AssetAssignedEntries.id',
+            'user_id' => 'AssetAssignedEntries.user_id',
+            'asset_id' => 'AssetAssignedEntries.asset_id',
+            'date_of_assign' => 'AssetAssignedEntries.date_of_assign',
+            'dor' => 'AssetAssignedEntries.dor',
+            'active' => 'AssetAssignedEntries.active',
+            'asset_release_remark' => 'AssetAssignedEntries.asset_release_remark',
+
+            // User
+            'user_name' => 'Users.name'
         ])
         ->leftJoin(
             ['AssetCategories' => 'asset_categories'],
@@ -684,12 +853,94 @@ class AssetAssignedEntriesController extends AppController
             ['AssetExpenses' => 'asset_expenses'],
             ['AssetExpenses.asset_id = AssetDatas.id']
         )
+        // Asset Assignment
+        ->leftJoin(
+            ['AssetAssignedEntries' => 'asset_assigned_entries'],
+            [
+                'AssetAssignedEntries.asset_id = AssetDatas.id',
+                'AssetAssignedEntries.active' => 1
+            ]
+        )
+        // User
+        ->leftJoin(
+            ['Users' => 'users'],
+            ['Users.id = AssetAssignedEntries.user_id']
+        )
         ->order([
             'AssetDatas.id' => 'DESC'
         ]);
 
         $assets = $assets->all();
+
+        $user_data = $this->Users->find("list", [
+            "keyField" => "id",
+            "valueField" => "name",
+            "conditions" => [
+                "role" => 3,
+                "status" => 1,
+                "deleted" => 1
+            ],
+            "order" => [
+                "name" => "ASC"
+            ]
+        ])->toArray();
+
+      
+
+        $assetCategories = $this->AssetCategories->find()
+            ->select(['id', 'cat_name'])
+            ->toArray();
+
+        $this->set(compact('assets','user_data','assetCategories'));
+    }
+
+    public function assetsDataFilter(){
+
+        if (!$this->request->is('GET')) {
+            return;
+        }
+
+        $type = trim($this->request->getQuery('type') ?? '');
+        $value = trim($this->request->getQuery('value') ?? '');
+        $to = trim($this->request->getQuery('to') ?? '');
+
+        $query = $this->AssetDatas->find()->contain([ 'AssetCategories', 'AssetExpenses', 'AssetAssignedEntries' => [ 'Users' ] ]);
+
+        $query->matching('AssetAssignedEntries', function ($q) {
+            return $q->where([
+                'AssetAssignedEntries.active' => 1
+            ]);
+        });
+
+        if ($type === 'category' && $value !== '') {
+            $query->matching('AssetCategories', function ($q) use ($value) {
+                return $q->where([ 'AssetCategories.cat_name LIKE' => '%' . $value . '%' ]);
+            });
+        }
+        elseif ($type === 'date_of_purchase') {
+            if ($value !== '') {
+                $query->where([ 'AssetDatas.date_of_purchase >=' => $value ]);
+            }
+            if ($to !== '') {
+                $query->where([ 'AssetDatas.date_of_purchase <=' => $to ]);
+            }
+        }
+        elseif ($type === 'status' && $value !== '') {
+            $query->where([ 'AssetDatas.free_asset_status LIKE' => '%' . $value . '%' ]);
+        }
+        elseif ($value !== '') {
+            $query->matching('AssetAssignedEntries.Users', function ($q) use ($value) {
+                return $q->where([ 'Users.name LIKE' => '%' . $value . '%' ]);
+            });
+        }
+
+        // $query->distinct([ 'AssetDatas.id' ]);
+
+        $assets = $query->toArray();
+
         $this->set(compact('assets'));
+        
+        $this->render('filter_data_table_assets_list', 'ajax');
     }
 
 }

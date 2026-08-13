@@ -12,6 +12,9 @@
                 </div>
 
                 <div class="col-md-2">
+                    <div class="actions-ctrl text-md-right">
+                        <?= $this->Html->link('<span>Asset List</span>', '/assets-list', ['class' => 'v-btn', 'escape' => false]); ?>
+                    </div>
                 </div>
                 <div class="col-md-2">
                     <div class="actions-ctrl text-md-right">
@@ -38,7 +41,18 @@
     <div class="page-content">
         <div class="container">
 
-            <div class="row">
+            <!-- <div class="row">
+                <div class="col-md-3">
+                    <input type="text" class="form-control" onkeyup="filterData(this.value,'status')"
+                        autocomplete="off" placeholder="Status">
+                </div>
+                <div class="col-md-3">
+                    <input type="text" class="datepicker1 form-control" onchange="filterData(this.value,'date_of_purchase')"
+                         id="date_from" autocomplete="off" placeholder="Date of Purchase From">
+                    <input type="text" class="datepicker1 form-control" onchange="filterData(this.value,'date_of_purchase')"
+                         id="date_to" autocomplete="off" placeholder="Date of Purchase To">
+                </div>
+
                 <div class="col-md-3">
                     <input type="text" class="form-control" onkeyup="filterData(this.value,'category')"
                         autocomplete="off" placeholder="Category filter...">
@@ -46,6 +60,39 @@
                 <div class="col-md-3">
                     <input type="text" class="form-control" onkeyup="filterData(this.value,'assign')" autocomplete="off"
                         placeholder="Assigned filter...">
+                </div>
+            </div> -->
+
+
+            <div class="row">
+                <div class="col">
+                    <!-- <input type="text" class="form-control" placeholder="Category filter..."> -->
+                     <input type="text" class="form-control" onkeyup="filterData(this.value,'category')"
+                        autocomplete="off" placeholder="Category filter...">
+                </div>
+
+                <div class="col">
+                    <!-- <input type="text" class="form-control" placeholder="Assigned filter..."> -->
+                    <input type="text" class="form-control" onkeyup="filterData(this.value,'assign')" autocomplete="off"
+                        placeholder="Assigned filter...">
+                </div>
+
+                <div class="col">
+                    <!-- <input type="text" class="form-control" placeholder="Status filter..."> -->
+                    <input type="text" class="form-control" onkeyup="filterData(this.value,'status')"
+                        autocomplete="off" placeholder="Status">
+                </div>
+
+                <div class="col">
+                    <!-- <input type="text" class="form-control" placeholder="Date From"> -->
+                    <input type="text" class="datepicker1 form-control" onchange="filterData(this.value,'date_of_purchase')"
+                         id="date_from" autocomplete="off" placeholder="Date of Purchase From">
+                </div>
+
+                <div class="col">
+                    <!-- <input type="text" class="form-control" placeholder="Date To"> -->
+                     <input type="text" class="datepicker1 form-control" onchange="filterData(this.value,'date_of_purchase')"
+                         id="date_to" autocomplete="off" placeholder="Date of Purchase To">
                 </div>
             </div>
 
@@ -320,6 +367,34 @@
                             </div>
                         </div>
                     </div>
+
+                    <div class="form-group row">
+                        <div class="col-md-12">
+                            <label for="">Date of Purchase</label>
+                            <div class="adon-group">
+                                <span class="icon ft-primary"><i class="fas fa-calendar-alt"></i></span>
+                                <?= $this->form->text("date_of_purchase", [
+                                    "class" => "datepicker1 form-control",
+                                    "autocomplete" => "off",
+                                    "placeholder" => "Enter Asset date of purchase",
+                                ]); ?>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <div class="col-md-12">
+                            <label for="">Description</label>
+                            <div class="adon-group">
+                                <span class="icon ft-primary"><i class="fas fa-align-left"></i></span>
+                                <?= $this->form->textarea("description", [
+                                    "class" => "form-control",
+                                    "autocomplete" => "off",
+                                    "placeholder" => "Enter Asset Description",
+                                ]); ?>
+                            </div>
+                        </div>
+                    </div>
+
                 </div>
             </div>
             <div class="modal-footer">
@@ -397,6 +472,17 @@
 <script type="text/javascript">
 $(document).ready(() => {
     $('.assignEmp').selectpicker();
+
+    $(".datepicker1").datepicker({
+        dateFormat: "yy-mm-dd",
+        changeMonth: true,
+        changeYear: true
+    });
+
+    $(document).on("click", ".datepicker1", function () {
+        $(this).datepicker("show");
+    });
+
 })
 
 function loadData(id) {
@@ -508,12 +594,21 @@ function fetchAsset(value) {
 }
 
 function filterData(value, type) {
+    var to ;
+    if (type == 'date_of_purchase') {
+        var from = $("#date_from").val();
+        to = $("#date_to").val();
+
+        value = from;
+    }
+
     $.ajax({
         url: "<?= $this->Url->build(['controller' => 'AssetAssignedEntries', 'action' => 'filterData']) ?>",
         method: "GET",
         data: {
             type,
-            value
+            value,
+            to
         },
         beforeSend: function() {
             $.LoadingOverlay("show")
