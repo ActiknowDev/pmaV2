@@ -49,7 +49,7 @@ class AssetAssignedEntriesTable extends Table
         ]);
         $this->belongsTo('AssetDatas', [
             'foreignKey' => 'asset_id',
-            'joinType' => 'INNER',
+            // 'joinType' => 'INNER',
         ]);
         $this->hasMany('AssetAssignedLogs', [
             'foreignKey' => 'asset_assigned_entry_id',

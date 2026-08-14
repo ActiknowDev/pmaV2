@@ -68,11 +68,11 @@ class AssetAssignedEntriesController extends AppController
                 'asset_price' => 'AssetDatas.asset_price',
                 'created_at' => 'AssetDatas.created_at',
                 'free_asset_status' => 'AssetDatas.free_asset_status',
-                'user_id' => 'ANY_VALUE(AssetAssignedEntries.user_id)',
-                'date_of_assign' => 'ANY_VALUE(AssetAssignedEntries.date_of_assign)',
-                'active' => 'ANY_VALUE(AssetAssignedEntries.active)',
-                'name' => 'ANY_VALUE(Users.name)',
-                'expenses_amount' => 'ANY_VALUE(AssetExpenses.expenses_amount)',
+                'user_id' => '(AssetAssignedEntries.user_id)',
+                'date_of_assign' => '(AssetAssignedEntries.date_of_assign)',
+                'active' => '(AssetAssignedEntries.active)',
+                'name' => '(Users.name)',
+                'expenses_amount' => '(AssetExpenses.expenses_amount)',
                 // 'user_id' => '(AssetAssignedEntries.user_id)',
                 // 'date_of_assign' => '(AssetAssignedEntries.date_of_assign)',
                 // 'active' => '(AssetAssignedEntries.active)',
@@ -146,11 +146,7 @@ class AssetAssignedEntriesController extends AppController
         $assetAssignedEntry = $this->AssetAssignedEntries->newEmptyEntity();
         if ($this->request->is('post')) {
 
-            // echo '<pre>';
-            // print_r($this->request->getData());
-            // die;
-
-            // $this->checkexists($this->request->getData("asset_id"));
+            // echo '<pre>'; print_r($this->request->getData()); die;
 
             $assetAssignedEntry->categories_id = $this->request->getData('categories_id');
             $assetAssignedEntry->asset_id = $this->request->getData('asset_id');
@@ -158,6 +154,9 @@ class AssetAssignedEntriesController extends AppController
             $assetAssignedEntry->date_of_assign = date("Y-m-d", strtotime($this->request->getData('assign_date')));
             
             if ($this->AssetAssignedEntries->save($assetAssignedEntry)) {
+                $this->AssetAssignedEntries->AssetDatas->updateAll(
+                    ['free_asset_status' => null], ['id' => $assetAssignedEntry->asset_id]
+                );
                 $this->Flash->success(__('The asset assigned entry has been saved.'));
                 if ($this->request->getData('redirect_page') === 'list') {
                     return $this->redirect([ 'action' => 'assetsList' ]);
@@ -900,160 +899,91 @@ class AssetAssignedEntriesController extends AppController
     }
 
     public function assetsDataFilter(){
-    if (!$this->request->is('GET')) {
-        return;
-    }
+        if (!$this->request->is('GET')) {
+            return;
+        }
 
-    $type = $this->request->getQuery('type');
-    $value = trim($this->request->getQuery('value') ?? '');
-    $to = trim($this->request->getQuery('to') ?? '');
+        $type = $this->request->getQuery('type');
+        $value = trim($this->request->getQuery('value') ?? '');
+        $to = trim($this->request->getQuery('to') ?? '');
 
-    $expenseQuery = $this->AssetDatas->AssetExpenses->find();
-    $assets = $this->AssetDatas->find();
+        $expenseQuery = $this->AssetDatas->AssetExpenses->find();
+        $assets = $this->AssetDatas->find();
 
-    $assets->select([
-        'AssetDatas.id',
-        'AssetDatas.product_name',
-        'AssetDatas.serial_number',
-        'AssetDatas.configuration',
-        'AssetDatas.asset_price',
-        'AssetDatas.free_asset_status',
-        'AssetDatas.date_of_purchase',
-        'AssetDatas.description',
-        'AssetDatas.created_at',
+        $assets->select([
+            'AssetDatas.id',
+            'AssetDatas.product_name',
+            'AssetDatas.serial_number',
+            'AssetDatas.configuration',
+            'AssetDatas.asset_price',
+            'AssetDatas.free_asset_status',
+            'AssetDatas.date_of_purchase',
+            'AssetDatas.description',
+            'AssetDatas.created_at',
 
-        // Category
-        'cat_name' => 'AssetCategories.cat_name',
+            // Category
+            'cat_name' => 'AssetCategories.cat_name',
 
+            // Expenses
+            // 'expense_id' => 'AssetExpenses.id',
+            // 'expense_amount' => 'AssetExpenses.expenses_amount',
+            'expense_amount' => $expenseQuery
+                ->select([ 'total' => $expenseQuery->func()->sum('expenses_amount') ])
+                ->where([ 'AssetExpenses.asset_id = AssetDatas.id' ]),
+
+            'assignment_id' => 'AssetAssignedEntries.id',
+            'user_id' => 'AssetAssignedEntries.user_id',
+            'asset_id' => 'AssetAssignedEntries.asset_id',
+            'date_of_assign' => 'AssetAssignedEntries.date_of_assign',
+            'dor' => 'AssetAssignedEntries.dor',
+            'active' => 'AssetAssignedEntries.active',
+            'asset_release_remark' => 'AssetAssignedEntries.asset_release_remark',
+
+            'user_name' => 'Users.name'
+        ])
+        ->leftJoin(
+            ['AssetCategories' => 'asset_categories'],
+            [ 'AssetCategories.id = AssetDatas.asset_categorie_id' ]
+        )
         // Expenses
-        // 'expense_id' => 'AssetExpenses.id',
-        // 'expense_amount' => 'AssetExpenses.expenses_amount',
-        'expense_amount' => $expenseQuery
-            ->select([ 'total' => $expenseQuery->func()->sum('expenses_amount') ])
-            ->where([ 'AssetExpenses.asset_id = AssetDatas.id' ]),
-
-        // Assignment
-        'assignment_id' => 'AssetAssignedEntries.id',
-        'user_id' => 'AssetAssignedEntries.user_id',
-        'asset_id' => 'AssetAssignedEntries.asset_id',
-        'date_of_assign' => 'AssetAssignedEntries.date_of_assign',
-        'dor' => 'AssetAssignedEntries.dor',
-        'active' => 'AssetAssignedEntries.active',
-        'asset_release_remark' => 'AssetAssignedEntries.asset_release_remark',
-
-        // User
-        'user_name' => 'Users.name'
-    ])
-
-    // Category
-    ->leftJoin(
-        ['AssetCategories' => 'asset_categories'],
-        [ 'AssetCategories.id = AssetDatas.asset_categorie_id' ]
-    )
-    // Expenses
-    // ->leftJoin(
-    //     ['AssetExpenses' => 'asset_expenses'],
-    //     [ 'AssetExpenses.asset_id = AssetDatas.id' ]
-    // )
-
-    // Active Assignment
-    ->leftJoin(
-        ['AssetAssignedEntries' => 'asset_assigned_entries'],
-        [ 'AssetAssignedEntries.asset_id = AssetDatas.id', 'AssetAssignedEntries.active' => 1 ]
-    )
-
-    // User
-    ->leftJoin(
-        ['Users' => 'users'],
-        [ 'Users.id = AssetAssignedEntries.user_id' ]
-    );
-
-    if ($type === 'category' && $value !== '') {
-        $assets->where([
-            'AssetCategories.cat_name LIKE' => '%' . $value . '%'
-        ]);
-
-    } elseif ($type === 'date_of_purchase') {
-        if ($value !== '') {
-            $assets->where([
-                'AssetDatas.date_of_purchase >=' => $value . ' 00:00:00'
-            ]);
-        }
-
-        if ($to !== '') {
-            $assets->where([
-                'AssetDatas.date_of_purchase <=' => $to . ' 23:59:59'
-            ]);
-        }
-
-    } elseif ($type === 'status' && $value !== '') {
-        $assets->where([
-            'AssetDatas.free_asset_status LIKE' => '%' . $value . '%'
-        ]);
-
-    } elseif ($type === 'assign' && $value !== '') {
-        $assets->where([ 'Users.name LIKE' => '%' . $value . '%' ]);
-    }
-
-    /*
-     * Same ordering as Assets List
-     */
-    $assets->order([
-        'AssetDatas.id' => 'DESC'
-    ]);
-
-    $assets = $assets->toArray();
-
-    $this->set(compact('assets'));
-
-    $this->render('filter_data_table_assets_list', 'ajax');
-}
-
-    //     if (!$this->request->is('GET')) {
-    //         return;
-    //     }
-
-    //     $type = trim($this->request->getQuery('type') ?? '');
-    //     $value = trim($this->request->getQuery('value') ?? '');
-    //     $to = trim($this->request->getQuery('to') ?? '');
-
-    //     $query = $this->AssetDatas->find()->contain([ 'AssetCategories', 'AssetExpenses', 'AssetAssignedEntries' => [ 'Users' ] ]);
-
-    //     $query->matching('AssetAssignedEntries', function ($q) {
-    //         return $q->where([
-    //             'AssetAssignedEntries.active' => 1
-    //         ]);
-    //     });
-
-    //     if ($type === 'category' && $value !== '') {
-    //         $query->matching('AssetCategories', function ($q) use ($value) {
-    //             return $q->where([ 'AssetCategories.cat_name LIKE' => '%' . $value . '%' ]);
-    //         });
-    //     }
-    //     elseif ($type === 'date_of_purchase') {
-    //         if ($value !== '') {
-    //             $query->where([ 'AssetDatas.date_of_purchase >=' => $value ]);
-    //         }
-    //         if ($to !== '') {
-    //             $query->where([ 'AssetDatas.date_of_purchase <=' => $to ]);
-    //         }
-    //     }
-    //     elseif ($type === 'status' && $value !== '') {
-    //         $query->where([ 'AssetDatas.free_asset_status LIKE' => '%' . $value . '%' ]);
-    //     }
-    //     elseif ($value !== '') {
-    //         $query->matching('AssetAssignedEntries.Users', function ($q) use ($value) {
-    //             return $q->where([ 'Users.name LIKE' => '%' . $value . '%' ]);
-    //         });
-    //     }
-
-    //     // $query->distinct([ 'AssetDatas.id' ]);
-
-    //     $assets = $query->toArray();
-
-    //     $this->set(compact('assets'));
+        // ->leftJoin(
+        //     ['AssetExpenses' => 'asset_expenses'],
+        //     [ 'AssetExpenses.asset_id = AssetDatas.id' ]
+        // )
         
-    //     $this->render('filter_data_table_assets_list', 'ajax');
-    // }
+        ->leftJoin(
+            ['AssetAssignedEntries' => 'asset_assigned_entries'],
+            [ 'AssetAssignedEntries.asset_id = AssetDatas.id', 'AssetAssignedEntries.active' => 1 ]
+        )
+        ->leftJoin(
+            ['Users' => 'users'],
+            [ 'Users.id = AssetAssignedEntries.user_id' ]
+        );
+        if ($type === 'category' && $value !== '') {
+            $assets->where(['AssetCategories.cat_name LIKE' => '%' . $value . '%']);
+        } elseif ($type === 'date_of_purchase') {
+            if ($value !== '') {
+                $assets->where(['AssetDatas.date_of_purchase >=' => $value . ' 00:00:00']);
+            }
+            if ($to !== '') {
+                $assets->where(['AssetDatas.date_of_purchase <=' => $to . ' 23:59:59']);
+            }
+
+        } elseif ($type === 'status' && $value !== '') {
+            if( $value == 'Assigned'){
+                $assets->where([ 'AssetAssignedEntries.active' => 1, 'AssetDatas.free_asset_status IS' => null ]);
+            }else{
+                $assets->where(['AssetDatas.free_asset_status LIKE' => '%' . $value . '%' ]);
+            }
+
+        } elseif ($type === 'assign' && $value !== '') {
+            $assets->where([ 'Users.name LIKE' => '%' . $value . '%' ]);
+        }
+
+        $assets->order([ 'AssetDatas.id' => 'DESC' ]);
+        $assets = $assets->toArray();
+        $this->set(compact('assets'));
+        $this->render('filter_data_table_assets_list', 'ajax');
+    }
 
 }

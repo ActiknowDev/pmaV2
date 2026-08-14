@@ -27,10 +27,12 @@
     }
 
     .status-assigned small {
-        color: #777;
+        color: #555;
         font-size: 10px;
         font-style: italic;
+        font-weight: 500;
         margin-top: 2px;
+        letter-spacing: 0.2px;
     }
    .lable{
         font-weight:600!important;
@@ -109,6 +111,58 @@
 
     }
     /* view assets modal end */
+    /* Category + Assigned To selectpicker */
+    .bootstrap-select {
+        width: 100% !important;
+    }
+
+    .bootstrap-select > .dropdown-toggle {
+        height: 35px !important;
+        min-height: 35px !important;
+        padding: 6px 12px !important;
+
+        background: #fff !important;
+        border: 1px solid #ced4da !important;
+        border-radius: 4px !important;
+
+        color: #495057 !important;
+        font-size: 14px !important;
+
+        box-shadow: none !important;
+    }
+
+    /* Remove Bootstrap Select's default caret styling */
+    .bootstrap-select > .dropdown-toggle::after {
+        margin-left: 0.5em;
+        vertical-align: middle;
+    }
+
+    /* Text inside dropdown */
+    .bootstrap-select .filter-option-inner-inner {
+        color: #495057 !important;
+        line-height: 21px !important;
+    }
+
+    /* Placeholder */
+    .bootstrap-select .filter-option-inner-inner:empty {
+        color: #6c757d !important;
+    }
+
+    /* Focus */
+    .bootstrap-select > .dropdown-toggle:focus,
+    .bootstrap-select > .dropdown-toggle:active {
+        outline: none !important;
+        box-shadow: none !important;
+    }
+    #categoryFilter + .bootstrap-select > .dropdown-toggle,
+    #assignFilter + .bootstrap-select > .dropdown-toggle {
+        height: 35px !important;
+        padding: 6px 12px !important;
+        background-color: #fff !important;
+        border: 1px solid #ced4da !important;
+        border-radius: 4px !important;
+        box-shadow: none !important;
+    }
 </style>
 
 <section class="page page-dashboard">
@@ -146,33 +200,28 @@
     </div>
 
 
-    <?= $this->Flash->render() ?>
     <!-- PAGE-CONTENT -->
     <div class="page-content">
         <div class="container">
+        <?= $this->Flash->render() ?>
 
-
-        <div class="row">
+            <div class="row">
                 <div class="col">
                     <label>Category</label>
-                    <select id="categoryFilter" class="form-control" onchange="filterData(this.value,'category')">
+                    <select id="categoryFilter" class="form-control selectpicker" data-live-search="true" data-size="8" onchange="filterData(this.value,'category')">
                         <option value="">Select Category</option>
                         <?php foreach ($assetCategories as $catVal) { ?>
-                            <option value="<?= $catVal->cat_name ?>">
-                                <?= $catVal->cat_name ?>
-                            </option>
+                            <option value="<?= $catVal->cat_name ?>"> <?= $catVal->cat_name ?> </option>
                         <?php } ?>
                     </select>
                 </div>
 
                 <div class="col">
                     <label>Assigned To</label>
-                    <select id="assignFilter" class="form-control" data-live-search="true" onchange="filterData(this.value,'assign')">
+                    <select id="assignFilter" class="form-control selectpicker" data-live-search="true" data-size="8" onchange="filterData(this.value,'assign')">
                         <option value="">Select Employee</option>                        
                         <?php foreach ($user_data as $id => $name): ?>
-                            <option value="<?= h($name) ?>">
-                                <?= h($name) ?>
-                            </option>
+                            <option value="<?= h($name) ?>"> <?= h($name) ?> </option>
                         <?php endforeach; ?>
                     </select>
                 </div>
@@ -181,6 +230,7 @@
                     <label>Status</label>
                     <select id="statusFilter"class="form-control" onChange="filterData(this.value,'status')">
                         <option value=''>Select</option>
+                        <option value='Assigned'>Assigned</option>
                         <option value='Free & Available'>Free & Available</option>
                         <option value='Free & Need to Repair'>Free & Need to Repair</option>
                         <option value='Dead'>Dead</option>
@@ -190,22 +240,20 @@
                 <div class="col">
                     <label>Date of Purchase From</label>
                     <input type="text" class="datepicker1 form-control" onchange="filterData(this.value,'date_of_purchase')"
-                         id="date_from" autocomplete="off" placeholder="Date of Purchase From">
+                            id="date_from" autocomplete="off" placeholder="Date of Purchase From">
                 </div>
 
                 <div class="col">
                     <label>Date of Purchase To</label>
                     <input type="text" class="datepicker1 form-control" onchange="filterData(this.value,'date_of_purchase')"
-                         id="date_to" autocomplete="off" placeholder="Date of Purchase To">
+                            id="date_to" autocomplete="off" placeholder="Date of Purchase To">
                 </div>
             </div>
-
             <hr class="dark">
-
 
             <div class="row">
                 <div class="col-md-12">
-                    <table data-page-length='25' class="table table-light nowrap table-sm" id="example"
+                    <table data-page-length='25' class="table table-light nowrap table-sm" id="AssetsListTable"
                         style="width:100%">
                         <thead>
                             <tr>
@@ -306,6 +354,7 @@
                     </table>
                 </div>
             </div>
+            
         </div>
     </div>
 </section>
@@ -524,15 +573,8 @@
     <div class="modal-dialog" role="document">
         <div class="modal-content">
 
-            <?= $this->Form->create(null, [
-                'url' => [
-                    'controller' => 'AssetAssignedEntries',
-                    'action' => 'add'
-                ]
-            ]) ?>
-            <?= $this->Form->hidden('redirect_page', [
-                'value' => 'list'
-            ]) ?>
+            <?= $this->Form->create(null, ['url' => ['controller' => 'AssetAssignedEntries', 'action' => 'add'] ]) ?>
+            <?= $this->Form->hidden('redirect_page', ['value' => 'list']) ?>
             <div class="modal-header">
                 <h5 class="modal-title">Assign Asset</h5>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
@@ -546,15 +588,11 @@
                             <label for="">Assigned To</label>
                             <div class="adon-group">
                                 <span class="icon ft-primary"><i class="fa fa-toolbox"></i></span>
-                                <select name="user_id" class="form-control assignEmp" data-live-search="true">
-                                    <option value="">Select Employee</option>
-                                    
+                                <select name="user_id" class="form-control assignEmp" data-live-search="true" required>
+                                    <option value="">Select Employee</option>                                    
                                     <?php foreach ($user_data as $id => $name): ?>
-                                        <option value="<?= h($id) ?>">
-                                            <?= h($name) ?>
-                                        </option>
+                                        <option value="<?= h($id)?>"> <?= h($name) ?></option>
                                     <?php endforeach; ?>
-                                    ?>
                                 </select>
                             </div>
                         </div>
@@ -565,18 +603,8 @@
                             <label for="">Category</label>
                             <div class="adon-group">
                                 <span class="icon ft-primary"><i class="fa fa-toolbox"></i></span>
-                                <input type="text"
-                                    id="a_category"
-                                    class="form-control"
-                                    placeholder="Category"
-                                    readonly>
-
-                                <!-- Category ID submitted to PHP -->
-                                <input type="hidden"
-                                    name="categories_id"
-                                    id="a_category_id">
-
-                                </select>
+                                <input type="text" id="a_category" class="form-control" placeholder="Category" readonly>
+                                <input type="hidden" name="categories_id" id="a_category_id">
                             </div>
                         </div>
                     </div>
@@ -586,19 +614,8 @@
                             <label for="">Asset</label>
                             <div class="adon-group">
                                 <span class="icon ft-primary"><i class="fa fa-toolbox"></i></span>
-                                <!-- Display asset name -->
-                                <input type="text"
-                                    id="a_asset"
-                                    class="form-control"
-                                    placeholder="Asset"
-                                    readonly>
-
-                                <!-- Asset ID submitted to PHP -->
-                                <input type="hidden"
-                                    name="asset_id"
-                                    id="a_asset_id">
-
-                                </select>
+                                <input type="text" id="a_asset" class="form-control" placeholder="Asset" readonly>
+                                <input type="hidden" name="asset_id" id="a_asset_id">
                             </div>
                         </div>
                     </div>
@@ -689,6 +706,13 @@
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.0/jquery.validate.js"></script>
 <script>
+    var assetTable;
+    $(document).ready(function () {
+        assetTable = $("#AssetsListTable").DataTable({
+            scrollX: true,
+            pageLength: 100,
+        });
+    });
     $(document).ready(() => {
 
         $(".datepicker1").datepicker({
@@ -772,12 +796,16 @@
         // Open modal
         $("#releaseAssetModal").modal("show");
     });
-    function filterData(value, type) {
+    $(document).ready(function () {
+        $('#categoryFilter, #assignFilter').selectpicker();
+    });
+    function filterData(value, type, page = 1) {
         var from = "";
         var to = "";
 
         if (type == 'category') {
-            $("#assignFilter").val("");
+            // $("#assignFilter").val("");
+            $("#assignFilter").selectpicker('val', '');
             $("#statusFilter").val("");
             $("#date_from").val("");
             $("#date_to").val("");
@@ -785,7 +813,8 @@
 
         // Assigned To filter
         else if (type == 'assign') {
-            $("#categoryFilter").val("");
+            // $("#categoryFilter").val("");
+            $("#categoryFilter").selectpicker('val', '');
             $("#statusFilter").val("");
             $("#date_from").val("");
             $("#date_to").val("");
@@ -793,33 +822,26 @@
 
         // Status filter
         else if (type == 'status') {
-            $("#categoryFilter").val("");
-            $("#assignFilter").val("");
+            // $("#categoryFilter").val("");
+            $("#categoryFilter").selectpicker('val', '');
+            // $("#assignFilter").val("");
+            $("#assignFilter").selectpicker('val', '');
             $("#date_from").val("");
             $("#date_to").val("");
         }
 
         // Date of Purchase filter
         else if (type == 'date_of_purchase') {
-
-            // Reset OTHER filters
-            $("#categoryFilter").val("");
-            $("#assignFilter").val("");
+            // $("#categoryFilter").val("");
+            $("#categoryFilter").selectpicker('val', '');
+            // $("#assignFilter").val("");
+            $("#assignFilter").selectpicker('val', '');
             $("#statusFilter").val("");
 
-            // Keep both date fields
             from = $("#date_from").val();
             to = $("#date_to").val();
-
             value = from;
         }
-
-        // var to ;
-        // if (type == 'date_of_purchase') {
-        //     var from = $("#date_from").val();
-        //     to = $("#date_to").val();
-        //     value = from;
-        // }
 
         $.ajax({
             url: "<?= $this->Url->build(['controller' => 'AssetAssignedEntries', 'action' => 'assetsDataFilter']) ?>",
@@ -827,14 +849,19 @@
             data: {
                 type,
                 value,
-                to
+                to,
+                page: page
             },
             beforeSend: function() {
                 $.LoadingOverlay("show")
             },
             success: function(res) {
+                // $("#filterData").html(res);
+                // $.LoadingOverlay("hide")
+                assetTable.clear();
                 $("#filterData").html(res);
-                $.LoadingOverlay("hide")
+                assetTable.rows.add($("#filterData tr")).draw();
+                $.LoadingOverlay("hide");
             },
             error: function() {
                 $.LoadingOverlay("hide");

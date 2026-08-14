@@ -22,10 +22,7 @@
             <?= $this->Flash->render() ?>
             <div class="row">
                 <div class="col-md-12">
-                    <?= $this->Form->create(null, ['url' => [
-                        'controller' => 'AssetAssignedEntries',
-                        'action' => 'editAssignAssetData'
-                    ]]) ?>
+                    <?= $this->Form->create(null, ['url' => [ 'controller' => 'AssetAssignedEntries', 'action' => 'editAssignAssetData' ]]) ?>
                     <div class="block">
                         <div class="header">
                             <h4 class="title">Edit Asset</h4>
@@ -58,14 +55,9 @@
                                         <div class="adon-group pname">
                                             <select name="categories_id" id="assetCat" onchange="assetNameSelect(this.value)" class="form-control" required=true>
                                                 <option value='0'>Select Category</option>
-                                                <?php
-                                                foreach ($assetCategories as $value) :
-                                                ?>
-                                                    <option value="<?= $value->id ?>" <?= $value->id == $AssetCategory->id ? 'selected' : null ?>>
-                                                        <?= $value->cat_name ?></option>
-                                                <?php
-                                                endforeach;
-                                                ?>
+                                                <?php foreach ($assetCategories as $value) : ?>
+                                                    <option value="<?= $value->id ?>" <?= $value->id == $AssetCategory->id ? 'selected' : null ?>>  <?= $value->cat_name ?></option>
+                                                <?php endforeach; ?>
                                             </select>
                                         </div>
                                     </div>
@@ -155,9 +147,9 @@
                                                 <select name="free_asset_status" id="free_asset_status" class="form-control" required=true>
                                                     <?php if(!empty($AssetDatas->free_asset_status)){ ?>
                                                         <option value='<?= $AssetDatas->free_asset_status ?>' selected hidden><?= $AssetDatas->free_asset_status ?></option>
-                                                <?php  } else { ?>
-                                                    <option value='' selected>Select</option>
-                                                <?php } ?>
+                                                    <?php  } else { ?>
+                                                        <option value='' selected>Select</option>
+                                                    <?php } ?>
                                                     <option value='Free & Available'>Free & Available</option>
                                                     <option value='Free & Need to Repair'>Free & Need to Repair</option>
                                                     <option value='Dead'>Dead</option>
@@ -311,15 +303,11 @@
                             <label for="">Assigned To</label>
                             <div class="adon-group">
                                 <span class="icon ft-primary"><i class="fa fa-toolbox"></i></span>
-                                <select name="user_id" class="form-control assignEmp" data-live-search="true">
+                                <select name="user_id" class="form-control assignEmp" data-live-search="true" required>
                                     <option value="">Select Employee</option>
-                                    <?php
-                                    foreach ($user_data as $emp) :
-                                    ?>
+                                    <?php foreach ($user_data as $emp) : ?>
                                         <option value="<?= $emp->id ?>"><?= $emp->name ?></option>
-                                    <?php
-                                    endforeach;
-                                    ?>
+                                    <?php endforeach; ?>
                                 </select>
                             </div>
                         </div>
