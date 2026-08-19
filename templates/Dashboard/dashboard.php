@@ -430,12 +430,13 @@
         $('#milestonesTable').DataTable();
         $('#employeeTable').DataTable();
         $('#gitTable').DataTable(
-            // {
-            //     pageLength: 10,
-            //     searching: false,
-            //     lengthChange: false,
-            //     ordering: true
-            // }
+            {
+                pageLength: 10,
+                searching: false,
+                lengthChange: false,
+                ordering: true,
+                order: [[3, 'desc']]
+            }
         );
 
     //     fetch('http://44.230.62.131:5016/github-report?days=7')
