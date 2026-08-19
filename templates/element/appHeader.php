@@ -32,6 +32,7 @@ $menu = $session->read('menu');
                         <!-- <?= $this->Html->link('Employee Attendance', '/employee-attendance', ['class' => 'link']); ?> -->
                         <?= $this->Html->link('Employee Leaves', '/users/user-total-leave-report', ['class' => 'link']); ?>
                         <?= $this->Html->link('Employee Score Card', ['class' => 'link', 'controller' => 'ScoreCard', 'action' => 'index']) ?>
+                        <?= $this->Html->link('PMA Dashboard', ['class' => 'link', 'controller' => 'Dashboard', 'action' => 'dashboard']) ?>
                    
                     </div>
                     </li>

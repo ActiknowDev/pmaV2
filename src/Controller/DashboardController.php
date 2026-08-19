@@ -4,6 +4,7 @@ use Cake\ORM\Query;
 use Cake\Database\Expression\QueryExpression;
 use Cake\Datasource\ConnectionManager;
 // use Cake\Datasource\ConnectionManager;
+use Cake\Http\Client;
 
 class DashboardController extends AppController
 {
@@ -655,5 +656,694 @@ class DashboardController extends AppController
         return $differenceInDays;
     }
 
+
+    public function dashboard($projectType = null)
+    {
+        $this->viewBuilder()->setLayout('default_new');
+        $this->Authorization->skipAuthorization();
+        $conn = \Cake\Datasource\ConnectionManager::get('default');
+        $this->Projects = $this->fetchTable('Projects');
+
+        /*
+        * ---------------------------------------------------------
+        * SESSION / USER
+        * ---------------------------------------------------------
+        */
+
+        $session = $this->request->getSession();
+        $userSession = $session->read('data');
+        // echo "<pre>";print_r($userSession);die('dj');
+
+        $userId   = (int)($userSession['id'] ?? 0);
+        $role     = (int)($userSession['role'] ?? 0);
+        $parentId = (int)($userSession['parent_id'] ?? 0);
+
+        $session->write('managerId', $userId);
+        $session->write('page', 'myproject');
+
+        /*
+        * ---------------------------------------------------------
+        * PROJECT WHERE CONDITION
+        * ---------------------------------------------------------
+        */
+
+        $where = " p.deleted = 1 AND p.status != 'Completed' and p.active = 1";
+        $params = [];
+
+        
+
+        $query = " SELECT p.*,
+                c.client_name AS client_name,
+                pm.name AS project_manager
+            FROM projects p
+            LEFT JOIN users c
+                ON p.client_id = c.id
+            LEFT JOIN users pm
+                ON p.project_manager_id = pm.id
+            WHERE {$where} AND project_name Not Like '%Internal Projects%' AND project_name Not Like '%General Tasks - Non Billable%'
+            ORDER BY p.id DESC
+        ";
+        $stmt = $conn->execute($query, $params);
+       // echo "<pre>";print_r($stmt);die('   kldgfvkl     ');
+        $projectList = $stmt->fetchAll('assoc');
+
+        /*
+        * ---------------------------------------------------------
+        * PROJECT IDS
+        * ---------------------------------------------------------
+        */
+
+        $projectIds = [];
+        foreach ($projectList as $project) {
+            $projectIds[] = (int)$project['id'];
+        }
+
+        /*
+        * ---------------------------------------------------------
+        * DEFAULT DASHBOARD VALUES
+        * ---------------------------------------------------------
+        */
+
+        $projects = [];
+
+        $total = 0;
+        $complete = 0;
+        $myActive = 0;
+
+        $totalHours = 0;
+        $allocatedHours = 0;
+
+        $billableHours = 0;
+        $nonBillableHours = 0;
+
+        $billableProjects = 0;
+        $nonBillableProjects = 0;
+
+        $projectTypes = [];
+
+        $milestoneData = [];
+        if (!empty($projectIds)) {
+
+            $placeholders = [];
+            $milestoneParams = [];
+            foreach ($projectIds as $index => $id) {
+                $placeholders[] = ":project_id_" . $index;
+                $milestoneParams["project_id_" . $index] = $id;
+            }
+            $milestoneSql = "SELECT
+                    project_id,
+                    title,
+                    status,
+                    COALESCE(SUM(amount), 0) AS total_amount,
+                    SUM( CASE WHEN due_date < CURDATE() AND status != 'Completed' THEN 1 ELSE 0 END ) AS overdue,
+                    SUM( CASE WHEN due_date >= CURDATE() AND due_date <= DATE_ADD(CURDATE(), INTERVAL 15 DAY) AND status != 'Completed' THEN 1 ELSE 0 END ) AS due
+                FROM project_milestones
+                WHERE deleted = 0
+                AND project_id IN (" . implode(',', $placeholders) . ")
+                GROUP BY project_id, title, status
+            ";
+
+            $stmt = $conn->execute( $milestoneSql, $milestoneParams );
+            // echo "<pre>";print_r($stmt);die();
+
+            foreach ($stmt->fetchAll('assoc') as $row) {
+                $milestoneData[(int)$row['project_id']] = [
+                    'amount' => (float)$row['total_amount'],
+                    'overdue' => (int)$row['overdue'],
+                    'due' => (int)$row['due'],
+                    'status' => (string)$row['status'],
+                    'title' => (string)$row['title'],
+                ];
+            }
+            // echo "<pre>";print_r($milestoneData);die();
+
+        }
+
+            ////////////////////////////////////// PAYMENT DATA/////////////////////////////////////////
+            $paymentData = [];
+            if (!empty($projectIds)) {
+                $placeholders = [];
+                $paymentParams = [];
+
+                foreach ($projectIds as $index => $id) {
+                    $key = "payment_project_" . $index;
+                    $placeholders[] = ":" . $key;
+                    $paymentParams[$key] = $id;
+                }
+                $paymentSql = " SELECT project_id,
+                                COALESCE(SUM(receive_amt), 0) AS paid
+                                FROM project_payments
+                                WHERE status = 'Paid'
+                                AND project_id IN (" . implode(',', $placeholders) . ")
+                                GROUP BY project_id
+                            ";
+                $stmt = $conn->execute( $paymentSql, $paymentParams );
+                foreach ($stmt->fetchAll('assoc') as $row) {
+                    $paymentData[(int)$row['project_id']] = (float)$row['paid'];
+                }
+            }
+
+            // ACTUAL HOURS//////////////////////////////////
+
+            $actualHoursData = [];
+            if (!empty($projectIds)) {
+                $placeholders = [];
+                $hoursParams = [];
+                foreach ($projectIds as $index => $id) {
+                    $key = "hours_project_" . $index;
+                    $placeholders[] = ":" . $key;
+                    $hoursParams[$key] = $id;
+                }
+
+                $actualHoursSql = " SELECT pm.project_id,
+                        COALESCE( SUM(ut.time_used), 0 ) AS actual_hours
+                    FROM user_timesheets ut
+                    INNER JOIN project_milestones pm
+                        ON pm.id = ut.milestone_id
+                    WHERE pm.project_id IN (
+                        " . implode(',', $placeholders) . "
+                    )
+                    GROUP BY pm.project_id
+                ";
+
+                $stmt = $conn->execute( $actualHoursSql, $hoursParams);
+                foreach ($stmt->fetchAll('assoc') as $row) {
+                    $actualHoursData[(int)$row['project_id']] = (float)$row['actual_hours'];
+                }
+            }
+
+            /*
+            * ---------------------------------------------------------
+            * ALLOCATED HOURS
+            * ---------------------------------------------------------
+            */
+
+            $allocatedHoursData = [];
+
+            if (!empty($projectIds)) {
+
+                $placeholders = [];
+                $allocationParams = [];
+
+                foreach ($projectIds as $index => $id) {
+                    $key = "allocation_project_" . $index;
+                    $placeholders[] = ":" . $key;
+                    $allocationParams[$key] = $id;
+                }
+
+                $allocatedHoursSql = " SELECT
+                        pm.project_id,
+                        COALESCE( SUM(pa.time_slot), 0 ) AS allocated_hours
+                        FROM project_allocations pa
+                        INNER JOIN project_milestones pm
+                            ON pm.id = pa.milestone_id
+                        WHERE pm.project_id IN ( " . implode(',', $placeholders) . " )
+                        GROUP BY pm.project_id
+                    ";
+
+                $stmt = $conn->execute( $allocatedHoursSql, $allocationParams );
+
+                foreach ($stmt->fetchAll('assoc') as $row) {
+                    $allocatedHoursData[(int)$row['project_id']] = (float)$row['allocated_hours'];
+                }
+            }
+
+            /*
+            * ---------------------------------------------------------
+            * BUILD PROJECT ARRAY
+            * ---------------------------------------------------------
+            */
+            // echo "<pre>";print_r($projectList);die();
+            foreach ($projectList as $l) {
+
+                $projectId = (int)$l['id'];
+
+                $milestone = $milestoneData[$projectId] ?? [ 'amount' => 0, 'overdue' => 0, 'due' => 0, ];
+
+                $amount = $milestone['amount'];
+                $paid = $paymentData[$projectId] ?? 0;
+                $actualHours = $x[$projectId] ?? 0;
+                $projectAllocatedHours = $allocatedHoursData[$projectId] ?? 0;
+
+                /*
+                * Project type
+                */
+
+                $type = !empty($l['project_type']) ? $l['project_type'] : 'Other';
+
+                if (!isset($projectTypes[$type])) {
+                    $projectTypes[$type] = 0;
+                }
+
+                $projectTypes[$type]++;
+
+
+                /*
+                * Billable / non-billable project
+                */
+
+                if ((float)$l['hourly_rate'] > 0) {
+                    $billableProjects++;
+                } else {
+                    $nonBillableProjects++;
+                }
+
+
+                /*
+                * Hours
+                */
+
+                $totalHours += $actualHours;
+                $allocatedHours += $projectAllocatedHours;
+
+                /*
+                * Format dates
+                */
+
+                $awardDate = '';
+                if (!empty($l['awarded_on'])) {
+                    $awardDate = date( 'd F Y', strtotime($l['awarded_on']) );
+                }
+
+                $dueDate = '';
+                if (!empty($l['due_date'])) {
+                    $dueDate = date( 'd-m-Y', strtotime($l['due_date']) );
+                }
+
+
+                /*
+                * Budget
+                */
+
+                if ((float)$l['hourly_rate'] == 0) {
+                    $budget = 'Na';
+
+                } else {
+                    $budget = $amount / (float)$l['hourly_rate'];
+                }
+
+
+                /*
+                * Final project array
+                */
+
+                $p = [];
+                $p['id'] = $projectId;
+                $p['project_name'] = $l['project_name'];
+                $p['client_id'] = $l['client_id'];
+                $p['client'] = $l['client_name'] ?? '';
+                $p['project_manager'] = $l['project_manager'] ?? '';
+                $p['award'] = $awardDate;
+                $p['due_date'] = $dueDate;
+                $p['type'] = $type;
+                $p['hourly_rate'] = (float)$l['hourly_rate'];
+                $p['amount'] = $amount;
+                $p['paid'] = $paid;
+                $p['status'] = $l['status'];
+                $p['active'] = $l['active'];
+                $p['overdue'] = $milestone['overdue'];
+                $p['due'] = $milestone['due'];
+                $p['pm_amount'] = $amount;
+                $p['actual_hours'] = $actualHours;
+                $p['allocated_hours'] = $projectAllocatedHours;
+                $p['budget'] = $budget;
+
+                $projects[] = $p;
+
+                /*
+                * Counters
+                */
+
+                $total++;
+
+                if ($l['status'] === 'Pending') {
+                    $myActive++;
+                } else {
+                    $complete++;
+                }
+            }
+
+
+            /*
+            * ---------------------------------------------------------
+            * BILLABLE / NON BILLABLE HOURS
+            * ---------------------------------------------------------
+            *
+            * For now:
+            *
+            * Actual timesheet hours = billable hours
+            * Allocated - actual = non-billable/remaining hours
+            *
+            * If your application has a specific billable flag on
+            * timesheets, we should change this calculation.
+            */
+
+            $billableHours = $totalHours;
+
+            $nonBillableHours = max( 0, $allocatedHours - $totalHours );
+
+            /*
+            * ---------------------------------------------------------
+            * PENDING / OVERDUE MILESTONES
+            * ---------------------------------------------------------
+            */
+
+            $pendingMilestones = [];
+
+            if (!empty($projectIds)) {
+
+                $placeholders = [];
+                $pendingParams = [];
+
+                foreach ($projectIds as $index => $id) {
+                    $key = "pending_project_" . $index;
+                    $placeholders[] = ":" . $key;
+                    $pendingParams[$key] = $id;
+                }
+
+                $pendingSql = " SELECT
+                        m.*,
+                        p.project_name,
+                        pm.name AS project_manager
+                    FROM project_milestones m
+                    INNER JOIN projects p
+                        ON p.id = m.project_id
+                    LEFT JOIN users pm
+                        ON pm.id = p.project_manager_id
+                    WHERE m.deleted = 0
+                    AND m.status != 'Completed'
+                    AND m.due_date < CURDATE()
+                    AND m.project_id IN ( " . implode(',', $placeholders) . " )
+                    ORDER BY m.due_date ASC
+                ";
+
+                $stmt = $conn->execute( $pendingSql, $pendingParams );
+                $pendingMilestones = $stmt->fetchAll('assoc');
+            }
+
+            $pendingMilestoneCount = count($pendingMilestones);
+
+            /*
+            * ---------------------------------------------------------
+            * EMPLOYEE DATA
+            * ---------------------------------------------------------
+            * 
+            * Working hours = 8 hours per working day.
+            */
+
+            $employees = [];
+
+            /*
+            * Number of working days from beginning of current month
+            * until today.
+            */
+            // $monthStart = date('Y-m-01');
+            // $today = date('Y-m-d');
+            // $workingDays = 0;
+            // $periodStart = new \DateTime($monthStart);
+            // $periodEnd = new \DateTime($today);
+
+            // while ($periodStart <= $periodEnd) {
+            //     $dayOfWeek = (int)$periodStart->format('N');
+            //     if ($dayOfWeek <= 5) {
+            //         $workingDays++;
+            //     }
+            //     $periodStart->modify('+1 day');
+            // }
+            // $availableWorkingHours = $workingDays * 8;
+            $monthStart = date('Y-m-01');
+            $today      = date('Y-m-d');
+            $dailyRequiredHours = 8;
+            $periodStart = new \DateTime($monthStart);
+            $periodEnd   = new \DateTime($today);
+            // Get holidays that overlap this month/current period
+            $this->Holidays = $this->fetchTable('Holidays');
+            $holidays = $this->Holidays->find()->where([ 'deleted' => 0, 'start <=' => $today, 'end >='   => $monthStart ])->all();
+            $holidayDates = [];
+
+            foreach ($holidays as $holiday) {
+                $holidayStart = new \DateTime($holiday->start);
+                $holidayEnd   = new \DateTime($holiday->end);
+                // Restrict holiday range to current calculation period
+                if ($holidayStart < $periodStart) {
+                    $holidayStart = clone $periodStart;
+                }
+                if ($holidayEnd > $periodEnd) {
+                    $holidayEnd = clone $periodEnd;
+                }
+                while ($holidayStart <= $holidayEnd) {
+                    // Only weekdays are relevant
+                    if ((int)$holidayStart->format('N') <= 5) {
+                        $holidayDates[$holidayStart->format('Y-m-d')] = true;
+                    }
+                    $holidayStart->modify('+1 day');
+                }
+            }
+            // Calculate working days
+            $workingDays = 0;
+            while ($periodStart <= $periodEnd) {
+                $date = $periodStart->format('Y-m-d');
+                $dayOfWeek = (int)$periodStart->format('N');
+                // Monday-Friday and not a company holiday
+                if ($dayOfWeek <= 5 && !isset($holidayDates[$date])) {
+                    $workingDays++;
+                }
+                $periodStart->modify('+1 day');
+            }
+            $availableWorkingHours = $workingDays * $dailyRequiredHours;
+            
+
+            /*
+            * Employee condition
+            */
+            $employeeWhere = "u.id > 0 AND
+            u.status = 1 AND 
+            u.deleted = 1 AND 
+            (
+                FIND_IN_SET('5', u.role_name)
+                OR FIND_IN_SET('6', u.role_name)
+                OR FIND_IN_SET('7', u.role_name)
+                OR FIND_IN_SET('8', u.role_name)
+            ) ";
+            $employeeParams = [];
+
+            if ($role == 1) {
+                $employeeWhere .= " AND u.company_id = :employee_company";
+                $employeeParams['employee_company'] = $userId;
+
+            } elseif ($role == 3) {
+                $employeeWhere .= " AND u.company_id = :employee_company";
+                $employeeParams['employee_company'] = $parentId;
+            }
+
+            /*
+            * Employee query
+            *
+            * Actual occupied hours are calculated from timesheets.
+            */
+
+            $employeeSql = "SELECT u.id, u.name, u.role_name,
+                        COALESCE(
+                            SUM(
+                                CASE
+                                    WHEN p.bill = 'Billable'
+                                        AND ut.work_date >= DATE_FORMAT(CURDATE(), '%Y-%m-01')
+                                        AND ut.work_date <= CURDATE()
+                                    THEN ut.time_used
+                                    ELSE 0
+                                END
+                            ),
+                            0
+                        ) AS occupied_hours
+                    FROM users u
+                    LEFT JOIN user_timesheets ut
+                        ON ut.resource_id = u.id
+                    LEFT JOIN project_milestones pm
+                        ON pm.id = ut.milestone_id
+                    LEFT JOIN projects p
+                        ON p.id = pm.project_id
+                    WHERE {$employeeWhere}
+                    GROUP BY u.id, u.name, u.role_name
+                    ORDER BY u.name ASC";
+                // echo "<pre>";
+                // print_r($employeeSql);
+                // print_r($employeeParams);
+
+            try {
+
+                $stmt = $conn->execute( $employeeSql, $employeeParams );
+                $employeeList = $stmt->fetchAll('assoc');
+
+                foreach ($employeeList as $employee) {
+
+                    $occupiedHours = (float)$employee['occupied_hours'];
+                    $totalEmployeeHours = $availableWorkingHours;
+
+                    if ($totalEmployeeHours > 0) {
+                        $occupancy = ($occupiedHours / $totalEmployeeHours) * 100;
+                    } else {
+                        $occupancy = 0;
+                    }
+
+                    $occupancy = min(100, max(0, $occupancy));
+                    // $availability = max(0, 100 - $occupancy);
+                    if ($totalEmployeeHours > 0) {
+                        $availability = (($totalEmployeeHours - $occupiedHours) / $totalEmployeeHours) * 100;
+                    } else {
+                        $availability = 0;
+                    }
+                    $availability = min(100, max(0, $availability));
+
+                    if ($occupancy >= 80) {
+                        $status = 'High Load';
+                    } elseif ($occupancy >= 60) {
+                        $status = 'Normal';
+                    } else {
+                        $status = 'Available';
+                    }
+
+                    $employees[] = [
+                        'id' => (int)$employee['id'],
+                        'name' => $employee['name'] ?? '',
+                        'role_name' => $employee['role_name'] ?? '',
+                        'total_hours' => $totalEmployeeHours,
+                        'occupied_hours' => $occupiedHours,
+                        'occupancy' => $occupancy,
+                        'availability' => $availability,
+                        'status' => $status,
+                    ];
+                }
+
+            } catch (\Exception $e) {
+                /*
+                * If your users table doesn't have role/status or
+                * the employee schema differs, don't break the
+                * complete dashboard.
+                */
+                $employees = [];
+            }
+
+
+            /*
+            * ---------------------------------------------------------
+            * AVERAGE AVAILABILITY
+            * ---------------------------------------------------------
+            */
+
+            $averageAvailability = 0;
+
+            if (!empty($employees)) {
+                $availabilityTotal = 0;
+
+                foreach ($employees as $employee) {
+                    $availabilityTotal += $employee['availability'];
+                }
+                $averageAvailability = $availabilityTotal / count($employees);
+            }
+
+
+            /*
+            * ---------------------------------------------------------
+            * GENERAL PROJECT COUNTS
+            * ---------------------------------------------------------
+            */
+
+            $my = count($projects);
+
+            /*
+            * Total company projects
+            */
+
+            // $countWhere = [ 'p.deleted = 1' ];
+            // $countParams = [];
+
+            // if ($role == 1) {
+            //     $countWhere[] = 'p.user_id = :count_user';
+            //     $countParams['count_user'] = $userId;
+
+            // } elseif ($role == 3) {
+            //     $countWhere[] = 'p.user_id = :count_user';
+            //     $countParams['count_user'] = $parentId;
+            // }
+
+            // $countSql = " SELECT COUNT(*) AS total
+            //     FROM projects p
+            //     WHERE " . implode(' AND ', $countWhere);
+
+            // $stmt = $conn->execute( $countSql, $countParams );
+            // $countRow = $stmt->fetch('assoc');
+            // $count = (int)($countRow['total'] ?? 0);
+
+            /*
+            * ---------------------------------------------------------
+            * ACTIVE COMPANY PROJECTS
+            * ---------------------------------------------------------
+            */
+
+            // $activeWhere = [ 'p.deleted = 1', 'p.active = 1' ];
+            // $activeParams = [];
+
+            // if ($role == 1) {
+            //     $activeWhere[] = 'p.user_id = :active_user';
+            //     $activeParams['active_user'] = $userId;
+
+            // } elseif ($role == 3) {
+            //     $activeWhere[] = 'p.user_id = :active_user';
+            //     $activeParams['active_user'] = $parentId;
+            // }
+
+
+            // $activeSql = " SELECT COUNT(*) AS total FROM projects p WHERE " . implode(' AND ', $activeWhere);
+            // $stmt = $conn->execute( $activeSql, $activeParams );
+            // $activeRow = $stmt->fetch('assoc');
+            // $active = (int)($activeRow['total'] ?? 0);
+
+
+        /*
+        * ---------------------------------------------------------
+        * gitHub DATA TO VIEW
+        * ---------------------------------------------------------
+        */
+        $githubData = [];
+        try {
+            $http = new Client();
+            $response = $http->get('http://44.230.62.131:5016/github-report?days=7');
+            if ($response->isOk()) {
+                $apiResponse = $response->getJson();
+                if ( !empty($apiResponse['success']) && !empty($apiResponse['data']) ) {
+                    $githubData = $apiResponse['data'];
+                }
+            }
+        } catch (\Exception $e) {
+            $githubData = [];
+        }
+        /*
+        * ---------------------------------------------------------
+        * FINAL DATA TO VIEW
+        * ---------------------------------------------------------
+        */
+
+        $this->set(compact( 
+            'projects', 
+            'total', 
+            // 'active', 
+            // 'complete', 
+            // 'my', 
+            // 'count',
+            // 'projectType', 
+            // 'totalHours', //Total Hours Till Date
+            // 'allocatedHours', 
+            // 'billableHours', //Billable Hours (Till Date)
+            // 'nonBillableHours', 
+            // 'billableProjects', 
+            // 'nonBillableProjects', 
+            // 'projectTypes', 
+            'pendingMilestones', 
+            'pendingMilestoneCount', 
+            'employees', 
+            'averageAvailability',
+            'githubData' ));
+            
+    }
 }
 ?>
