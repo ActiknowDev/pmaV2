@@ -407,12 +407,12 @@ class LeavesController extends AppController
 
 
                 if ($leave->leave_type == "Paid Leave") {
-                    $leaveCount->query()->delete()
+                    $leaveCount->deleteQuery()
                         ->where(['leave_id' => $leave->id])
                         ->execute();
                 } else if ($leave->leave_type == "Casual Leave") {
 
-                    $leaveCount->query()->delete()
+                    $leaveCount->deleteQuery()
                         ->where(['leave_id' => $leave->id])
                         ->execute();
                     // $cl = $user->cl;
@@ -420,7 +420,7 @@ class LeavesController extends AppController
                     // $user->cl = $cl;
                 } else if ($leave->leave_type == "Sick Leave") {
 
-                    $leaveCount->query()->delete()
+                    $leaveCount->deleteQuery()
                         ->where(['leave_id' => $leave->id])
                         ->execute();
                 } else if ($leave->leave_type == "Half Day") {
@@ -430,14 +430,14 @@ class LeavesController extends AppController
                         // $detectLeave = $this->halfLeaveCancel($id);
                         // print_r($detectLeave);
                         // die;
-                        $leaveCount->query()->delete()
+                        $leaveCount->deleteQuery()
                                     ->where(['leave_id' => $leave->id])
                                     ->execute();
                     } else {
                         // $detectLeave = $this->halfLeaveCancel($id);
                         // print_r($detectLeave);
                         // die;
-                        $leaveCount->query()->delete()
+                        $leaveCount->deleteQuery()
                                     ->where(['leave_id' => $leave->id])
                                     ->execute();
                         // foreach ($detectLeave as $value) {
@@ -461,18 +461,18 @@ class LeavesController extends AppController
                         // }
                     }
                 } else if ($leave->leave_type == "comp_off") {
-                    $leaveCount->query()->delete()
+                    $leaveCount->deleteQuery()
                         ->where(['leave_id' => $leave->id])
                         ->execute();
                 } else if ($leave->leave_type == "LWP") {
-                    $leaveCount->query()->delete()
+                    $leaveCount->deleteQuery()
                         ->where(['leave_id' => $leave->id])
                         ->execute();
                     $user->lwp = $user->lwp - $totalLeave;
                 }
                 $this->Users->save($user);
             } else {
-                $leaveCount->query()->delete()
+                $leaveCount->deleteQuery()
                         ->where(['leave_id' => $leave->id])
                         ->execute();
             }
@@ -616,6 +616,17 @@ class LeavesController extends AppController
                 $check_leave_type = '';
                 $halfday_type = '';
             }
+
+
+            $doj = new FrozenTime($user['doj']);
+            $sixMonthsAfterDoj = $doj->addMonths(6);
+            $currentDate = FrozenTime::now();
+            if($currentDate < $sixMonthsAfterDoj) {
+                $sixmonthcomplete = false;
+            } else {
+                $sixmonthcomplete = true;
+            }
+
             // dd($check_leave_type);
             // dd($wfh->totalwfh);
             $totalwfh=$wfh->totalwfh;
@@ -697,9 +708,6 @@ class LeavesController extends AppController
                     }
                 } else if ($this->request->getData("leave_type") == "Paid Leave") {
 
-                    $doj = new FrozenTime($user['doj']);
-                    $sixMonthsAfterDoj = $doj->addMonths(6);
-                    $currentDate = FrozenTime::now();
                     if ($currentDate < $sixMonthsAfterDoj) {
                         $this->Flash->error(__("You can't apply paid leave."));
                     } else {
@@ -830,7 +838,7 @@ class LeavesController extends AppController
                         } else if ($user->sl - $takenLeave['sumSL'] >= 0.5+$extra_weekend_leave) {
                             $allTypeLeave[] = ['sl' => 0.5];
                             $leaveCountInsert->sl = ($date_got / 2)+$extra_weekend_leave;
-                        } else if ($user->el - $takenLeave['sumEL'] >= 0.5+$extra_weekend_leave) {
+                        } else if ($user->el - $takenLeave['sumEL'] >= 0.5+$extra_weekend_leave && $sixmonthcomplete == true) {
                             $allTypeLeave[] = ['el' => 0.5];
                             $leaveCountInsert->el = ($date_got / 2)+$extra_weekend_leave;
                         } else if ($user->comp_off - $takenLeave['sumComp'] >= 0.5+$extra_weekend_leave) {
@@ -865,7 +873,7 @@ class LeavesController extends AppController
                                         $leaveDuration -= 0.5;
                                     } 
                                     // Deduct from Earned Leave
-                                    elseif ($user->el - $takenLeave['sumEL'] >= 0.5) {
+                                    elseif ($user->el - $takenLeave['sumEL'] >= 0.5 && $sixmonthcomplete == true) {
                                         $leaveCountInsert->el += 0.5;
                                         $takenLeave['sumEL'] += 0.5;
                                         $leaveDuration -= 0.5;
@@ -880,7 +888,7 @@ class LeavesController extends AppController
                                         $leaveCountInsert->sl += $leaveDuration;
                                         $takenLeave['sumSL'] += $leaveDuration;
                                         $leaveDuration = 0;
-                                    } elseif ($leaveDuration > 0 && $user->el - $takenLeave['sumEL'] >= $leaveDuration) {
+                                    } elseif ($leaveDuration > 0 && $user->el - $takenLeave['sumEL'] >= $leaveDuration && $sixmonthcomplete == true) {
                                         $leaveCountInsert->el += $leaveDuration;
                                         $takenLeave['sumEL'] += $leaveDuration;
                                         $leaveDuration = 0;
@@ -904,7 +912,7 @@ class LeavesController extends AppController
                                         $leaveDuration -= 0.5;
                                     } 
                                     // Deduct from Earned Leave
-                                    elseif ($user->el - $takenLeave['sumEL'] >= 0.5) {
+                                    elseif ($user->el - $takenLeave['sumEL'] >= 0.5 && $sixmonthcomplete == true) {
                                         $leaveCountInsert->el += 0.5;
                                         $takenLeave['sumEL'] += 0.5;
                                         $leaveDuration -= 0.5;
@@ -924,7 +932,7 @@ class LeavesController extends AppController
                                         $leaveCountInsert->sl += $leaveDuration;
                                         $takenLeave['sumSL'] += $leaveDuration;
                                         $leaveDuration = 0;
-                                    } elseif ($leaveDuration > 0 && $user->el - $takenLeave['sumEL'] >= $leaveDuration) {
+                                    } elseif ($leaveDuration > 0 && $user->el - $takenLeave['sumEL'] >= $leaveDuration && $sixmonthcomplete == true) {
                                         $leaveCountInsert->el += $leaveDuration;
                                         $takenLeave['sumEL'] += $leaveDuration;
                                         $leaveDuration = 0;
@@ -1632,6 +1640,13 @@ class LeavesController extends AppController
         // echo "<pre>";
         // print_r($userSession);
         // die;
+
+        // implement email functionality for comp off 
+
+        $manager_id = $userSession['reporting_manager'];
+        $managerData = $this->Users->get($manager_id);
+        $managerEmail = $managerData['email'];
+
         $compOffTbl = $this->getTableLocator()->get('AddCompOff');
 
         if ($this->request->is('post')) {
@@ -1647,6 +1662,17 @@ class LeavesController extends AppController
             $compData->description = $this->request->getData('description');
 
             $compOffTbl->save($compData);
+
+            if($managerEmail) {
+                $empName = $userSession['name'];
+                $reqDate = date( 'Y-m-d', strtotime($this->request->getData('request_date')));
+                $description = $this->request->getData('description');
+                $leaveType = 'Comp Off';
+                $subject = $empName. ' - Comp Off Request';
+
+                $this->sendCompOffNotification($managerEmail, $leaveType, $subject, $empName, $reqDate, $description);
+
+            }
 
             return $this->redirect(['action' => 'addCompOff']);
         } else {
@@ -2314,6 +2340,16 @@ class LeavesController extends AppController
                 $check_leave_type = '';
                 $halfday_type = '';
             }
+
+            $doj = new FrozenTime($user['doj']);
+            $sixMonthsAfterDoj = $doj->addMonths(6);
+            $currentDate = FrozenTime::now();
+            if($currentDate < $sixMonthsAfterDoj) {
+                $sixmonthcomplete = false;
+            } else {
+                $sixmonthcomplete = true;
+            }
+
             // dd($check_leave_type);
             // dd($wfh->totalwfh);
             $totalwfh=$wfh->totalwfh;
@@ -2395,9 +2431,6 @@ class LeavesController extends AppController
                     }
                 } else if ($this->request->getData("leave_type") == "Paid Leave") {
 
-                    $doj = new FrozenTime($user['doj']);
-                    $sixMonthsAfterDoj = $doj->addMonths(6);
-                    $currentDate = FrozenTime::now();
                     if ($currentDate < $sixMonthsAfterDoj) {
                         $this->Flash->error(__("You can't apply paid leave."));
                     } else {
@@ -2533,7 +2566,7 @@ class LeavesController extends AppController
                         } else if ($user->sl - $takenLeave['sumSL'] >= 0.5+$extra_weekend_leave) {
                             $allTypeLeave[] = ['sl' => 0.5];
                             $leaveCountInsert->sl = ($date_got / 2)+$extra_weekend_leave;
-                        } else if ($user->el - $takenLeave['sumEL'] >= 0.5+$extra_weekend_leave) {
+                        } else if ($user->el - $takenLeave['sumEL'] >= 0.5+$extra_weekend_leave && $sixmonthcomplete == true) {
                             $allTypeLeave[] = ['el' => 0.5];
                             $leaveCountInsert->el = ($date_got / 2)+$extra_weekend_leave;
                         } else if ($user->comp_off - $takenLeave['sumComp'] >= 0.5+$extra_weekend_leave) {
@@ -2568,7 +2601,7 @@ class LeavesController extends AppController
                                         $leaveDuration -= 0.5;
                                     } 
                                     // Deduct from Earned Leave
-                                    elseif ($user->el - $takenLeave['sumEL'] >= 0.5) {
+                                    elseif ($user->el - $takenLeave['sumEL'] >= 0.5 && $sixmonthcomplete == true) {
                                         $leaveCountInsert->el += 0.5;
                                         $takenLeave['sumEL'] += 0.5;
                                         $leaveDuration -= 0.5;
@@ -2583,7 +2616,7 @@ class LeavesController extends AppController
                                         $leaveCountInsert->sl += $leaveDuration;
                                         $takenLeave['sumSL'] += $leaveDuration;
                                         $leaveDuration = 0;
-                                    } elseif ($leaveDuration > 0 && $user->el - $takenLeave['sumEL'] >= $leaveDuration) {
+                                    } elseif ($leaveDuration > 0 && $user->el - $takenLeave['sumEL'] >= $leaveDuration && $sixmonthcomplete == true) {
                                         $leaveCountInsert->el += $leaveDuration;
                                         $takenLeave['sumEL'] += $leaveDuration;
                                         $leaveDuration = 0;
@@ -2607,7 +2640,7 @@ class LeavesController extends AppController
                                         $leaveDuration -= 0.5;
                                     } 
                                     // Deduct from Earned Leave
-                                    elseif ($user->el - $takenLeave['sumEL'] >= 0.5) {
+                                    elseif ($user->el - $takenLeave['sumEL'] >= 0.5 && $sixmonthcomplete == true) {
                                         $leaveCountInsert->el += 0.5;
                                         $takenLeave['sumEL'] += 0.5;
                                         $leaveDuration -= 0.5;
@@ -2627,7 +2660,7 @@ class LeavesController extends AppController
                                         $leaveCountInsert->sl += $leaveDuration;
                                         $takenLeave['sumSL'] += $leaveDuration;
                                         $leaveDuration = 0;
-                                    } elseif ($leaveDuration > 0 && $user->el - $takenLeave['sumEL'] >= $leaveDuration) {
+                                    } elseif ($leaveDuration > 0 && $user->el - $takenLeave['sumEL'] >= $leaveDuration && $sixmonthcomplete == true) {
                                         $leaveCountInsert->el += $leaveDuration;
                                         $takenLeave['sumEL'] += $leaveDuration;
                                         $leaveDuration = 0;
