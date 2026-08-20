@@ -12,29 +12,6 @@
 }
 
 
-
-/* ============================================================
-   PROJECT DASHBOARD
-   Scoped so it does not interfere with existing CakePHP theme
-============================================================ */
-
-.project-dashboard {
-
-    /*
-     * IMPORTANT:
-     * No font-family is defined here intentionally.
-     *
-     * The dashboard inherits the font already used by your
-     * CakePHP application.
-     */
-
-    width: 100%;
-    padding: 18px 18px 25px;
-
-    color: inherit;
-}
-
-
 /* ------------------------------------------------------------
    Dashboard variables
 ------------------------------------------------------------ */
@@ -42,21 +19,16 @@
 .project-dashboard {
     --pd-primary: #2f6fed;
     --pd-primary-dark: #245bd0;
-
     --pd-text: #12243f;
     --pd-muted: #60708a;
-
     --pd-border: #e1e7ef;
     --pd-border-light: #edf0f4;
-
     --pd-card: #ffffff;
     --pd-table-head: #dddddd;
-
     --pd-green: #12b77a;
     --pd-red: #ef4444;
     --pd-orange: #f5a623;
     --pd-purple: #8b4de8;
-
     --pd-green-bg: #e5f8f1;
     --pd-red-bg: #fff0f1;
     --pd-purple-bg: #f3eaff;
@@ -68,31 +40,25 @@
    HEADING
 ============================================================ */
 
-.project-dashboard .pd-page-heading {
+.pd-page-heading {
     margin-bottom: 14px;
 }
 
-.project-dashboard .pd-page-heading h1 {
+.pd-page-heading h1 {
     margin: 0 0 5px;
     padding: 0;
-
     color: var(--pd-text);
-
     font-size: 20px;
     line-height: 1.25;
     font-weight: 600;
-
     letter-spacing: .2px;
 }
 
-.project-dashboard .pd-page-heading p {
+.pd-page-heading p {
     margin: 0;
-
     color: #65758f;
-
     font-size: 11px;
     line-height: 1.5;
-
     letter-spacing: .3px;
 }
 
@@ -101,122 +67,101 @@
    KPI GRID
 ============================================================ */
 
-.project-dashboard .pd-kpi-grid {
+.pd-kpi-grid {
     display: grid;
-
-    grid-template-columns:
-        repeat(6, minmax(0, 1fr));
-
+    grid-template-columns: repeat(4, minmax(0, 1fr));
     gap: 12px;
-
     margin-bottom: 14px;
 }
 
+.pma_body .pd-kpi-grid>* {
+    min-width: 0;
+}
 
-.project-dashboard .pd-kpi-card {
-    min-height: 102px;
-
+.pd-kpi-card {
     background: var(--pd-card);
-
     border: 1px solid var(--pd-border);
     border-radius: 9px;
-
     padding: 14px;
-
     box-shadow: none;
 }
 
-
-.project-dashboard .pd-kpi-top {
+.pd-kpi-top {
     display: flex;
     align-items: center;
-
     gap: 10px;
 }
 
-
-.project-dashboard .pd-kpi-icon {
+.pd-kpi-icon {
     width: 36px;
     height: 36px;
-
     flex: 0 0 36px;
-
     display: flex;
     align-items: center;
     justify-content: center;
-
     border-radius: 9px;
-
     font-size: 13px;
 }
 
-
-.project-dashboard .pd-blue {
+.pd-blue {
     color: var(--pd-primary);
     background: var(--pd-blue-bg);
 }
 
-.project-dashboard .pd-red {
+.pd-red {
     color: var(--pd-red);
     background: var(--pd-red-bg);
 }
 
-.project-dashboard .pd-purple {
+.pd-purple {
     color: var(--pd-purple);
     background: var(--pd-purple-bg);
 }
 
-.project-dashboard .pd-green {
+.pd-green {
     color: var(--pd-green);
     background: var(--pd-green-bg);
 }
 
-.project-dashboard .pd-cyan {
+.pd-cyan {
     color: #248bd1;
     background: #eaf6ff;
 }
 
-
-.project-dashboard .pd-kpi-title {
+.pd-kpi-title {
     margin-bottom: 4px;
-
     color: #66758d;
-
     font-size: 10px;
+    font-weight: 500;
     line-height: 1.2;
-
     letter-spacing: .8px;
 }
 
 
-.project-dashboard .pd-kpi-value {
+.pd-kpi-value {
     color: var(--pd-text);
-
     font-size: 20px;
     line-height: 1.1;
-
     font-weight: 600;
 }
 
 
-.project-dashboard .pd-kpi-change {
+.pd-kpi-change {
     margin-top: 11px;
-
     color: #60708a;
-
     font-size: 9px;
     letter-spacing: .4px;
 }
 
-.project-dashboard .pd-kpi-change span {
+.pd-kpi-change span {
     color: #738198;
 }
 
-.project-dashboard .pd-up {
+.pd-up {
     color: var(--pd-green);
 }
 
-.project-dashboard .pd-red-text {
+.pd-red-text {
     color: var(--pd-red);
 }
 
@@ -225,27 +170,18 @@
    GRID LAYOUT
 ============================================================ */
 
-.project-dashboard .pd-two-column {
-    display: grid;
-
-    grid-template-columns:
-        minmax(0, 1fr)
-        minmax(0, 0.94fr);
-
-    gap: 12px;
-
-    margin-bottom: 14px;
+.pd-two-column,
+.pd-bottom-grid {
+    display: grid !important;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px !important;
+    width: 100% !important;
+    margin-bottom: 12px !important;
 }
 
-
-.project-dashboard .pd-bottom-grid {
-    display: grid;
-
-    grid-template-columns:
-        minmax(0, 2.05fr)
-        minmax(340px, 1fr);
-
-    gap: 12px;
+.pma_body .pd-two-column>*,
+.pma_body .pd-bottom-grid>* {
+    min-width: 0;
 }
 
 
@@ -253,51 +189,40 @@
    CARDS
 ============================================================ */
 
-.project-dashboard .pd-card {
+.pd-card {
     background: var(--pd-card);
-
     border: 1px solid var(--pd-border);
-
     border-radius: 9px;
-
     overflow: hidden;
-
     box-shadow: none;
 }
 
 
-.project-dashboard .pd-card-header {
+.pd-card-header {
     min-height: 44px;
-
     padding: 0 14px;
-
     display: flex;
     align-items: center;
     justify-content: space-between;
-
     border-bottom: 1px solid var(--pd-border-light);
-
     color: var(--pd-text);
 }
 
 
-.project-dashboard .pd-card-header strong {
+.pd-card-header strong {
     font-size: 12px;
     font-weight: 600;
-
     letter-spacing: .3px;
 }
 
 
-.project-dashboard .pd-card-header a {
+.pd-card-header a {
     color: var(--pd-primary);
-
     font-size: 9px;
-
     text-decoration: none;
 }
 
-.project-dashboard .pd-card-header a:hover {
+.pd-card-header a:hover {
     text-decoration: underline;
 }
 
@@ -306,64 +231,82 @@
    TABLE
 ============================================================ */
 
-.project-dashboard .pd-table-wrap {
-    width: 100%;
-    overflow-x: auto;
+.pd-table-wrap {
+    scrollbar-width: thin;
+    max-height: none;
+    overflow: visible;
 }
 
+.pma_body .dataTables_scrollBody {
+    scrollbar-width: thin;
+    scrollbar-color: #c1c9d6 #f1f1f1;
+}
 
-.project-dashboard table.pd-table {
+.pma_body .dataTables_scrollBody::-webkit-scrollbar {
+    height: 6px;
+    width: 6px;
+}
+
+.pma_body .dataTables_scrollBody::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 10px;
+}
+
+.pma_body .dataTables_scrollBody::-webkit-scrollbar-thumb {
+    background: #c1c9d6;
+    border-radius: 10px;
+}
+
+.pma_body .dataTables_scrollBody::-webkit-scrollbar-thumb:hover {
+    background: #a8b3c4;
+}
+
+.pma_body .dataTables_scrollBody {
+    overflow-x: auto !important;
+}
+
+.pma_body .dataTables_scrollBody {
+    overflow-x: auto !important;
+}
+
+table.pd-table {
     width: 100%;
-
     margin: 0;
-
     border-collapse: collapse;
     border-spacing: 0;
-
     background: transparent;
 }
 
 
-.project-dashboard .pd-table th {
-    height: 37px;
-
+.pd-table th {
+    height: 30px;
     padding: 0 13px;
-
     background: var(--pd-table-head);
-
     border: 0;
-
     color: #4d6380;
-
     font-size: 9px;
     font-weight: 500;
-
     text-align: left;
-
     white-space: nowrap;
-
     letter-spacing: .7px;
+    position: sticky;
+    top: 0;
+    z-index: 2;
 }
 
 
-.project-dashboard .pd-table td {
-    height: 41px;
-
+.pd-table td {
+    height: 30px;
     padding: 0 13px;
-
     border-top: 1px solid var(--pd-border-light);
-
     color: var(--pd-text);
-
     font-size: 9.5px;
-
     white-space: nowrap;
-
     vertical-align: middle;
 }
 
 
-.project-dashboard .pd-table tbody tr:hover {
+.pd-table tbody tr:hover {
     background: #fbfcfe;
 }
 
@@ -372,37 +315,33 @@
    PROJECT DOT
 ============================================================ */
 
-.project-dashboard .pd-project-dot,
-.project-dashboard .pd-milestone-dot {
+.pd-project-dot,
+.pd-milestone-dot {
     display: inline-block;
-
     width: 7px;
     height: 7px;
-
     margin-right: 8px;
-
     border-radius: 50%;
-
     vertical-align: middle;
 }
 
-.project-dashboard .pd-project-dot {
+.pd-project-dot {
     background: var(--pd-primary);
 }
 
-.project-dashboard .pd-dot-cyan {
+.pd-dot-cyan {
     background: #18a5b7;
 }
 
-.project-dashboard .pd-dot-dark {
+.pd-dot-dark {
     background: #294572;
 }
 
-.project-dashboard .pd-dot-purple {
+.pd-dot-purple {
     background: #9250e7;
 }
 
-.project-dashboard .pd-milestone-dot {
+.pd-milestone-dot {
     background: var(--pd-red);
 }
 
@@ -411,34 +350,26 @@
    PROGRESS
 ============================================================ */
 
-.project-dashboard .pd-progress-cell {
+.pd-progress-cell {
     display: flex;
-
     align-items: center;
-
     gap: 9px;
 }
 
 
-.project-dashboard .pd-progress {
+.pd-progress {
     width: 34px;
     height: 4px;
-
     overflow: hidden;
-
     background: #e5eaf1;
-
     border-radius: 10px;
 }
 
 
-.project-dashboard .pd-progress span {
+.pd-progress span {
     display: block;
-
     height: 100%;
-
     background: var(--pd-primary);
-
     border-radius: inherit;
 }
 
@@ -447,47 +378,38 @@
    PILLS
 ============================================================ */
 
-.project-dashboard .pd-pill {
+.pd-pill {
     display: inline-flex;
-
     align-items: center;
     justify-content: center;
-
     min-width: 43px;
     height: 20px;
-
     padding: 0 10px;
-
     border-radius: 12px;
-
     font-size: 8px;
-
     line-height: 1;
-
     white-space: nowrap;
 }
 
 
-.project-dashboard .pd-success {
+.pd-success {
     color: #07976a;
     background: var(--pd-green-bg);
 }
 
-.project-dashboard .pd-danger {
+.pd-danger {
     color: #e9505c;
     background: var(--pd-red-bg);
 }
 
-.project-dashboard .pd-not-completed {
+.pd-not-completed {
     min-width: 85px;
-
     color: #e74b57;
-
     background: var(--pd-red-bg);
 }
 
 
-.project-dashboard .pd-overdue {
+.pd-overdue {
     color: var(--pd-red) !important;
 }
 
@@ -504,30 +426,21 @@
 
 .project-dashboard .pd-employee-name {
     display: flex;
-
     align-items: center;
-
     gap: 9px;
 }
 
 
 .project-dashboard .pd-avatar {
-    width: 27px;
-    height: 27px;
-
-    flex: 0 0 27px;
-
+    width: 22px;
+    height: 22px;
+    flex: 0 0 22px;
     display: inline-flex;
-
     align-items: center;
     justify-content: center;
-
     border-radius: 50%;
-
     background: #e2e8f0;
-
     color: #45607e;
-
     font-size: 8px;
     font-weight: 600;
 }
@@ -539,9 +452,7 @@
 
 .project-dashboard .pd-meter-cell {
     display: flex;
-
     align-items: center;
-
     gap: 8px;
 }
 
@@ -549,20 +460,15 @@
 .project-dashboard .pd-meter {
     width: 68px;
     height: 5px;
-
     overflow: hidden;
-
     background: #e8edf3;
-
     border-radius: 10px;
 }
 
 
 .project-dashboard .pd-meter span {
     display: block;
-
     height: 100%;
-
     border-radius: inherit;
 }
 
@@ -586,18 +492,12 @@
 
 .project-dashboard .pd-status {
     display: inline-flex;
-
     align-items: center;
     justify-content: center;
-
     min-height: 20px;
-
     padding: 0 10px;
-
     border-radius: 12px;
-
     font-size: 8px;
-
     white-space: nowrap;
 }
 
@@ -624,31 +524,21 @@
 
 .project-dashboard .pd-employee-footer {
     min-height: 42px;
-
     padding: 0 14px;
-
     display: flex;
-
     align-items: center;
     justify-content: space-between;
-
     gap: 15px;
-
     border-top: 1px solid var(--pd-border-light);
-
     color: #68778e;
-
     font-size: 8px;
 }
 
 
 .project-dashboard .pd-legend {
     display: inline-flex;
-
     align-items: center;
-
     margin-right: 15px;
-
     white-space: nowrap;
 }
 
@@ -656,11 +546,8 @@
 .project-dashboard .pd-legend i {
     width: 7px;
     height: 7px;
-
     display: inline-block;
-
     margin-right: 5px;
-
     border-radius: 50%;
 }
 
@@ -684,9 +571,7 @@
 
 .project-dashboard .pd-chart-column {
     display: flex;
-
     flex-direction: column;
-
     gap: 12px;
 }
 
@@ -698,11 +583,8 @@
 
 .project-dashboard .pd-chart-body {
     min-height: 155px;
-
     display: flex;
-
     align-items: center;
-
     padding: 15px 20px;
 }
 
@@ -714,61 +596,44 @@
 .project-dashboard .pd-donut {
     width: 120px;
     height: 120px;
-
     flex: 0 0 120px;
-
     position: relative;
-
     border-radius: 50%;
 }
 
 
 .project-dashboard .pd-hours-donut {
     background:
-        conic-gradient(
-            var(--pd-primary) 0deg 273.6deg,
-            #d8dcfa 273.6deg 360deg
-        );
+        conic-gradient(var(--pd-primary) 0deg 273.6deg,
+            #d8dcfa 273.6deg 360deg);
 }
 
 
 .project-dashboard .pd-project-donut {
     background:
-        conic-gradient(
-            var(--pd-primary) 0deg 241.2deg,
-            #d8dcfa 241.2deg 360deg
-        );
+        conic-gradient(var(--pd-primary) 0deg 241.2deg,
+            #d8dcfa 241.2deg 360deg);
 }
 
 
 .project-dashboard .pd-donut::after {
     content: "";
-
     position: absolute;
-
     width: 75px;
     height: 75px;
-
     top: 22.5px;
     left: 22.5px;
-
     background: #fff;
-
     border-radius: 50%;
 }
 
 
 .project-dashboard .pd-donut-center {
     position: absolute;
-
     z-index: 2;
-
     inset: 0;
-
     display: flex;
-
     flex-direction: column;
-
     align-items: center;
     justify-content: center;
 }
@@ -776,7 +641,6 @@
 
 .project-dashboard .pd-donut-center strong {
     color: var(--pd-text);
-
     font-size: 17px;
     font-weight: 500;
 }
@@ -784,9 +648,7 @@
 
 .project-dashboard .pd-donut-center span {
     margin-top: 3px;
-
     color: #68768c;
-
     font-size: 8px;
 }
 
@@ -797,33 +659,24 @@
 
 .project-dashboard .pd-chart-legend {
     display: flex;
-
     flex-direction: column;
-
     gap: 18px;
-
     margin-left: 22px;
 }
 
 
-.project-dashboard .pd-chart-legend > div {
+.project-dashboard .pd-chart-legend>div {
     display: flex;
-
     align-items: flex-start;
-
     gap: 8px;
-
     color: #52637c;
-
     font-size: 9px;
-
     line-height: 1.45;
 }
 
 
 .project-dashboard .pd-chart-legend strong {
     font-weight: 500;
-
     color: #334a68;
 }
 
@@ -831,11 +684,8 @@
 .project-dashboard .pd-square {
     width: 9px;
     height: 9px;
-
     flex: 0 0 9px;
-
     margin-top: 2px;
-
     border-radius: 2px;
 }
 
@@ -848,50 +698,37 @@
     background: #d8dcfa;
 }
 
+.pma_body {
+    padding: 0 50px;
+}
+
 
 /* ============================================================
    RESPONSIVE
 ============================================================ */
+@media (max-width: 767px) {
 
-@media (max-width: 1400px) {
-
-    .project-dashboard .pd-kpi-grid {
-        grid-template-columns: repeat(3, 1fr);
-    }
-
-    .project-dashboard .pd-bottom-grid {
+    .pma_body .pd-two-column,
+    .pma_body .pd-bottom-grid,
+    .pma_body .pd-kpi-grid {
         grid-template-columns: 1fr;
     }
 
-    .project-dashboard .pd-chart-column {
-        display: grid;
-
-        grid-template-columns: 1fr 1fr;
-    }
-}
-
-
-@media (max-width: 1000px) {
-
-    .project-dashboard .pd-two-column {
-        grid-template-columns: 1fr;
+    .pma_body .dataTables_info {
+        margin-bottom: 10px !important;
     }
 
-    .project-dashboard .pd-chart-column {
-        grid-template-columns: 1fr;
+    .pma_body .pagination {
+        justify-content: center !important;
+    }
+
+    .pma_body {
+        padding: 0 15px;
     }
 }
 
 
 @media (max-width: 700px) {
-
-    .project-dashboard {
-        padding: 12px;
-    }
-
-    .project-dashboard .pd-kpi-grid {
-        grid-template-columns: repeat(2, 1fr);
-    }
 
     .project-dashboard .pd-page-heading h1 {
         font-size: 17px;
@@ -906,13 +743,87 @@
 }
 
 
-@media (max-width: 500px) {
+.pma_body .dataTables_wrapper.dt-bootstrap4.no-footer .dataTables_length label,
+.pma_body .dataTables_wrapper.dt-bootstrap4.no-footer .dataTables_filter label {
+    padding: 10px 10px 0 !important;
+    font-size: 11px !important;
+}
 
-    .project-dashboard .pd-kpi-grid {
-        grid-template-columns: 1fr;
-    }
+.pma_body .dataTables_wrapper.dt-bootstrap4.no-footer .row:last-child {
+    display: flex !important;
+    justify-content: space-between !important;
+    align-items: center !important;
+    padding: 10px !important;
+}
 
-    .project-dashboard .pd-kpi-card {
-        min-height: 90px;
-    }
+.pma_body .pagination {
+    margin-top: 0 !important
+}
+
+.pma_body .dataTables_info {
+    padding-top: 0 !important;
+}
+
+.pma_body .dataTables_info,
+.pma_body .dataTables_paginate.paging_simple_numbers .paginate_button.page-item {
+    font-size: 10px !important;
+}
+
+
+.pma_body .pd-chart-column {
+    grid-template-columns: 1fr;
+}
+
+.pma_body table.dataTable,
+.pma_body table.dataTable th,
+.pma_body table.dataTable td,
+.pma_body .dataTables_scrollHead table,
+.pma_body .dataTables_scrollHead th,
+.pma_body .dataTables_scrollBody table,
+.pma_body .dataTables_scrollBody td {
+    box-sizing: content-box !important;
+}
+
+.pma_body table.dataTable {
+    width: 100% !important;
+    table-layout: auto !important;
+}
+
+.pma_body .dataTables_scrollHead,
+.pma_body .dataTables_scrollHeadInner,
+.pma_body .dataTables_scrollHead table {
+    overflow: visible !important;
+}
+
+.pma_body .hours-tooltip {
+    position: relative;
+    cursor: help;
+}
+
+/* 👇 Ye naya add karo — clipping fix */
+.pma_body .dataTables_scrollHead,
+.pma_body .dataTables_scrollHeadInner,
+.pma_body .dataTables_scrollHead table {
+    overflow: visible !important;
+}
+
+.pma_body .hours-tooltip>span {
+    visibility: hidden;
+    opacity: 0;
+    position: absolute;
+    bottom: 125%;
+    left: 50%;
+    transform: translateX(-50%);
+    background: var(--pd-text);
+    color: #fff;
+    text-align: center;
+    padding: 6px 10px;
+    border-radius: 6px;
+    font-size: 11px;
+    font-weight: 400;
+    white-space: nowrap;
+    z-index: 999;
+    /* 👈 10 se badha kar 999 kiya, taaki sticky th ke upar dikhe */
+    transition: opacity 0.2s ease;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
 }
