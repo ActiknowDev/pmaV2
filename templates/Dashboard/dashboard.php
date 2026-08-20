@@ -150,7 +150,7 @@
                                 continue;
                             }
                             $activeProjectsFound = true;
-                            $isBillable = ((float)$project['hourly_rate'] > 0);
+                            $isBillable = $project['bill'] == 'Billable' ? 1 : 0;
                         ?>
                         <tr>
                             <td> <?php
@@ -398,6 +398,13 @@
                                 <th>Commited On</th>
                             </tr>
                             </thead>
+                            <!-- <tbody id="gitTableBody">
+                                <tr>
+                                    <td colspan="4" style="text-align:center;">
+                                        Loading GitHub data...
+                                    </td>
+                                </tr>
+                            </tbody> -->
                             <tbody id="gitTableBody">
                                 <?php if (!empty($githubData)): ?>
                                     <?php foreach ($githubData as $git): ?>
@@ -405,9 +412,13 @@
                                             <td><?= h($git['user'] ?? '') ?></td>
                                             <td><?= h($git['repository'] ?? '') ?></td>
                                             <td><?= h($git['commits'] ?? '') ?></td>
-                                            <td><?= !empty($git['lastCommitDate'])
-                                                    ? h(date('Y-m-d', strtotime($git['lastCommitDate'])))
-                                                    : '' ?>
+                                            <td>
+                                                <?php
+                                                    echo h(
+                                                        (new \DateTime($git['lastCommitDate'], new \DateTimeZone('UTC')))
+                                                            ->setTimezone(new \DateTimeZone('Asia/Kolkata'))
+                                                            ->format('Y-m-d H:i:s')
+                                                    ); ?>
                                             </td>
                                         </tr>
                                     <?php endforeach; ?>
@@ -418,11 +429,6 @@
                                         </td>
                                     </tr>
                                 <?php endif; ?>
-                                <!-- <tr>
-                                    <td colspan="4" style="text-align:center;">
-                                        Loading GitHub data...
-                                    </td>
-                                </tr> -->
                             </tbody>
                         </table>
                     </div>
