@@ -159,7 +159,7 @@ class ReportingMNameHelper extends Helper
       return $my_teams;
    }
 
-   public function roleName($roleIds)
+      public function roleName($roleIds)
    {
       $roles = [
          4  => 'Manager',
@@ -191,6 +191,7 @@ class ReportingMNameHelper extends Helper
 
       return implode(', ', $roleNames);
    }
+
    // Leave Date for Employee Attendance
 
    public function leaveDate($id, $date)

@@ -241,6 +241,27 @@ class AppController extends Controller
         $mailer->deliver();
     }
 
+    // email for add comp off 
+
+    public function sendCompOffNotification($managerEmail, $leaveType, $subject, $empName, $reqDate, $description)
+    {
+        $mailer = new Mailer();
+
+        // dd($managerEmail);
+
+        $mailer->setTransport('default');
+        $mailer
+            ->setEmailFormat('html')
+            ->setTo($managerEmail)
+            // ->setCc("devendra.singh@actiknow.com")
+            ->setSubject($subject)
+            ->viewBuilder()
+            ->setTemplate('compoffleave');
+
+        $mailer->setViewVars(['leaveType' => $leaveType, 'empName' => $empName, 'reqDate' => $reqDate, 'description' => $description]);
+        $mailer->deliver();
+    }
+
     public function invoiceMailPDF($filePath)
     {
         $mailer = new Mailer();

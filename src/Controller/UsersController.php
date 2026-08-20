@@ -2371,7 +2371,7 @@ class UsersController extends AppController
 			$data['sixth']  = date('Y-m-d', strtotime('+5 day', $monday));
 
 			// Previous week
-			$pdate = date('Y-m-d', strtotime('-1 week', $monday));
+			$pdate = date('Y-m-d', strtotime('-2 days', $monday));
 
 			// Next week
 			$ndate = date('Y-m-d', strtotime('+1 week', $monday));
