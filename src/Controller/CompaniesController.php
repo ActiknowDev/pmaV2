@@ -583,7 +583,14 @@ class CompaniesController extends AppController
 
 			// Handle resources array
 			$resource = $this->request->getData('resources');
-			$resources = implode(',', $resource);
+			// $resources = implode(',', $resource);
+			if (empty($resource)) {
+				$resources = '';
+			} elseif (is_array($resource)) {
+				$resources = implode(',', $resource);
+			} else {
+				$resources = $resource;
+			}
 			$project->resources = $resources;
 
 			// Handle milestones

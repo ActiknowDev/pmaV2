@@ -96,10 +96,10 @@ define('CAKE', CORE_PATH . 'src' . DS);
 $web_path = '';
 if (isset($_SERVER['SERVER_NAME'])) {
 	if (isset($_SERVER['HTTPS']) && ($_SERVER['HTTPS'] == 'on' || $_SERVER['HTTPS'] == 1) || isset($_SERVER['HTTP_X_FORWARDED_PROTO']) && $_SERVER['HTTP_X_FORWARDED_PROTO'] == 'https') {
-		$web_path = 'https://' . $_SERVER['SERVER_NAME'] . '/pmaV2/';
+		$web_path = 'https://' . $_SERVER['SERVER_NAME'] . '/';
 
 	} else {
-		$web_path = 'http://' . $_SERVER['SERVER_NAME'] . '/pmaV2/';
+		$web_path = 'http://' . $_SERVER['SERVER_NAME'] . '/';
 	}
 }
 define('WEBURL', $web_path);
