@@ -1058,6 +1058,47 @@ class DashboardController extends AppController
                     $leaveDatesByEmployee[(int)$leave->user_id][$leaveDate] = true;
                 }
             }
+            
+        /*
+        * ---------------------------------------------------------
+        * OFFICE HOURS
+        * ---------------------------------------------------------
+        */
+            $officeHoursByEmployee = [];
+            $officeHoursSql = "
+                SELECT
+                    u.id AS employee_id,
+                    u.name,
+                    COALESCE(
+                        SUM(
+                            TIME_TO_SEC(
+                                TIMEDIFF(
+                                    e.outtime,
+                                    e.intime
+                                )
+                            )
+                        ),
+                        0
+                    ) AS office_seconds
+                FROM users u
+                LEFT JOIN emp_punch_time e
+                    ON e.emp = u.name
+                    AND e.dom >= :office_month_start
+                    AND e.dom <= :office_today
+                    AND e.intime IS NOT NULL
+                    AND e.outtime IS NOT NULL
+                WHERE {$employeeWhere}
+                GROUP BY u.id, u.name
+            ";
+            $officeHoursParams = $employeeParams;
+            $officeHoursParams['office_month_start'] = $monthStart;
+            $officeHoursParams['office_today'] = $today;
+
+            $officeHoursRows = $conn->execute($officeHoursSql, $officeHoursParams)->fetchAll('assoc');
+
+            foreach ($officeHoursRows as $row) {
+                $officeHoursByEmployee[(int)$row['employee_id']] = (int)$row['office_seconds'];
+            }
 
         /*
         * ---------------------------------------------------------
@@ -1123,6 +1164,16 @@ class DashboardController extends AppController
                     $totalEmployeeHours = $workingDays * $dailyRequiredHours;
                     $occupiedHours = (float)$employee['occupied_hours'];
 
+                    // office hours
+                    $officeSeconds = $officeHoursByEmployee[$employeeId] ?? 0;
+                    $officeHours = floor($officeSeconds / 3600);
+                    $officeMinutes = floor(($officeSeconds % 3600) / 60);
+                    $officeHoursFormatted = sprintf(
+                        '%02d:%02d',
+                        $officeHours,
+                        $officeMinutes
+                    );
+
                     if ($totalEmployeeHours > 0) {
                         $occupancy = ($occupiedHours / $totalEmployeeHours) * 100;
                         $availability = (($totalEmployeeHours - $occupiedHours) / $totalEmployeeHours) * 100;
@@ -1146,6 +1197,7 @@ class DashboardController extends AppController
                         'id'              => $employeeId,
                         'name'            => $employee['name'] ?? '',
                         'role_name'       => $employee['role_name'] ?? '',
+                        'office_hours'      => $officeHoursFormatted,
                         'total_hours'     => $totalEmployeeHours,
                         'occupied_hours'  => $occupiedHours,
                         'occupancy'       => $occupancy,
@@ -1157,7 +1209,6 @@ class DashboardController extends AppController
             } catch (\Exception $e) {
                 $employees = [];
             }
-
         /*
         * ---------------------------------------------------------
         * AVERAGE AVAILABILITY

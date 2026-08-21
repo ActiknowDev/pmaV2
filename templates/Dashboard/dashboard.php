@@ -2,54 +2,6 @@
 $unavailableEmployees = array_merge($leaveEmployees, $wfhEmployees);
 $unavailableCount = count($unavailableEmployees);
 ?>
-<style>
-   .attendance-table-wrapper {
-    width: 100%;
-    overflow-x: auto;
-}
-
-.attendance-table {
-    width: 100%;
-    border-collapse: collapse;
-    font-size: 13px;
-}
-
-.attendance-table th {
-    background: #f5f6f8;
-    color: #4b5563;
-    font-size: 11px;
-    font-weight: 600;
-    letter-spacing: 0.5px;
-    text-align: left;
-    padding: 8px 10px;
-    border: 1px solid #dfe3e8;
-}
-
-.attendance-table td {
-    padding: 8px 10px;
-    border: 1px solid #dfe3e8;
-    color: #64748b;
-    font-size: 12px;
-}
-
-.attendance-table tbody tr:nth-child(even) {
-    background: #f7f7f7;
-}
-
-.attendance-table tbody tr:hover {
-    background: #f1f5f9;
-}
-
-.attendance-table th:first-child,
-.attendance-table td:first-child {
-    width: 55%;
-}
-
-.attendance-table th:last-child,
-.attendance-table td:last-child {
-    width: 45%;
-}
-</style>
 <div class="page-content">
     <div class="project-dashboard container-fluid pma_body">
         <div class="pd-page-heading">
@@ -366,7 +318,7 @@ $unavailableCount = count($unavailableEmployees);
                                         }
                                         ?>
                                     <!-- <td><?= h(implode(', ', $employeeRoles)) ?></td> -->
-                                    <td> <?= number_format( $employee['total_hours'], 2 ) ?> hrs </td>
+                                    <td> <?=$employee['office_hours']?> hrs </td>
                                     <td> <?= number_format( $employee['total_hours'], 2 ) ?> hrs </td>
                                     <td> <?= number_format($employee['occupied_hours'], 2) ?> hrs </td>
                                     <td>
