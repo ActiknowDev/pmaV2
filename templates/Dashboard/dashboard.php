@@ -81,6 +81,7 @@ $unavailableCount = count($unavailableEmployees);
                         </div>
                     </div>
                 </div>
+                <div class="pdi-bottom"> Today  </div>
             </div>
 
             <!-- On Leave / WFH -->
@@ -101,6 +102,7 @@ $unavailableCount = count($unavailableEmployees);
                         </div>
                     </div>
                 </div>
+                <div class="pdi-bottom"> Today  </div>
             </div>
 
             <!-- Average Availability -->
@@ -118,6 +120,7 @@ $unavailableCount = count($unavailableEmployees);
                         </div>
                     </div>
                 </div>
+                <div class="pdi-bottom"> This Month </div>
             </div>
         </div>
 

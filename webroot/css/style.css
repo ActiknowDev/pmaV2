@@ -836,3 +836,10 @@ table.pd-table {
     font-size: 11px!important;
     font-weight:500
 }
+.pdi-bottom{
+    font-size: 10px;
+    font-weight: 500;
+    color: var(--pd-muted);
+    text-align: end;
+    margin-top: 5px;
+}
