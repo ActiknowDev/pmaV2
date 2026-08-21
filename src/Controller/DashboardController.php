@@ -960,6 +960,10 @@ class DashboardController extends AppController
             $today = date('Y-m-d');
             $dailyRequiredHours = 8;
 
+            $leaveEmployees = [];
+            $wfhEmployees   = [];
+            $presentEmployees = [];
+
             ////////////// COMPANY HOLIDAYS 
             $this->Holidays = $this->fetchTable('Holidays');
             $holidays = $this->Holidays->find()->where([
@@ -1004,7 +1008,8 @@ class DashboardController extends AppController
                 AND u.status = 1
                 AND u.deleted = 1
                 AND (
-                    FIND_IN_SET('5', u.role_name)
+                    FIND_IN_SET('4', u.role_name)
+                    OR FIND_IN_SET('5', u.role_name)
                     OR FIND_IN_SET('6', u.role_name)
                     OR FIND_IN_SET('7', u.role_name)
                     OR FIND_IN_SET('8', u.role_name)
@@ -1063,6 +1068,7 @@ class DashboardController extends AppController
                 SELECT
                     u.id,
                     u.name,
+                    u.user_image,
                     u.role_name,
                     COALESCE(
                         SUM(
@@ -1093,19 +1099,15 @@ class DashboardController extends AppController
 
             try {
                 $employeeList = $conn->execute($employeeSql, $employeeParams)->fetchAll('assoc');
-
                 foreach ($employeeList as $employee) {
                     $employeeId = (int)$employee['id'];
-
                     /*
                     * Calculate working days separately for this employee.
                     * Company holidays + employee-specific leave are excluded.
                     */
                     $workingDays = 0;
-
                     $periodStart = new \DateTime($monthStart);
                     $periodEnd = new \DateTime($today);
-
                     $employeeLeaveDates = $leaveDatesByEmployee[$employeeId] ?? [];
 
                     while ($periodStart <= $periodEnd) {
@@ -1150,6 +1152,7 @@ class DashboardController extends AppController
                         'availability'    => $availability,
                         'status'          => $status,
                     ];
+
                 }
             } catch (\Exception $e) {
                 $employees = [];
@@ -1171,52 +1174,208 @@ class DashboardController extends AppController
         * GITHUB DATA
         * ---------------------------------------------------------
         */
-            $githubData = [];
-            try {
-                $http = new Client();
-                $response = $http->get( 'http://44.230.62.131:5016/github-report?days=7');
+            // $githubData = [];
+            // try {
+            //     $http = new Client();
+            //     $response = $http->get( 'http://44.230.62.131:5016/github-report?days=7');
 
-                if ($response->isOk()) {
-                    $apiResponse = $response->getJson();
+            //     if ($response->isOk()) {
+            //         $apiResponse = $response->getJson();
 
-                    if (!empty($apiResponse['success']) && !empty($apiResponse['data'])) {
-                        $githubData = $apiResponse['data'];
-                    } else {
-                        echo '<pre>';
-                        echo 'API Error: ';
-                        print_r($apiResponse);
-                        echo '</pre>';
-                    }
+            //         if (!empty($apiResponse['success']) && !empty($apiResponse['data'])) {
+            //             $githubData = $apiResponse['data'];
+            //         } else {
+            //             echo '<pre>';
+            //             echo 'API Error: ';
+            //             print_r($apiResponse);
+            //             echo '</pre>';
+            //         }
+            //     } else {
+            //         echo '<pre>';
+            //         echo 'HTTP Error: ' . $response->getStatusCode() . ' ' . $response->getReasonPhrase() . PHP_EOL;
+            //         echo 'Response: ' . $response->getStringBody();
+            //         echo '</pre>';
+            //     }
+            // } catch (\Exception $e) {
+            //     $githubData = [];
+            //     echo '<pre>';
+            //     echo 'Exception Error: ' . $e->getMessage() . PHP_EOL;
+            //     echo 'File: ' . $e->getFile() . PHP_EOL;
+            //     echo 'Line: ' . $e->getLine();
+            //     echo '</pre>';
+            // }
+
+            $this->GithubReports = $this->fetchTable("GithubReports");
+            $githubData = $this->GithubReports->find()->order([ "last_commit_date" => "DESC" ])->all();
+
+        
+        /*
+        * ---------------------------------------------------------
+        * TODAY'S LEAVE / WFH
+        * ---------------------------------------------------------
+        */
+
+            $leaveEmployees = [];
+            $wfhEmployees = [];
+            $presentEmployees = [];
+
+            $leaveEmployeeIds = [];
+            $wfhEmployeeIds = [];
+
+            $attendanceSql = "
+                SELECT
+                    u.id,
+                    u.name,
+                    u.user_image,
+                    l.id AS leave_id,
+                    l.from_date,
+                    l.to_date,
+                    l.wfh_flag,
+                    l.leave_type
+                FROM users u
+                INNER JOIN leaves l
+                    ON l.created_by = u.id
+                WHERE {$employeeWhere}
+                    AND l.status IN ('Approved', 'Pending')
+                    AND CURDATE() BETWEEN DATE(l.from_date) AND DATE(l.to_date)
+            ";
+
+            $attendanceEmployees = $conn->execute($attendanceSql, $employeeParams)->fetchAll('assoc');
+
+            foreach ($attendanceEmployees as $attendance) {
+
+                $employeeId = (int)$attendance['id'];
+                $employeeData = [
+                    'id'         => $employeeId,
+                    'name'       => $attendance['name'] ?? '',
+                    'user_image' => $attendance['user_image'] ?? '',
+                    'leave_id'   => $attendance['leave_id'],
+                    'from_date'  => $attendance['from_date'],
+                    'to_date'    => $attendance['to_date'],
+                    'leave_type' => $attendance['leave_type'],
+                    'wfh_flag'   => $attendance['wfh_flag'],
+                ];
+
+                if ((int)$attendance['wfh_flag'] === 1) {
+                    $wfhEmployees[$employeeId] = $employeeData;
+                    $wfhEmployeeIds[$employeeId] = true;
+
                 } else {
-                    echo '<pre>';
-                    echo 'HTTP Error: ' . $response->getStatusCode() . ' ' . $response->getReasonPhrase() . PHP_EOL;
-                    echo 'Response: ' . $response->getStringBody();
-                    echo '</pre>';
+                    $leaveEmployees[$employeeId] = $employeeData;
+                    $leaveEmployeeIds[$employeeId] = true;
                 }
-            } catch (\Exception $e) {
-                $githubData = [];
-                echo '<pre>';
-                echo 'Exception Error: ' . $e->getMessage() . PHP_EOL;
-                echo 'File: ' . $e->getFile() . PHP_EOL;
-                echo 'Line: ' . $e->getLine();
-                echo '</pre>';
             }
 
         /*
         * ---------------------------------------------------------
-        * FINAL DATA TO VIEW
+        * PRESENT EMPLOYEES
         * ---------------------------------------------------------
         */
-            $this->set(compact(
-                'projects',
-                'total',
-                'pendingMilestones',
-                'pendingMilestoneCount',
-                'employees',
-                'averageAvailability',
-                'githubData'
-            ));
+            foreach ($employeeList as $employee) {
+                $employeeId = (int)$employee['id'];
+                if ( !isset($leaveEmployeeIds[$employeeId]) && !isset($wfhEmployeeIds[$employeeId]) ) {
+                    $presentEmployees[] = $employee;
+                }
+            }
+            $leaveEmployees = array_values($leaveEmployees);
+            $wfhEmployees = array_values($wfhEmployees);
+        /*
+        * ---------------------------------------------------------
+        * FINAL DATA TO VIEW
+        * ---------------------------------------------------------
+        */    
+            $this->set([
+                'projects' => $projects,
+                'total' => $total,
+                'pendingMilestones' => $pendingMilestones,
+                'pendingMilestoneCount' => $pendingMilestoneCount,
+                'employees' => $employees,
+                'averageAvailability' => $averageAvailability,
+
+                'githubData' => $githubData,
+
+                'leaveCount' => count($leaveEmployees),
+                'leaveEmployees' => $leaveEmployees,
+
+                'wfhCount' => count($wfhEmployees),
+                'wfhEmployees' => $wfhEmployees,
+
+                'presentCount' => count($presentEmployees),
+            ]);
+        /*
+        * ---------------------------------------------------------
+        * END
+        * ---------------------------------------------------------
+        */
     }
+
+public function refreshGithubData()
+{
+    $this->Authorization->skipAuthorization();
+    $this->GithubReports = $this->fetchTable("GithubReports");
+    try {
+
+        $http = new \Cake\Http\Client();
+        $response = $http->get("http://44.230.62.131:5016/github-report?days=7");
+
+        if (!$response->isOk()) {
+            throw new \Exception("GitHub API request failed.");
+        }
+
+        $github_data = $response->getJson();
+        if (
+            empty($github_data["success"]) ||
+            empty($github_data["data"])
+        ) {
+            throw new \Exception("No GitHub data found.");
+        }
+
+        foreach ($github_data["data"] as $data) {
+            if ( empty($data["repository"]) || empty($data["user"]) ) {
+                continue;
+            }
+
+            $github_report = $this->GithubReports->find()->where([
+                    "repository" => $data["repository"],
+                    "github_user" => $data["user"]
+                ])->first();
+
+            if ($github_report) {
+                $github_report->commits = $data["commits"];
+                $github_report->last_commit_date = $data["lastCommitDate"];
+
+            } else {
+                $github_report = $this->GithubReports->newEntity([
+                    "repository" => $data["repository"],
+                    "github_user" => $data["user"],
+                    "commits" => $data["commits"],
+                    "last_commit_date" => $data["lastCommitDate"]
+                ]);
+            }
+
+            if (!$this->GithubReports->save($github_report)) {
+                throw new \Exception(
+                    "Unable to save GitHub data for " .
+                    $data["repository"]
+                );
+            }
+        }
+        return $this->response
+            ->withType("application/json")
+            ->withStringBody(json_encode([
+                "success" => true,
+                "message" => "GitHub data refreshed successfully."
+            ]));
+    } catch (\Exception $e) {
+        return $this->response
+            ->withType("application/json")
+            ->withStringBody(json_encode([
+                "success" => false,
+                "message" => $e->getMessage()
+            ]));
+    }
+}
+    
 
 }
 ?>

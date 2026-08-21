@@ -1,3 +1,55 @@
+<?php
+$unavailableEmployees = array_merge($leaveEmployees, $wfhEmployees);
+$unavailableCount = count($unavailableEmployees);
+?>
+<style>
+   .attendance-table-wrapper {
+    width: 100%;
+    overflow-x: auto;
+}
+
+.attendance-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+}
+
+.attendance-table th {
+    background: #f5f6f8;
+    color: #4b5563;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    text-align: left;
+    padding: 8px 10px;
+    border: 1px solid #dfe3e8;
+}
+
+.attendance-table td {
+    padding: 8px 10px;
+    border: 1px solid #dfe3e8;
+    color: #64748b;
+    font-size: 12px;
+}
+
+.attendance-table tbody tr:nth-child(even) {
+    background: #f7f7f7;
+}
+
+.attendance-table tbody tr:hover {
+    background: #f1f5f9;
+}
+
+.attendance-table th:first-child,
+.attendance-table td:first-child {
+    width: 55%;
+}
+
+.attendance-table th:last-child,
+.attendance-table td:last-child {
+    width: 45%;
+}
+</style>
 <div class="page-content">
     <div class="project-dashboard container-fluid pma_body">
         <div class="pd-page-heading">
@@ -46,7 +98,6 @@
             </div>
 
             <!-- EMPLOYEES -->
-
             <div class="pd-kpi-card">
                 <div class="pd-kpi-top">
                     <div class="pd-kpi-icon pd-purple">
@@ -63,45 +114,44 @@
                 </div>
             </div>
 
-            <!-- TOTAL HOURS -->
-
-            <!-- <div class="pd-kpi-card">
+            <!-- Employees Present -->
+            <div class="pd-kpi-card">
                 <div class="pd-kpi-top">
                     <div class="pd-kpi-icon pd-green">
-                        <i class="fa fa-clock-o"></i>
+                        <i class="fa fa-user-check"></i>
                     </div>
                     <div>
                         <div class="pd-kpi-title">
-                            Total Hours Till Date
+                           Employees Present
                         </div>
                         <div class="pd-kpi-value">
-                            <?= number_format($totalHours, 2) ?>hrs
+                            <?= number_format($presentCount) ?>
                         </div>
                     </div>
                 </div>
-            </div> -->
+            </div>
 
-
-            <!-- BILLABLE HOURS -->
-
-            <!-- <div class="pd-kpi-card">
+            <!-- On Leave / WFH -->
+            <div class="pd-kpi-card">
                 <div class="pd-kpi-top">
-                    <div class="pd-kpi-icon pd-cyan">
-                        <i class="fa fa-file-text-o"></i>
+                    <div class="pd-kpi-icon pd-red">
+                        <i class="fa fa-calendar"></i>
                     </div>
                     <div>
                         <div class="pd-kpi-title">
-                            Billable Hours (Till Date)
+                            On Leave / WFH
                         </div>
                         <div class="pd-kpi-value">
-                            <?= number_format($billableHours, 2) ?>hrs
+                            <a href="javascript:void(0)" class="pd-attendance-link" data-type="On Leave / WFH"
+                                data-employees='<?= h(json_encode($unavailableEmployees)) ?>'>
+                                    <?= number_format($unavailableCount) ?>
+                            </a>
                         </div>
                     </div>
                 </div>
-            </div> -->
+            </div>
 
-            <!-- AVAILABILITY -->
-
+            <!-- Average Availability -->
             <div class="pd-kpi-card">
                 <div class="pd-kpi-top">
                     <div class="pd-kpi-icon pd-purple">
@@ -122,15 +172,10 @@
         <!-- =====================================================
             PROJECTS / MILESTONES
             ===================================================== -->
-
         <div class="pd-two-column">
-            <!-- =================================================
-                ACTIVE PROJECTS
-                ================================================= -->
             <div class="pd-card">
                 <div class="pd-card-header">
                     <strong> Active Projects</strong>
-                    <!-- <a href="<?= $this->Url->build([ 'controller' => 'Projects', 'action' => 'myProject']) ?>"> View All </a> -->
                 </div>
                 <div class="pd-table-wrap">
                     <table class="pd-table" id="projectsTable">
@@ -158,7 +203,9 @@
                                     $project_name_words = preg_split('/\s+/', trim($project_name));
                                     $short_project_name = implode(' ', array_slice($project_name_words, 0, 4));
                                 ?>
-                                <span title="<?= h($project_name) ?>"> <?= h($short_project_name) ?><?= count($project_name_words) > 4 ? '...' : '' ?> </span>
+                                <a href="<?= $this->Url->build('/edit-project/' . $project['id']) ?>" title="<?= h($project_name) ?>" target="_Blank">
+                                    <span> <?= h($short_project_name) ?><?= count($project_name_words) > 4 ? '...' : '' ?> </span>
+                                </a>
                             </td>
                             <td> <?= h($project['client']) ?> </td>
                             <td> <?= h($project['project_manager']) ?></td>
@@ -177,11 +224,6 @@
                     </table>
                 </div>
             </div>
-
-            <!-- =================================================
-                PENDING MILESTONES
-                ================================================= -->
-
             <div class="pd-card">
                 <div class="pd-card-header">
                     <strong> Pending Milestones (Overdue) </strong>
@@ -200,7 +242,7 @@
                         </thead>
                         <tbody>
                         <?php if (!empty($pendingMilestones)): ?>
-                            <?php foreach ( $pendingMilestones as $milestone ): ?>
+                            <?php foreach ( $pendingMilestones as $milestone ):?>
                                 <?php
                                 $dueDate = '';
                                 $daysOverdue = 0;
@@ -228,7 +270,9 @@
                                             $projectNameWords = preg_split('/\s+/', trim($projectName));
                                             $shortProjectName = implode(' ', array_slice($projectNameWords, 0, 4));
                                         ?>
-                                        <span title="<?= h($projectName) ?>"> <?= h($shortProjectName) ?><?= count($projectNameWords) > 4 ? '...' : '' ?> </span>
+                                        <a href="<?= $this->Url->build('/edit-project/' . $milestone['project_id']) ?>" title="<?= h($projectName) ?>" target="_Blank">
+                                            <span> <?= h($shortProjectName) ?><?= count($projectNameWords) > 4 ? '...' : '' ?> </span>
+                                        </a>
                                     </td>
                                     <td> <?= h( $milestone['project_manager'] ?? '' ) ?> </td>
                                     <td><?= h($dueDate) ?></td>
@@ -254,16 +298,10 @@
                 </div>
             </div>
         </div>
-
         <!-- =====================================================
-            EMPLOYEE + CHARTS
+            EMPLOYEE / GIT
             ===================================================== -->
-
         <div class="pd-bottom-grid">
-            <!-- =================================================
-                EMPLOYEE OCCUPANCY
-                ================================================= -->
-
             <div class="pd-card pd-employee-card">
                 <div class="pd-card-header">
                     <strong> Employee Occupancy &amp; Availability (Month to Date) </strong>
@@ -272,16 +310,13 @@
                     <table class="pd-table pd-employee-table" id="employeeTable">
                         <thead>
                         <tr>
-                            <th>EMPLOYEE</th>
-                            <!-- <th>ROLE</th> -->
-                             
+                            <th>EMPLOYEE</th>                             
+                            <th>Office Hours</th>                             
                             <th class="hours-tooltip">
-                                TOTAL HOURS
-                                <span>TOTAL HOURS (TILL DATE)</span>
+                                TOTAL HOURS <span>TOTAL HOURS (TILL DATE)</span>
                             </th>
                             <th class="hours-tooltip">
-                                OCCUPIED HOURS
-                                <span>OCCUPIED HOURS (BILLABLE PROJECTS)</span>
+                                Billable HOURS <span>OCCUPIED HOURS (BILLABLE PROJECTS)</span>
                             </th>
                             <th>OCCUPANCY %</th>
                             <th>AVAILABILITY %</th>
@@ -311,7 +346,7 @@
                                 }
 
                                 $statusClass = strtolower( str_replace( ' ', '-', $employee['status'] ) );
-                                $roleNames = ['5' => 'BD', '6' => 'Tech Lead', '7' =>  'Developer', '8' => 'Designer']
+                                $roleNames = ['4' => 'Manager', '5' => 'BD', '6' => 'Tech Lead', '7' =>  'Developer', '8' => 'Designer']
                                 ?>
                                 <tr>
                                     <td>
@@ -331,6 +366,7 @@
                                         }
                                         ?>
                                     <!-- <td><?= h(implode(', ', $employeeRoles)) ?></td> -->
+                                    <td> <?= number_format( $employee['total_hours'], 2 ) ?> hrs </td>
                                     <td> <?= number_format( $employee['total_hours'], 2 ) ?> hrs </td>
                                     <td> <?= number_format($employee['occupied_hours'], 2) ?> hrs </td>
                                     <td>
@@ -379,14 +415,19 @@
                     <div> Note: Total Hours is based on working days till date in the current month. </div>
                 </div>
             </div>
-
-            <!-- =================================================
-                GIT COLUMN
-                ================================================= -->
             <div class="pd-chart-column">
                 <div class="pd-card pd-chart-card">
                     <div class="pd-card-header">
                         <strong> Latest Git Commits </strong>
+
+                        <button
+                            type="button"
+                            id="refreshGitData"
+                            class="btn btn-sm btn-secondary"
+                        >
+                            <i class="fa fa-refresh"></i> Refresh
+                        </button>
+
                     </div>
                     <div class="pd-table-wrap">
                         <table class="pd-table pd-employee-table" id="gitTable">
@@ -398,24 +439,17 @@
                                 <th>Commited On</th>
                             </tr>
                             </thead>
-                            <!-- <tbody id="gitTableBody">
-                                <tr>
-                                    <td colspan="4" style="text-align:center;">
-                                        Loading GitHub data...
-                                    </td>
-                                </tr>
-                            </tbody> -->
                             <tbody id="gitTableBody">
                                 <?php if (!empty($githubData)): ?>
                                     <?php foreach ($githubData as $git): ?>
                                         <tr>
-                                            <td><?= h($git['user'] ?? '') ?></td>
+                                            <td><?= h($git['github_user'] ?? '') ?></td>
                                             <td><?= h($git['repository'] ?? '') ?></td>
                                             <td><?= h($git['commits'] ?? '') ?></td>
                                             <td>
                                                 <?php
                                                     echo h(
-                                                        (new \DateTime($git['lastCommitDate'], new \DateTimeZone('UTC')))
+                                                        (new \DateTime($git['last_commit_date'], new \DateTimeZone('UTC')))
                                                             ->setTimezone(new \DateTimeZone('Asia/Kolkata'))
                                                             ->format('Y-m-d H:i:s')
                                                     ); ?>
@@ -435,28 +469,51 @@
                 </div>            
             </div>
         </div>
+
     </div>
 </div>
+
+<!-- On Leave/WFH Modal -->
+<div class="modal fade" id="attendanceEmployeesModal" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">
+                    <i class="fa fa-users"></i>
+                    <span id="attendanceModalTitle">On Leave / WFH</span>
+                </h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="attendance-table-wrapper">
+                    <table class="attendance-table">
+                        <thead>
+                            <tr>
+                                <th>EMP NAME</th>
+                                <th>PARTICULAR</th>
+                            </tr>
+                        </thead>
+                        <tbody id="attendanceEmployeeList">
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- On Leave/WFH Modal End -->
+ 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
 <script src="https://cdn.datatables.net/1.12.1/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
     $(document).ready(function () {
-        // $('#projectsTable').DataTable();
-        // $('#milestonesTable').DataTable();
-        // $('#employeeTable').DataTable();
-        // $('#gitTable').DataTable(
-        //     {
-        //         pageLength: 10,
-        //         searching: false,
-        //         lengthChange: false,
-        //         ordering: true,
-        //         order: [[3, 'desc']],
-        //     }
-        // );
-
-        // sandeep do start
         $.fn.dataTable.ext.pager.numbers_length = 5;
         $('#projectsTable').DataTable({
+            ordering: true,
+            order: [[3, 'asc']],
             scrollX: true,
             scrollCollapse: true,
             scrollY: '350px',
@@ -464,6 +521,8 @@
         });
 
         $('#milestonesTable').DataTable({
+            ordering: true,
+            order: [[3, 'desc']],
             scrollX: true,
             scrollCollapse: true,
             scrollY: '350px',
@@ -473,23 +532,18 @@
         $('#employeeTable').DataTable({
             scrollX: true,
             scrollCollapse: true,
-            scrollY: '280px',
+            scrollY: '350px',
             autoWidth: true
         });
 
-        $('#gitTable').DataTable(
-            {
-                // pageLength: 10,
-                // searching: false,
-                // lengthChange: false,
-                ordering: true,
-                order: [[3, 'desc']],
-                scrollX: true,
-                scrollCollapse: true,
-                autoWidth: true,
-                scrollY: '350px',
-            }
-        );
+        $('#gitTable').DataTable({
+            ordering: true,
+            order: [[3, 'desc']],
+            scrollX: true,
+            scrollCollapse: true,
+            autoWidth: true,
+            scrollY: '350px',
+        });
 
         let resizeTimer;
         $(window).on('resize', function () {
@@ -501,106 +555,89 @@
                 gitTable.columns.adjust().draw(false);
             }, 250);
         });
-
-        // sandeep end
-
+    });
 
 
-    //     fetch('http://44.230.62.131:5016/github-report?days=7')
-    //     .then(function (response) {
+    $(document).on('click', '#refreshGitData', function () {
+        const button = $(this);
+        const originalHtml = button.html();
+        button.prop('disabled', true);
+        button.html('<i class="fa fa-spinner fa-spin"></i> Refreshing...');
 
-    //         if (!response.ok) {
-    //             throw new Error('GitHub API request failed');
-    //         }
+        $.ajax({
+            url: '<?= $this->Url->build([ "controller" => "Dashboard", "action" => "refreshGithubData" ]) ?>',
+            type: 'GET',
+            dataType: 'json',
+            success: function (response) {
+                button.prop('disabled', false);
+                button.html(originalHtml);
+                if (response.success) {
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Success',
+                        text: response.message,
+                        timer: 1500,
+                        showConfirmButton: false
+                    }).then(function () {
+                        location.reload();
+                    });
+                } else {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: response.message
+                    });
+                }
+            },
+            error: function (xhr) {
+                button.prop('disabled', false);
+                button.html(originalHtml);
+                let message = 'Unable to refresh GitHub data.';
+                if (xhr.responseJSON && xhr.responseJSON.message) {
+                    message = xhr.responseJSON.message;
+                }
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: message
+                });
+            }
+        });
+    });
 
-    //         return response.json();
-    //     })
-    //     .then(function (response) {
+    $(document).on('click', '.pd-attendance-link', function () {
+        const type = $(this).data('type');
+        const employees = $(this).data('employees');
+        $('#attendanceModalTitle').text(type);
+        let html = '';
 
-    //         console.log('GitHub API response:', response);
+        if (employees && employees.length > 0) {
+            employees.forEach(function (employee) {
+                const name = employee.name || '-';
+                // WFH when wfh_flag = 1, otherwise show leave_type
+                const particular = employee.wfh_flag == 1
+                    ? 'WFH'
+                    : (employee.leave_type || 'Leave');
 
-    //         const tbody = $('#gitTableBody');
+                html += `
+                    <tr>
+                        <td>${name}</td>
+                        <td>${particular}</td>
+                    </tr>
+                `;
+            });
 
-    //         // Clear loading row
-    //         tbody.empty();
+        } else {
+            html = `
+                <tr>
+                    <td colspan="2" class="text-center">
+                        No employees found
+                    </td>
+                </tr>
+            `;
+        }
 
-    //         if (
-    //             !response.success ||
-    //             !response.data ||
-    //             response.data.length === 0
-    //         ) {
-
-    //             tbody.html(`
-    //                 <tr>
-    //                     <td colspan="4" style="text-align:center;">
-    //                         No GitHub data found.
-    //                     </td>
-    //                 </tr>
-    //             `);
-
-    //         } else {
-
-    //             response.data.forEach(function (git) {
-
-    //                 let commitDate = '';
-
-    //                 if (git.lastCommitDate) {
-    //                     const date = new Date(git.lastCommitDate);
-
-    //                     commitDate =
-    //                         date.getFullYear() + '-' +
-    //                         String(date.getMonth() + 1).padStart(2, '0') + '-' +
-    //                         String(date.getDate()).padStart(2, '0');
-    //                 }
-
-    //                 tbody.append(`
-    //                     <tr>
-    //                         <td>${escapeHtml(git.user || '')}</td>
-    //                         <td>${escapeHtml(git.repository || '')}</td>
-    //                         <td>${escapeHtml(git.commits || 0)}</td>
-    //                         <td>${escapeHtml(commitDate)}</td>
-    //                     </tr>
-    //                 `);
-    //             });
-    //         }
-
-    //         // NOW initialize DataTable
-    //         $('#gitTable').DataTable({
-    //             pageLength: 10,
-    //             searching: false,
-    //             lengthChange: false,
-    //             ordering: true
-    //         });
-
-    //     })
-    //     .catch(function (error) {
-
-    //         console.error('GitHub API Error:', error);
-
-    //         $('#gitTableBody').html(`
-    //             <tr>
-    //                 <td colspan="4" style="text-align:center;">
-    //                     Unable to load GitHub data.
-    //                 </td>
-    //             </tr>
-    //         `);
-
-    //         // Initialize DataTable even if API fails
-    //         $('#gitTable').DataTable({
-    //             pageLength: 10,
-    //             searching: false,
-    //             lengthChange: false,
-    //             ordering: true
-    //         });
-
-    //     });
-
-
-    // function escapeHtml(value) {
-    //     const div = document.createElement('div');
-    //     div.textContent = value;
-    //     return div.innerHTML;
-    // }
-
-});
+        $('#attendanceEmployeeList').html(html);
+        $('#attendanceEmployeesModal').modal('show');
+    });
 </script>

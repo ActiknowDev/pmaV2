@@ -60,6 +60,7 @@
     font-size: 11px;
     line-height: 1.5;
     letter-spacing: .3px;
+    font-weight: 500;
 }
 
 
@@ -69,7 +70,7 @@
 
 .pd-kpi-grid {
     display: grid;
-    grid-template-columns: repeat(4, minmax(0, 1fr));
+    grid-template-columns: repeat(6, minmax(0, 1fr));
     gap: 12px;
     margin-bottom: 14px;
 }
@@ -131,8 +132,8 @@
 .pd-kpi-title {
     margin-bottom: 4px;
     color: #66758d;
-    font-size: 10px;
-    font-weight: 500;
+    font-size: 12px;
+    font-weight: 600;
     line-height: 1.2;
     letter-spacing: .8px;
 }
@@ -531,7 +532,8 @@ table.pd-table {
     gap: 15px;
     border-top: 1px solid var(--pd-border-light);
     color: #68778e;
-    font-size: 8px;
+    font-size: 9px;
+    font-weight: 500;
 }
 
 
@@ -747,6 +749,7 @@ table.pd-table {
 .pma_body .dataTables_wrapper.dt-bootstrap4.no-footer .dataTables_filter label {
     padding: 10px 10px 0 !important;
     font-size: 11px !important;
+    font-weight: 500;
 }
 
 .pma_body .dataTables_wrapper.dt-bootstrap4.no-footer .row:last-child {
@@ -766,7 +769,8 @@ table.pd-table {
 
 .pma_body .dataTables_info,
 .pma_body .dataTables_paginate.paging_simple_numbers .paginate_button.page-item {
-    font-size: 10px !important;
+    font-size: 11px !important;
+    font-weight:500;
 }
 
 
@@ -789,11 +793,11 @@ table.pd-table {
     table-layout: auto !important;
 }
 
-.pma_body .dataTables_scrollHead,
+/* .pma_body .dataTables_scrollHead,
 .pma_body .dataTables_scrollHeadInner,
 .pma_body .dataTables_scrollHead table {
     overflow: visible !important;
-}
+} */
 
 .pma_body .hours-tooltip {
     position: relative;
@@ -801,11 +805,11 @@ table.pd-table {
 }
 
 /* 👇 Ye naya add karo — clipping fix */
-.pma_body .dataTables_scrollHead,
+/* .pma_body .dataTables_scrollHead,
 .pma_body .dataTables_scrollHeadInner,
 .pma_body .dataTables_scrollHead table {
     overflow: visible !important;
-}
+} */
 
 .pma_body .hours-tooltip>span {
     visibility: hidden;
@@ -826,4 +830,9 @@ table.pd-table {
     /* 👈 10 se badha kar 999 kiya, taaki sticky th ke upar dikhe */
     transition: opacity 0.2s ease;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+
+.pma_body table th, .pma_body table td {
+    font-size: 11px!important;
+    font-weight:500
 }
