@@ -88,13 +88,14 @@
     height: 90px;
     display: flex;
     flex-direction: column;
+    position: relative;
+    box-sizing: border-box;
 }
 
 .pd-kpi-top {
     display: flex;
     align-items: flex-start;
     gap: 13px;
-    flex: 1;
 }
 
 .pd-kpi-icon {
@@ -851,10 +852,14 @@ table.pd-table {
     font-size: 11px!important;
     font-weight:500
 }
-.pdi-bottom{
+.pdi-bottom {
+    position: absolute;
+    right: 14px;
+    bottom: 10px;
     font-size: 10px;
     font-weight: 500;
+    line-height: 1;
     color: var(--pd-muted);
     text-align: right;
-    margin-top: auto;
+    margin: 0;
 }
