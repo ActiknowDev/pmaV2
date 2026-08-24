@@ -68,11 +68,11 @@ class AssetAssignedEntriesController extends AppController
                 'asset_price' => 'AssetDatas.asset_price',
                 'created_at' => 'AssetDatas.created_at',
                 'free_asset_status' => 'AssetDatas.free_asset_status',
-                'user_id' => '(AssetAssignedEntries.user_id)',
-                'date_of_assign' => '(AssetAssignedEntries.date_of_assign)',
-                'active' => '(AssetAssignedEntries.active)',
-                'name' => '(Users.name)',
-                'expenses_amount' => '(AssetExpenses.expenses_amount)',
+                'user_id' => 'ANY_VALUE(AssetAssignedEntries.user_id)',
+                'date_of_assign' => 'ANY_VALUE(AssetAssignedEntries.date_of_assign)',
+                'active' => 'ANY_VALUE(AssetAssignedEntries.active)',
+                'name' => 'ANY_VALUE(Users.name)',
+                'expenses_amount' => 'ANY_VALUE(AssetExpenses.expenses_amount)',
                 // 'user_id' => '(AssetAssignedEntries.user_id)',
                 // 'date_of_assign' => '(AssetAssignedEntries.date_of_assign)',
                 // 'active' => '(AssetAssignedEntries.active)',
@@ -83,8 +83,7 @@ class AssetAssignedEntriesController extends AppController
                 'AssetDatas' => [
                     'table' => 'asset_datas',
                     'type' => 'INNER',
-                    'conditions' => ['AssetDatas.asset_categorie_id = AssetCategories.id',
-                    'AssetDatas.free_asset_status IS NULL']
+                    'conditions' => 'AssetDatas.asset_categorie_id = AssetCategories.id'
                 ],
                 'AssetAssignedEntries' => [
                     'table' => 'asset_assigned_entries',
@@ -126,7 +125,7 @@ class AssetAssignedEntriesController extends AppController
             // print_r($asset_data);
             // die();
 
-        $assigned_entries = $this->AssetAssignedEntries->find("all")->contain(["AssetDatas", "AssetDatas.AssetCategories", "AssetDatas.AssetExpenses", "Users"])->where(["AssetAssignedEntries.active" => 1])->toArray();
+        // $assigned_entries = $this->AssetAssignedEntries->find("all")->contain(["AssetDatas", "AssetDatas.AssetCategories", "AssetDatas.AssetExpenses", "Users"])->where(["AssetAssignedEntries.active" => 1])->toArray();
         // echo "<pre>";
         // print_r($asset_data);
         // die;
