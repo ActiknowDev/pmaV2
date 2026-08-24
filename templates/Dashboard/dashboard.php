@@ -23,8 +23,9 @@ $unavailableCount = count($unavailableEmployees);
                         <div class="pd-kpi-title">
                             Active Projects
                         </div>
-                        <div class="pd-kpi-value">                        
-                            <?= number_format($total > 0 ? $total : count( array_filter($projects, fn($p) => $p['status'] === 'Pending')
+                        <div class="pd-kpi-value">
+                            <?= number_format($total > 0 ? $total : count(
+                                array_filter($projects, fn($p) => $p['status'] === 'Pending')
                             )) ?>
                         </div>
                     </div>
@@ -74,14 +75,14 @@ $unavailableCount = count($unavailableEmployees);
                     </div>
                     <div>
                         <div class="pd-kpi-title">
-                           Employees Present
+                            Employees Present
                         </div>
                         <div class="pd-kpi-value">
                             <?= number_format($presentCount) ?>
                         </div>
                     </div>
                 </div>
-                <div class="pdi-bottom"> Today  </div>
+                <div class="pdi-bottom"> Today </div>
             </div>
 
             <!-- On Leave / WFH -->
@@ -97,12 +98,12 @@ $unavailableCount = count($unavailableEmployees);
                         <div class="pd-kpi-value">
                             <a href="javascript:void(0)" class="pd-attendance-link" data-type="On Leave / WFH"
                                 data-employees='<?= h(json_encode($unavailableEmployees)) ?>'>
-                                    <?= number_format($unavailableCount) ?>
+                                <?= number_format($unavailableCount) ?>
                             </a>
                         </div>
                     </div>
                 </div>
-                <div class="pdi-bottom"> Today  </div>
+                <div class="pdi-bottom"> Today </div>
             </div>
 
             <!-- Average Availability -->
@@ -135,46 +136,48 @@ $unavailableCount = count($unavailableEmployees);
                 <div class="pd-table-wrap">
                     <table class="pd-table" id="projectsTable">
                         <thead>
-                        <tr>
-                            <th>PROJECT NAME</th>
-                            <th>CLIENT</th>
-                            <th>MANAGER</th>
-                            <th>BILLABLE</th>
-                        </tr>
+                            <tr>
+                                <th>PROJECT NAME</th>
+                                <th>CLIENT</th>
+                                <th>MANAGER</th>
+                                <th>BILLABLE</th>
+                            </tr>
                         </thead>
                         <tbody>
-                        <?php
-                        $activeProjectsFound = false;
-                        foreach ($projects as $project):
-                            if ($project['status'] !== 'Pending') {
-                                continue;
-                            }
-                            $activeProjectsFound = true;
-                            $isBillable = $project['bill'] == 'Billable' ? 1 : 0;
-                        ?>
-                        <tr>
-                            <td> <?php
-                                    $project_name = $project['project_name'] ?? '';
-                                    $project_name_words = preg_split('/\s+/', trim($project_name));
-                                    $short_project_name = implode(' ', array_slice($project_name_words, 0, 4));
-                                ?>
-                                <a href="<?= $this->Url->build('/edit-project/' . $project['id']) ?>" title="<?= h($project_name) ?>" target="_Blank">
-                                    <span> <?= h($short_project_name) ?><?= count($project_name_words) > 4 ? '...' : '' ?> </span>
-                                </a>
-                            </td>
-                            <td> <?= h($project['client']) ?> </td>
-                            <td> <?= h($project['project_manager']) ?></td>
-                            <td><?php if ($isBillable): ?>
-                                    <span class="pd-pill pd-success"> Yes </span>
-                                <?php else: ?>
-                                    <span class="pd-pill pd-danger">No</span>
-                                <?php endif; ?>
-                            </td>
-                        </tr>
-                        <?php endforeach; ?>
-                        <?php if (!$activeProjectsFound): ?>
-                            <tr><td colspan="4" class="text-center">No active projects found.</td></tr>
-                        <?php endif; ?>
+                            <?php
+                            $activeProjectsFound = false;
+                            foreach ($projects as $project):
+                                if ($project['status'] !== 'Pending') {
+                                    continue;
+                                }
+                                $activeProjectsFound = true;
+                                $isBillable = $project['bill'] == 'Billable' ? 1 : 0;
+                            ?>
+                                <tr>
+                                    <td> <?php
+                                            $project_name = $project['project_name'] ?? '';
+                                            $project_name_words = preg_split('/\s+/', trim($project_name));
+                                            $short_project_name = implode(' ', array_slice($project_name_words, 0, 4));
+                                            ?>
+                                        <a href="<?= $this->Url->build('/edit-project/' . $project['id']) ?>" title="<?= h($project_name) ?>" target="_Blank">
+                                            <span> <?= h($short_project_name) ?><?= count($project_name_words) > 4 ? '...' : '' ?> </span>
+                                        </a>
+                                    </td>
+                                    <td> <?= h($project['client']) ?> </td>
+                                    <td> <?= h($project['project_manager']) ?></td>
+                                    <td><?php if ($isBillable): ?>
+                                            <span class="pd-pill pd-success"> Yes </span>
+                                        <?php else: ?>
+                                            <span class="pd-pill pd-danger">No</span>
+                                        <?php endif; ?>
+                                    </td>
+                                </tr>
+                            <?php endforeach; ?>
+                            <?php if (!$activeProjectsFound): ?>
+                                <tr>
+                                    <td colspan="4" class="text-center">No active projects found.</td>
+                                </tr>
+                            <?php endif; ?>
                         </tbody>
                     </table>
                 </div>
@@ -186,68 +189,70 @@ $unavailableCount = count($unavailableEmployees);
                 <div class="pd-table-wrap">
                     <table class="pd-table" id="milestonesTable">
                         <thead>
-                        <tr>
-                            <th>MILESTONE</th>
-                            <th>PROJECT</th>
-                            <th>MANAGER</th>
-                            <th>DUE DATE</th>
-                            <!-- <th>DAYS OVERDUE</th> -->
-                            <th>STATUS</th>
-                        </tr>
+                            <tr>
+                                <th>MILESTONE</th>
+                                <th>PROJECT</th>
+                                <th>MANAGER</th>
+                                <th>DUE DATE</th>
+                                <!-- <th>DAYS OVERDUE</th> -->
+                                <th>STATUS</th>
+                            </tr>
                         </thead>
                         <tbody>
-                        <?php if (!empty($pendingMilestones)): ?>
-                            <?php foreach ( $pendingMilestones as $milestone ):?>
-                                <?php
-                                $dueDate = '';
-                                $daysOverdue = 0;
-                                if (!empty($milestone['due_date'])) {
-                                    $dueDate = date( 'd M Y', strtotime( $milestone['due_date'] ) );
-                                    $dueTimestamp = strtotime( date( 'Y-m-d', strtotime( $milestone['due_date'] ) ) );
-                                    $todayTimestamp = strtotime( date('Y-m-d') );
+                            <?php if (!empty($pendingMilestones)): ?>
+                                <?php foreach ($pendingMilestones as $milestone): ?>
+                                    <?php
+                                    $dueDate = '';
+                                    $daysOverdue = 0;
+                                    if (!empty($milestone['due_date'])) {
+                                        $dueDate = date('d M Y', strtotime($milestone['due_date']));
+                                        $dueTimestamp = strtotime(date('Y-m-d', strtotime($milestone['due_date'])));
+                                        $todayTimestamp = strtotime(date('Y-m-d'));
 
-                                    if ( $dueTimestamp < $todayTimestamp ) {
-                                        $daysOverdue = floor( ( $todayTimestamp - $dueTimestamp ) / 86400 );
-                                    }
-                                } ?>
-                                <tr>
-                                    <td>
-                                        <span class="pd-milestone-dot"></span>
-                                        <?php
+                                        if ($dueTimestamp < $todayTimestamp) {
+                                            $daysOverdue = floor(($todayTimestamp - $dueTimestamp) / 86400);
+                                        }
+                                    } ?>
+                                    <tr>
+                                        <td>
+                                            <span class="pd-milestone-dot"></span>
+                                            <?php
                                             $title = $milestone['title'] ?? '';
                                             $words = preg_split('/\s+/', trim($title));
                                             $shortTitle = implode(' ', array_slice($words, 0, 4));
-                                        ?>
-                                        <span title="<?= h($title) ?>"> <?= h($shortTitle) ?><?= count($words) > 4 ? '...' : '' ?> </span>
-                                    </td>
-                                    <td> <?php
-                                            $projectName = $milestone['project_name'] ?? '';
-                                            $projectNameWords = preg_split('/\s+/', trim($projectName));
-                                            $shortProjectName = implode(' ', array_slice($projectNameWords, 0, 4));
-                                        ?>
-                                        <a href="<?= $this->Url->build('/edit-project/' . $milestone['project_id']) ?>" title="<?= h($projectName) ?>" target="_Blank">
-                                            <span> <?= h($shortProjectName) ?><?= count($projectNameWords) > 4 ? '...' : '' ?> </span>
-                                        </a>
-                                    </td>
-                                    <td> <?= h( $milestone['project_manager'] ?? '' ) ?> </td>
-                                    <td><?= h($dueDate) ?></td>
-                                    <!-- <td class="pd-overdue">
+                                            ?>
+                                            <span title="<?= h($title) ?>"> <?= h($shortTitle) ?><?= count($words) > 4 ? '...' : '' ?> </span>
+                                        </td>
+                                        <td> <?php
+                                                $projectName = $milestone['project_name'] ?? '';
+                                                $projectNameWords = preg_split('/\s+/', trim($projectName));
+                                                $shortProjectName = implode(' ', array_slice($projectNameWords, 0, 4));
+                                                ?>
+                                            <a href="<?= $this->Url->build('/edit-project/' . $milestone['project_id']) ?>" title="<?= h($projectName) ?>" target="_Blank">
+                                                <span> <?= h($shortProjectName) ?><?= count($projectNameWords) > 4 ? '...' : '' ?> </span>
+                                            </a>
+                                        </td>
+                                        <td> <?= h($milestone['project_manager'] ?? '') ?> </td>
+                                        <td><?= h($dueDate) ?></td>
+                                        <!-- <td class="pd-overdue">
                                         <?php if ($daysOverdue > 0): ?>
                                             -<?= $daysOverdue ?> day<?= $daysOverdue > 1 ? 's' : '' ?>
                                         <?php else: ?>
                                             Due today
                                         <?php endif; ?>
                                     </td> -->
-                                    <td> 
-                                        <span class="pd-pill pd-not-completed" >
-                                            <?= h( $milestone['status'] ?? 'Pending' ) ?>
-                                        </span>
-                                    </td>
+                                        <td>
+                                            <span class="pd-pill pd-not-completed">
+                                                <?= h($milestone['status'] ?? 'Pending') ?>
+                                            </span>
+                                        </td>
+                                    </tr>
+                                <?php endforeach; ?>
+                            <?php else: ?>
+                                <tr>
+                                    <td colspan="6" class="text-center"> No pending milestones found. </td>
                                 </tr>
-                            <?php endforeach; ?>
-                        <?php else: ?>
-                            <tr> <td colspan="6" class="text-center" > No pending milestones found. </td> </tr>
-                        <?php endif; ?>
+                            <?php endif; ?>
                         </tbody>
                     </table>
                 </div>
@@ -264,53 +269,51 @@ $unavailableCount = count($unavailableEmployees);
                 <div class="pd-table-wrap">
                     <table class="pd-table pd-employee-table" id="employeeTable">
                         <thead>
-                        <tr>
-                            <th>EMPLOYEE</th>                             
-                            <th>Office Hours</th>                             
-                            <th class="hours-tooltip">
-                                TOTAL HOURS <span>TOTAL HOURS (TILL DATE)</span>
-                            </th>
-                            <th class="hours-tooltip">
-                                Billable HOURS <span>OCCUPIED HOURS (BILLABLE PROJECTS)</span>
-                            </th>
-                            <th>OCCUPANCY %</th>
-                            <th>AVAILABILITY %</th>
-                            <th>STATUS</th>
-                        </tr>
+                            <tr>
+                                <th>EMPLOYEE</th>
+                                <th>Office Hours</th>
+                                <th class="hours-tooltip">
+                                    TOTAL HOURS <span>TOTAL HOURS (TILL DATE)</span>
+                                </th>
+                                <th class="hours-tooltip">
+                                    Billable HOURS <span>OCCUPIED HOURS (BILLABLE PROJECTS)</span>
+                                </th>
+                                <th>OCCUPANCY %</th>
+                                <th>AVAILABILITY %</th>
+                                <th>STATUS</th>
+                            </tr>
                         </thead>
                         <tbody>
-                        <?php 
-                        // echo "<pre>";print_r($employees);die('djhs');
-                        if (!empty($employees)): ?>
-                            <?php foreach ( $employees as $employee ): ?>
-                                <?php $name = $employee['name'] ?? '';
-                                $nameParts = preg_split( '/\s+/', trim($name) );
+                            <?php
+                            // echo "<pre>";print_r($employees);die('djhs');
+                            if (!empty($employees)): ?>
+                                <?php foreach ($employees as $employee): ?>
+                                    <?php $name = $employee['name'] ?? '';
+                                    $nameParts = preg_split('/\s+/', trim($name));
 
-                                $initials = strtoupper( substr( $nameParts[0] ?? '', 0, 1 ) . substr( 0, 1  ) );
-                                $occupancy = (float)$employee['occupancy'];
-                                $availability = (float)$employee['availability'];
+                                    $initials = strtoupper(substr($nameParts[0] ?? '', 0, 1) . substr(0, 1));
+                                    $occupancy = (float)$employee['occupancy'];
+                                    $availability = (float)$employee['availability'];
 
-                                if ($occupancy >= 75) {
-                                    $meterClass = 'pd-meter-red';
+                                    if ($occupancy >= 75) {
+                                        $meterClass = 'pd-meter-red';
+                                    } elseif ($occupancy >= 40) {
+                                        $meterClass = 'pd-meter-orange';
+                                    } else {
+                                        $meterClass = 'pd-meter-green';
+                                    }
 
-                                } elseif ($occupancy >= 40) {
-                                    $meterClass = 'pd-meter-orange';
-
-                                } else {
-                                    $meterClass = 'pd-meter-green';
-                                }
-
-                                $statusClass = strtolower( str_replace( ' ', '-', $employee['status'] ) );
-                                $roleNames = ['4' => 'Manager', '5' => 'BD', '6' => 'Tech Lead', '7' =>  'Developer', '8' => 'Designer']
-                                ?>
-                                <tr>
-                                    <td>
-                                        <div class="pd-employee-name" >
-                                            <span class="pd-avatar" > <?= h( $initials ) ?></span> 
-                                            <?= h($name) ?>
-                                        </div>
-                                    </td>
-                                    <?php 
+                                    $statusClass = strtolower(str_replace(' ', '-', $employee['status']));
+                                    $roleNames = ['4' => 'Manager', '5' => 'BD', '6' => 'Tech Lead', '7' =>  'Developer', '8' => 'Designer']
+                                    ?>
+                                    <tr>
+                                        <td>
+                                            <div class="pd-employee-name">
+                                                <span class="pd-avatar"> <?= h($initials) ?></span>
+                                                <?= h($name) ?>
+                                            </div>
+                                        </td>
+                                        <?php
                                         $roleIds = explode(',', $employee['role_name']);
                                         $employeeRoles = [];
                                         foreach ($roleIds as $roleId) {
@@ -320,34 +323,36 @@ $unavailableCount = count($unavailableEmployees);
                                             }
                                         }
                                         ?>
-                                    <!-- <td><?= h(implode(', ', $employeeRoles)) ?></td> -->
-                                    <td> <?=$employee['office_hours']?> hrs </td>
-                                    <td> <?= number_format( $employee['total_hours'], 2 ) ?> hrs </td>
-                                    <td> <?= number_format($employee['occupied_hours'], 2) ?> hrs </td>
-                                    <td>
-                                        <div class="pd-meter-cell" >
-                                            <div class="pd-meter">
-                                                <span class="<?= h( $meterClass ) ?>" style="width:<?= min( 100, $occupancy ) ?>%" ></span>
+                                        <!-- <td><?= h(implode(', ', $employeeRoles)) ?></td> -->
+                                        <td> <?= $employee['office_hours'] ?> hrs </td>
+                                        <td> <?= number_format($employee['total_hours'], 2) ?> hrs </td>
+                                        <td> <?= number_format($employee['occupied_hours'], 2) ?> hrs </td>
+                                        <td>
+                                            <div class="pd-meter-cell">
+                                                <div class="pd-meter">
+                                                    <span class="<?= h($meterClass) ?>" style="width:<?= min(100, $occupancy) ?>%"></span>
+                                                </div>
+                                                <?= number_format($occupancy,  1) ?>%
                                             </div>
-                                            <?= number_format(  $occupancy,  1 ) ?>%
-                                        </div>
-                                    </td>
-                                    <td>
-                                        <div class="pd-meter-cell" >
-                                            <div class="pd-meter">
-                                                <span class="pd-meter-green" style="width:<?= min( 100, $availability ) ?>%" ></span>
+                                        </td>
+                                        <td>
+                                            <div class="pd-meter-cell">
+                                                <div class="pd-meter">
+                                                    <span class="pd-meter-green" style="width:<?= min(100, $availability) ?>%"></span>
+                                                </div>
+                                                <?= number_format($availability, 1) ?>%
                                             </div>
-                                            <?= number_format( $availability, 1 ) ?>%
-                                        </div>
-                                    </td>
-                                    <td>
-                                        <span class="pd-status pd-status-<?= h( $statusClass ) ?>" > <?= h( $employee['status'] ) ?> </span>
-                                    </td>
+                                        </td>
+                                        <td>
+                                            <span class="pd-status pd-status-<?= h($statusClass) ?>"> <?= h($employee['status']) ?> </span>
+                                        </td>
+                                    </tr>
+                                <?php endforeach; ?>
+                            <?php else: ?>
+                                <tr>
+                                    <td colspan="7" class="text-center"> No employee data found. </td>
                                 </tr>
-                            <?php endforeach; ?>
-                        <?php else: ?>
-                            <tr> <td colspan="7" class="text-center" > No employee data found. </td> </tr>
-                        <?php endif; ?>
+                            <?php endif; ?>
                         </tbody>
                     </table>
                 </div>
@@ -378,8 +383,7 @@ $unavailableCount = count($unavailableEmployees);
                         <button
                             type="button"
                             id="refreshGitData"
-                            class="btn btn-sm btn-secondary"
-                        >
+                            class="btn btn-sm btn-secondary">
                             <i class="fa fa-refresh"></i> Refresh
                         </button>
 
@@ -387,12 +391,12 @@ $unavailableCount = count($unavailableEmployees);
                     <div class="pd-table-wrap">
                         <table class="pd-table pd-employee-table" id="gitTable">
                             <thead>
-                            <tr>
-                                <th>EMPLOYEE</th>
-                                <th>Project Name</th>
-                                <th>COMMITS</th>
-                                <th>Commited On</th>
-                            </tr>
+                                <tr>
+                                    <th>EMPLOYEE</th>
+                                    <th>Project Name</th>
+                                    <th>COMMITS</th>
+                                    <th>Commited On</th>
+                                </tr>
                             </thead>
                             <tbody id="gitTableBody">
                                 <?php if (!empty($githubData)): ?>
@@ -403,11 +407,11 @@ $unavailableCount = count($unavailableEmployees);
                                             <td><?= h($git['commits'] ?? '') ?></td>
                                             <td>
                                                 <?php
-                                                    echo h(
-                                                        (new \DateTime($git['last_commit_date'], new \DateTimeZone('UTC')))
-                                                            ->setTimezone(new \DateTimeZone('Asia/Kolkata'))
-                                                            ->format('Y-m-d H:i:s')
-                                                    ); ?>
+                                                echo h(
+                                                    (new \DateTime($git['last_commit_date'], new \DateTimeZone('UTC')))
+                                                        ->setTimezone(new \DateTimeZone('Asia/Kolkata'))
+                                                        ->format('Y-m-d H:i:s')
+                                                ); ?>
                                             </td>
                                         </tr>
                                     <?php endforeach; ?>
@@ -421,7 +425,7 @@ $unavailableCount = count($unavailableEmployees);
                             </tbody>
                         </table>
                     </div>
-                </div>            
+                </div>
             </div>
         </div>
 
@@ -459,51 +463,57 @@ $unavailableCount = count($unavailableEmployees);
     </div>
 </div>
 <!-- On Leave/WFH Modal End -->
- 
+
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
 <script src="https://cdn.datatables.net/1.12.1/js/jquery.dataTables.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
-    $(document).ready(function () {
+    $(document).ready(function() {
         $.fn.dataTable.ext.pager.numbers_length = 5;
         $('#projectsTable').DataTable({
             ordering: true,
-            order: [[3, 'asc']],
+            order: [
+                [3, 'asc']
+            ],
             scrollX: true,
-            scrollCollapse: true,
-            scrollY: '350px',
+            scrollCollapse: false,
+            scrollY: '315px',
             autoWidth: true
         });
 
         $('#milestonesTable').DataTable({
             ordering: true,
-            order: [[3, 'desc']],
+            order: [
+                [3, 'desc']
+            ],
             scrollX: true,
-            scrollCollapse: true,
-            scrollY: '350px',
+            scrollCollapse: false,
+            scrollY: '315px',
             autoWidth: true
         });
 
         $('#employeeTable').DataTable({
             scrollX: true,
-            scrollCollapse: true,
-            scrollY: '350px',
+            scrollCollapse: false,
+            scrollY: '315px',
             autoWidth: true
         });
 
         $('#gitTable').DataTable({
             ordering: true,
-            order: [[3, 'desc']],
+            order: [
+                [3, 'desc']
+            ],
             scrollX: true,
-            scrollCollapse: true,
+            scrollCollapse: false,
             autoWidth: true,
-            scrollY: '350px',
+            scrollY: '315px',
         });
 
         let resizeTimer;
-        $(window).on('resize', function () {
+        $(window).on('resize', function() {
             clearTimeout(resizeTimer);
-            resizeTimer = setTimeout(function () {
+            resizeTimer = setTimeout(function() {
                 projectsTable.columns.adjust().draw(false);
                 milestonesTable.columns.adjust().draw(false);
                 employeeTable.columns.adjust().draw(false);
@@ -513,17 +523,17 @@ $unavailableCount = count($unavailableEmployees);
     });
 
 
-    $(document).on('click', '#refreshGitData', function () {
+    $(document).on('click', '#refreshGitData', function() {
         const button = $(this);
         const originalHtml = button.html();
         button.prop('disabled', true);
         button.html('<i class="fa fa-spinner fa-spin"></i> Refreshing...');
 
         $.ajax({
-            url: '<?= $this->Url->build([ "controller" => "Dashboard", "action" => "refreshGithubData" ]) ?>',
+            url: '<?= $this->Url->build(["controller" => "Dashboard", "action" => "refreshGithubData"]) ?>',
             type: 'GET',
             dataType: 'json',
-            success: function (response) {
+            success: function(response) {
                 button.prop('disabled', false);
                 button.html(originalHtml);
                 if (response.success) {
@@ -533,7 +543,7 @@ $unavailableCount = count($unavailableEmployees);
                         text: response.message,
                         timer: 1500,
                         showConfirmButton: false
-                    }).then(function () {
+                    }).then(function() {
                         location.reload();
                     });
                 } else {
@@ -544,7 +554,7 @@ $unavailableCount = count($unavailableEmployees);
                     });
                 }
             },
-            error: function (xhr) {
+            error: function(xhr) {
                 button.prop('disabled', false);
                 button.html(originalHtml);
                 let message = 'Unable to refresh GitHub data.';
@@ -560,19 +570,19 @@ $unavailableCount = count($unavailableEmployees);
         });
     });
 
-    $(document).on('click', '.pd-attendance-link', function () {
+    $(document).on('click', '.pd-attendance-link', function() {
         const type = $(this).data('type');
         const employees = $(this).data('employees');
         $('#attendanceModalTitle').text(type);
         let html = '';
 
         if (employees && employees.length > 0) {
-            employees.forEach(function (employee) {
+            employees.forEach(function(employee) {
                 const name = employee.name || '-';
                 // WFH when wfh_flag = 1, otherwise show leave_type
-                const particular = employee.wfh_flag == 1
-                    ? 'WFH'
-                    : (employee.leave_type || 'Leave');
+                const particular = employee.wfh_flag == 1 ?
+                    'WFH' :
+                    (employee.leave_type || 'Leave');
 
                 html += `
                     <tr>
