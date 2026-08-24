@@ -104,21 +104,7 @@ class AssetAssignedEntriesController extends AppController
                     'type' => 'LEFT',
                     'conditions' => 'AssetExpenses.asset_id = AssetDatas.id'
                 ],
-            ])->group([
-                'AssetDatas.id',
-                'AssetCategories.cat_name',
-                'AssetDatas.product_name',
-                'AssetDatas.serial_number',
-                'AssetDatas.configuration',
-                'AssetDatas.asset_price',
-                'AssetDatas.created_at',
-                'AssetDatas.free_asset_status',
-                'AssetAssignedEntries.user_id',
-                'AssetAssignedEntries.date_of_assign',
-                'AssetAssignedEntries.active',
-                'Users.name',
-                'AssetExpenses.expenses_amount'
-            ])
+            ])->group('AssetDatas.id')
             ->toArray();
             
             // echo "<pre>";
