@@ -477,7 +477,7 @@ $unavailableCount = count($unavailableEmployees);
             ],
             scrollX: true,
             scrollCollapse: false,
-            scrollY: '315px',
+            scrollY: '320px',
             autoWidth: true
         });
 
@@ -488,14 +488,14 @@ $unavailableCount = count($unavailableEmployees);
             ],
             scrollX: true,
             scrollCollapse: false,
-            scrollY: '315px',
+            scrollY: '320px',
             autoWidth: true
         });
 
         $('#employeeTable').DataTable({
             scrollX: true,
             scrollCollapse: false,
-            scrollY: '315px',
+            scrollY: '320px',
             autoWidth: true
         });
 
@@ -507,7 +507,7 @@ $unavailableCount = count($unavailableEmployees);
             scrollX: true,
             scrollCollapse: false,
             autoWidth: true,
-            scrollY: '315px',
+            scrollY: '320px',
         });
 
         let resizeTimer;
