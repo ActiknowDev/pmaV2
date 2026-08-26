@@ -82,7 +82,7 @@ class AssetAssignedEntriesController extends AppController
             ->join([
                 'AssetDatas' => [
                     'table' => 'asset_datas',
-                    'type' => 'INNER',
+                    'type' => 'RIGHT',
                     'conditions' => 'AssetDatas.asset_categorie_id = AssetCategories.id'
                 ],
                 'AssetAssignedEntries' => [
@@ -477,9 +477,15 @@ class AssetAssignedEntriesController extends AppController
             $catId = $this->request->getQuery('catId');
             $asset_id = $this->request->getQuery('asset_id');
 
-            $assetData = $this->AssetDatas->find()
+            if(empty($catId)) {
+                $assetData = $this->AssetDatas->find()
+                ->where(['id' => $asset_id])
+                ->toArray();
+            } else {
+                $assetData = $this->AssetDatas->find()
                 ->where(['asset_categorie_id' => $catId])
                 ->toArray();
+            }
 
             // print_r($assetData);
             // die;
