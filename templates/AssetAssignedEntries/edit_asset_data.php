@@ -66,9 +66,8 @@
                                 <div class="col-md-4">
                                     <div class="form-group">
                                         <label for="">Asset Name</label>
-                                        <div class="adon-group pname" id="assetData">
-
-                                        </div>
+                                        <input name="asset_id" type="text" class ="form-control" value="<?= $AssetDatas->id; ?>" hidden>
+                                        <input name="" type="text" class ="form-control" value="<?= $AssetDatas->product_name; ?>" readonly>
                                     </div>
                                 </div>
                             </div>
@@ -319,17 +318,8 @@
                             <label for="">Category</label>
                             <div class="adon-group">
                                 <span class="icon ft-primary"><i class="fa fa-toolbox"></i></span>
-                                <select name="categories_id" id="modalAssetCat" class="form-control" required=true>
-                                    <option value='0'>Select Category</option>
-                                    <?php
-                                    foreach ($assetCategories as $value) :
-                                    ?>
-                                        <option value="<?= $value->id ?>" <?= $value->id == $AssetCategory->id ? 'selected' : null ?>>
-                                            <?= $value->cat_name ?></option>
-                                    <?php
-                                    endforeach;
-                                    ?>
-                                </select>
+                                <input name="categories_id" type="text" class ="form-control" value="<?= $AssetCategory->id; ?>" readonly hidden>
+                                <input type="text" class ="form-control" value="<?= $AssetCategory->cat_name; ?>" readonly>
 
                             </div>
                         </div>
@@ -340,9 +330,8 @@
                             <label for="">Asset</label>
                             <div class="adon-group">
                                 <span class="icon ft-primary"><i class="fa fa-toolbox"></i></span>
-                                <select name="asset_id" id="assetData1" data-live-search="true" class="form-control" required=true>
-
-                                </select>
+                                <input name="asset_id" type="text" class ="form-control" value="<?= $AssetDatas->id; ?>" hidden>
+                                <input name="" type="text" class ="form-control" value="<?= $AssetDatas->product_name; ?>" readonly>
                             </div>
                         </div>
                     </div>
