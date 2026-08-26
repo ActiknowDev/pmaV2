@@ -51,12 +51,13 @@
                                 </div>
                                 <div class="col-md-4">
                                     <div class="form-group">
-                                        <label for="">Category</label>
+                                        <label for="">Category</label><?php //echo "<pre>";print_r($assetCategories);die('fkh');?>
                                         <div class="adon-group pname">
-                                            <select name="categories_id" id="assetCat" onchange="assetNameSelect(this.value)" class="form-control" required=true>
+                                            <select name="categories_id" id="editAssetCat" class="form-control" required=true>
+                                                
                                                 <option value='0'>Select Category</option>
                                                 <?php foreach ($assetCategories as $value) : ?>
-                                                    <option value="<?= $value->id ?>" <?= $value->id == $AssetCategory->id ? 'selected' : null ?>>  <?= $value->cat_name ?></option>
+                                                    <option value="<?= $value->id ?>" <?= (!empty($AssetCategory) && $value->id == $AssetCategory->id) ? 'selected' : '' ?>>  <?= $value->cat_name ?></option>
                                                 <?php endforeach; ?>
                                             </select>
                                         </div>
@@ -318,7 +319,7 @@
                             <label for="">Category</label>
                             <div class="adon-group">
                                 <span class="icon ft-primary"><i class="fa fa-toolbox"></i></span>
-                                <select name="categories_id" id="assetCat" onchange="fetchAsset(this.value)" class="form-control" required=true>
+                                <select name="categories_id" id="modalAssetCat" class="form-control" required=true>
                                     <option value='0'>Select Category</option>
                                     <?php
                                     foreach ($assetCategories as $value) :
@@ -516,19 +517,30 @@
     $(document).ready(() => {
         $('.assignEmployee').selectpicker();
         $('.assignEmp').selectpicker();
-        $('#assetCat').selectpicker();
+
+        $('#editAssetCat').selectpicker();
+        $('#modalAssetCat').selectpicker();
 
         $(".datepicker1").datepicker({
             dateFormat: 'yy-mm-dd'
         });
 
-        let assetCat = $("#assetCat").val();
+        let assetCat = $("#editAssetCat").val();
         let asset_id = Number("<?= $asset_id ?>");
         let productName = "<?= $AssetDatas->product_name ?>";
+
         assetNameSelect(assetCat, asset_id);
         expenseTblData(asset_id, productName);
 
-        fetchAsset(Number("<?= $AssetCategory->id ?>"));
+        fetchAsset(<?= !empty($AssetCategory) ? (int)$AssetCategory->id : 0 ?>);
+    });
+
+    $(document).on('change', '#editAssetCat', function () {
+        assetNameSelect(this.value);
+    });
+
+    $(document).on('change', '#modalAssetCat', function () {
+        fetchAsset(this.value);
     });
 
     function assetNameSelect(id, asset_id = null) {

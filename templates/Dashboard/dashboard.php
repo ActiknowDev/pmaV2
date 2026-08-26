@@ -324,8 +324,15 @@ $unavailableCount = count($unavailableEmployees);
                                         }
                                         ?>
                                         <!-- <td><?= h(implode(', ', $employeeRoles)) ?></td> -->
-                                        <td> <?= $employee['office_hours'] ?> hrs </td>
-                                        <td> <?= number_format($employee['total_hours'], 2) ?> hrs </td>
+                                        <td onclick="getOfficeHours('<?= h($employee['name']) ?>')" 
+                                            style="cursor: pointer;">
+                                            <?= $employee['office_hours'] ?> hrs
+                                        </td>
+
+                                        <td onclick="getTotalHours('<?= h($employee['name']) ?>')" 
+                                            style="cursor: pointer;">
+                                            <?= number_format($employee['total_hours'], 2) ?> hrs
+                                        </td>
                                         <td> <?= number_format($employee['occupied_hours'], 2) ?> hrs </td>
                                         <td>
                                             <div class="pd-meter-cell">
@@ -488,7 +495,7 @@ $unavailableCount = count($unavailableEmployees);
             ],
             scrollX: true,
             scrollCollapse: false,
-            scrollY: '320px',
+            scrollY: '317.5px',
             autoWidth: true
         });
 
@@ -605,4 +612,49 @@ $unavailableCount = count($unavailableEmployees);
         $('#attendanceEmployeeList').html(html);
         $('#attendanceEmployeesModal').modal('show');
     });
+
+    function getOfficeHours(emp_name) {
+    $.ajax({
+        url: '<?= $this->Url->build(["controller" => "Dashboard", "action" => "getOfficeHours"]) ?>',
+        type: 'GET',
+        dataType: 'json',
+        data: {
+            emp_name: emp_name
+        },
+        success: function(response) {
+            console.log('Employee:', emp_name);
+            console.log('Office Hours Data:', response);
+
+            if (response.status) {
+                console.log(response.data);
+            }
+        },
+        error: function(xhr, status, error) {
+            console.error(error);
+        }
+    });
+}
+
+
+function getTotalHours(emp_name) {
+
+    $.ajax({
+        url: '<?= $this->Url->build(["controller" => "Dashboard", "action" => "getTotalHours"]) ?>',
+        type: 'GET',
+        dataType: 'json',
+        data: {
+            emp_name: emp_name
+        },
+        success: function(response) {
+            console.log('Total Hours Response:', response);
+
+            // Handle returned data here
+            // Example:
+            // $('#totalHoursModal').html(response);
+        },
+        error: function(xhr, status, error) {
+            console.error('Total Hours AJAX Error:', error);
+        }
+    });
+}
 </script>

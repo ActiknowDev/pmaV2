@@ -360,15 +360,19 @@ class AssetAssignedEntriesController extends AppController
         $AssetDatas = $this->AssetDatas->find('all')
             ->where(['id' => $asset_id])
             ->first();
+        // echo '<pre>';
+        // print_r($AssetDatas);
+        // die;
         $AssetAssignedEntries = $this->AssetAssignedEntries->find("all")
             ->where(['asset_id' => $asset_id,'dor IS NULL'])
             ->first();
-
-        $AssetCategory = $this->AssetCategories->find("all")
-            ->where(['id' => $AssetDatas->asset_categorie_id])
-            ->first();
-
-
+        
+        $AssetCategory = [];
+        if($AssetDatas->asset_categorie_id){
+            $AssetCategory = $this->AssetCategories->find("all")
+                ->where(['id' => $AssetDatas->asset_categorie_id])
+                ->first();
+        }
 
         $allAssignedEntries =  $this->AssetAssignedEntries->find("all")->select([
             'user_name' => 'Users.name',

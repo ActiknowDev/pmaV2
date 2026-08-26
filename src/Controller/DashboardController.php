@@ -1360,72 +1360,143 @@ class DashboardController extends AppController
         */
     }
 
-public function refreshGithubData()
-{
-    $this->Authorization->skipAuthorization();
-    $this->GithubReports = $this->fetchTable("GithubReports");
-    try {
+    public function refreshGithubData()
+    {
+        $this->Authorization->skipAuthorization();
+        $this->GithubReports = $this->fetchTable("GithubReports");
+        try {
 
-        $http = new \Cake\Http\Client();
-        $response = $http->get("http://44.230.62.131:5016/github-report?days=7");
+            $http = new \Cake\Http\Client();
+            $response = $http->get("http://44.230.62.131:5016/github-report?days=7");
 
-        if (!$response->isOk()) {
-            throw new \Exception("GitHub API request failed.");
-        }
-
-        $github_data = $response->getJson();
-        if (
-            empty($github_data["success"]) ||
-            empty($github_data["data"])
-        ) {
-            throw new \Exception("No GitHub data found.");
-        }
-
-        foreach ($github_data["data"] as $data) {
-            if ( empty($data["repository"]) || empty($data["user"]) ) {
-                continue;
+            if (!$response->isOk()) {
+                throw new \Exception("GitHub API request failed.");
             }
 
-            $github_report = $this->GithubReports->find()->where([
-                    "repository" => $data["repository"],
-                    "github_user" => $data["user"]
-                ])->first();
-
-            if ($github_report) {
-                $github_report->commits = $data["commits"];
-                $github_report->last_commit_date = $data["lastCommitDate"];
-
-            } else {
-                $github_report = $this->GithubReports->newEntity([
-                    "repository" => $data["repository"],
-                    "github_user" => $data["user"],
-                    "commits" => $data["commits"],
-                    "last_commit_date" => $data["lastCommitDate"]
-                ]);
+            $github_data = $response->getJson();
+            if ( empty($github_data["success"]) || empty($github_data["data"]) ) {
+                throw new \Exception("No GitHub data found.");
             }
 
-            if (!$this->GithubReports->save($github_report)) {
-                throw new \Exception(
-                    "Unable to save GitHub data for " .
-                    $data["repository"]
-                );
+            foreach ($github_data["data"] as $data) {
+                if ( empty($data["repository"]) || empty($data["user"]) ) {
+                    continue;
+                }
+
+                $github_report = $this->GithubReports->find()->where([
+                        "repository" => $data["repository"],
+                        "github_user" => $data["user"]
+                    ])->first();
+
+                if ($github_report) {
+                    $github_report->commits = $data["commits"];
+                    $github_report->last_commit_date = $data["lastCommitDate"];
+
+                } else {
+                    $github_report = $this->GithubReports->newEntity([
+                        "repository" => $data["repository"],
+                        "github_user" => $data["user"],
+                        "commits" => $data["commits"],
+                        "last_commit_date" => $data["lastCommitDate"]
+                    ]);
+                }
+                if (!$this->GithubReports->save($github_report)) {
+                    throw new \Exception( "Unable to save GitHub data for " .  $data["repository"] );
+                }
             }
+            return $this->response
+                ->withType("application/json")->withStringBody(json_encode([
+                    "success" => true,
+                    "message" => "GitHub data refreshed successfully."
+                ]));
+        } catch (\Exception $e) {
+            return $this->response
+                ->withType("application/json")->withStringBody(json_encode([
+                    "success" => false,
+                    "message" => $e->getMessage()
+                ]));
         }
+    }
+
+    public function getOfficeHours(){
+        $this->Authorization->skipAuthorization();
+
+        $conn = ConnectionManager::get('default');
+
+        $session = new \Cake\Http\Session();
+        $userSession = $session->read('data');
+
+        $month = date('m');
+        $year  = date('Y');
+
+        $userName = $this->request->getQuery('emp_name');
+    
+        if (empty($userName)) {
+            return $this->response
+                ->withType('application/json')
+                ->withStringBody(json_encode([
+                    'status' => false,
+                    'message' => 'Employee name is required'
+                ]));
+        }
+
+        $query = "
+            SELECT DISTINCT
+                u.emp_id,
+                u.emp_name AS emp,
+                u.manager_name,
+                e.dom AS DATE,
+                e.intime,
+                e.outtime,
+                TIMEDIFF(e.outtime, e.intime) AS total_time,
+                TIMEDIFF(e.intime, '10:00:00') AS Late_by,
+
+                CASE
+                    WHEN e.emp IS NOT NULL THEN 'Present'
+                    ELSE 'Absent'
+                END AS STATUS
+
+            FROM
+            (
+                SELECT
+                    u1.id AS emp_id,
+                    u1.name AS emp_name,
+                    u2.name AS manager_name
+                FROM users u1
+
+                INNER JOIN users u2
+                    ON u1.reporting_manager = u2.id
+
+                WHERE
+                    u1.deleted = 1
+                    AND u1.company_id = 10
+                    AND u1.role = 3
+                    AND u1.status = 1
+            ) AS u
+
+            INNER JOIN emp_punch_time e
+                ON e.emp = u.emp_name
+                AND MONTH(e.dom) = :month
+                AND YEAR(e.dom) = :year
+                AND e.emp = :userName
+
+            ORDER BY e.dom ASC
+        ";
+
+        $stmtProduct = $conn->execute($query, [
+            'month'    => $month,
+            'year'     => $year,
+            'userName' => $userName
+        ]);
+
+        $emp_attendence_list = $stmtProduct->fetchAll('assoc');
         return $this->response
-            ->withType("application/json")
+            ->withType('application/json')
             ->withStringBody(json_encode([
-                "success" => true,
-                "message" => "GitHub data refreshed successfully."
-            ]));
-    } catch (\Exception $e) {
-        return $this->response
-            ->withType("application/json")
-            ->withStringBody(json_encode([
-                "success" => false,
-                "message" => $e->getMessage()
+                'status' => true,
+                'data' => $emp_attendence_list
             ]));
     }
-}
     
 
 }

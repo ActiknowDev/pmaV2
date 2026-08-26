@@ -308,6 +308,7 @@
                                 <td><?= h($asset->cat_name); ?></td>
                                 <td>₹<?= number_format($asset->asset_price); ?></td>
                                 <td>₹<?= number_format($asset->expense_amount); ?></td>
+                                <?php //echo "<pre>";print_r($asset); ?>
                                <td>
                                     <?php if (!empty($asset->user_name)): ?>
                                         <span class="status-assigned"><strong>Assigned</strong><small>Owner: <?= h($asset->user_name) ?></small> </span>                                    
