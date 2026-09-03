@@ -39,11 +39,29 @@
     color: #198754;
     font-weight: 600;
 }
+.clk-dt {
+    color: #3fd5db !important;
+}
+.clk-dt:hover {
+    color: #0056b3 !important;
+}
 </style>
 
 <?php
 $unavailableEmployees = array_merge($leaveEmployees, $wfhEmployees);
 $unavailableCount = count($unavailableEmployees);
+
+function covertMinute($hoursDt) {
+
+$parts = explode(':', $hoursDt);
+
+$hours   = (int)($parts[0] ?? 0);
+$minutes = (int)($parts[1] ?? 0);
+
+$decimalHours = $hours + ($minutes / 60);
+return $decimalHours;
+
+}
 ?>
 <div class="page-content">
     <div class="project-dashboard container-fluid pma_body">
@@ -366,17 +384,16 @@ $unavailableCount = count($unavailableEmployees);
                                             }
                                         }
                                         ?>
-                                        <!-- <td><?= h(implode(', ', $employeeRoles)) ?></td> -->
-                                        <td onclick="getOfficeHours('<?= h($employee['name']) ?>')" 
+                                        <td data-order="<?= covertMinute($employee['office_hours']); ?>" class="clk-dt" onclick="getOfficeHours('<?= h($employee['name']) ?>')" 
                                             style="cursor: pointer;">
                                             <?= $employee['office_hours'] ?> hrs
                                         </td>
 
-                                        <td onclick='getTotalHours(<?= $employee["id"] ?>)'
+                                        <td data-order="<?= covertMinute($employee['total_hours'], 2); ?>" class="clk-dt" onclick='getTotalHours(<?= $employee["id"] ?>)'
                                             style="cursor: pointer;">
                                             <?= number_format($employee['total_hours'], 2) ?> hrs
                                         </td>
-                                        <td onclick='getBillableHours(<?= $employee["id"] ?>)'
+                                        <td data-order="<?= covertMinute($employee['occupied_hours'], 2); ?>" class="clk-dt" onclick='getBillableHours(<?= $employee["id"] ?>)'
                                             style="cursor: pointer;">
                                          <?= number_format($employee['occupied_hours'], 2) ?> hrs </td>
                                         <td>
