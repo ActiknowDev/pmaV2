@@ -1,3 +1,46 @@
+<style>
+.office-status {
+    display: inline-block;
+    padding: 5px 12px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 600;
+}
+
+.status-present {
+    color: #198754;
+    background: #e8f5ee;
+}
+
+.status-absent {
+    color: #dc3545;
+    background: #fdebec;
+}
+
+.status-leave {
+    color: #d39e00;
+    background: #fff6d8;
+}
+
+.status-default {
+    color: #6c757d;
+    background: #eeeeee;
+}
+
+
+/* Late */
+
+.late-time {
+    color: #dc3545;
+    font-weight: 600;
+}
+
+.late-on-time {
+    color: #198754;
+    font-weight: 600;
+}
+</style>
+
 <?php
 $unavailableEmployees = array_merge($leaveEmployees, $wfhEmployees);
 $unavailableCount = count($unavailableEmployees);
@@ -329,11 +372,13 @@ $unavailableCount = count($unavailableEmployees);
                                             <?= $employee['office_hours'] ?> hrs
                                         </td>
 
-                                        <td onclick="getTotalHours('<?= h($employee['name']) ?>')" 
+                                        <td onclick='getTotalHours(<?= $employee["id"] ?>)'
                                             style="cursor: pointer;">
                                             <?= number_format($employee['total_hours'], 2) ?> hrs
                                         </td>
-                                        <td> <?= number_format($employee['occupied_hours'], 2) ?> hrs </td>
+                                        <td onclick='getBillableHours(<?= $employee["id"] ?>)'
+                                            style="cursor: pointer;">
+                                         <?= number_format($employee['occupied_hours'], 2) ?> hrs </td>
                                         <td>
                                             <div class="pd-meter-cell">
                                                 <div class="pd-meter">
@@ -470,6 +515,21 @@ $unavailableCount = count($unavailableEmployees);
     </div>
 </div>
 <!-- On Leave/WFH Modal End -->
+
+<!-- Office hours modal start -->
+<div class="modal fade" id="office_hours_show" role="dialog">
+</div>
+<!-- Office hours modal end -->
+
+<!-- total hours start -->
+ <div class="modal fade" id="project_show" role="dialog">
+</div>
+<!-- total hours end -->
+
+<!-- total Billable and non-billable hours start popup -->
+<div class="modal fade" id="billable_hours_show" role="dialog">
+</div>
+<!-- total Billable and non-billable hours end popup -->
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
 <script src="https://cdn.datatables.net/1.12.1/js/jquery.dataTables.min.js"></script>
@@ -613,47 +673,43 @@ $unavailableCount = count($unavailableEmployees);
         $('#attendanceEmployeesModal').modal('show');
     });
 
-    function getOfficeHours(emp_name) {
+
+function getOfficeHours(emp_name) {
+
     $.ajax({
-        url: '<?= $this->Url->build(["controller" => "Dashboard", "action" => "getOfficeHours"]) ?>',
+        url: '<?= $this->Url->build([ "controller" => "Dashboard", "action" => "getOfficeHours"]) ?>',
         type: 'GET',
-        dataType: 'json',
         data: {
             emp_name: emp_name
         },
-        success: function(response) {
-            console.log('Employee:', emp_name);
-            console.log('Office Hours Data:', response);
-
-            if (response.status) {
-                console.log(response.data);
-            }
-        },
-        error: function(xhr, status, error) {
-            console.error(error);
+        success : function(resp){
+            $('#office_hours_show').html(resp);
+            $('#office_hours_show').modal('show');
         }
     });
 }
 
 
-function getTotalHours(emp_name) {
+function getTotalHours(id) {
 
     $.ajax({
-        url: '<?= $this->Url->build(["controller" => "Dashboard", "action" => "getTotalHours"]) ?>',
-        type: 'GET',
-        dataType: 'json',
-        data: {
-            emp_name: emp_name
-        },
-        success: function(response) {
-            console.log('Total Hours Response:', response);
+        url:"<?= $this->Url->build(['controller'=>'Dashboard', 'action'=>'getTotalHours']) ?>/"+id,
+        method:"get",
+        success : function(resp){
+            $('#project_show').html(resp);
+            $('#project_show').modal('show');
+        }
+    });
+}
 
-            // Handle returned data here
-            // Example:
-            // $('#totalHoursModal').html(response);
-        },
-        error: function(xhr, status, error) {
-            console.error('Total Hours AJAX Error:', error);
+function getBillableHours(id) {
+
+    $.ajax({
+        url:"<?= $this->Url->build(['controller'=>'Dashboard', 'action'=>'getBillableHours']) ?>/"+id,
+        method:"get",
+        success : function(resp){
+            $('#billable_hours_show').html(resp);
+            $('#billable_hours_show').modal('show');
         }
     });
 }

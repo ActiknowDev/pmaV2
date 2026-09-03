@@ -261,7 +261,50 @@ if ($on_time_score >= 95) {
                 </div>
             </div>
 
-            <!-- Attendance Log Section -->
+            <!-- Quick Insights List -->
+            <div class="card p-3 mb-4">
+                <h6 class="font-weight-bold mb-4 small text-uppercase tracking-widest text-muted"><i class="fas fa-bolt text-warning mr-2"></i> Quick Insights</h6>
+                <div class="small">
+                    <div class="d-flex justify-content-between mb-3 border-bottom pb-2">
+                        <span><i class="far fa-clock mr-2 text-primary"></i> Avg Office Hours</span>
+                        <a href="#" data-toggle="modal" data-target="#average_hours_modal">
+                            <span class="font-weight-bold"><?= $average_time_display ?> Hr</span>
+                        </a>
+                    </div>
+                    <div class="d-flex justify-content-between mb-3 border-bottom pb-2">
+                        <span><i class="far fa-calendar-times mr-2 text-warning"></i> Leaves Taken</span>
+                        <a href="#" data-toggle="modal" data-target="#leave_modal">
+                            <span class="font-weight-bold"><?= $total_lv ?></span>
+                        </a>
+                    </div>
+                    <div class="d-flex justify-content-between mb-3 border-bottom pb-2">
+                        <span><i class="fas fa-home mr-2 text-info"></i> WFH Days</span>
+                        <a href="#" data-toggle="modal" data-target="#wfh_modal">
+                            <span class="font-weight-bold"><?= $total_wfh ?></span>
+                        </a>
+                    </div>
+                    <div class="d-flex justify-content-between mb-3 border-bottom pb-2">
+                        <span><i class="fas fa-home mr-2 text-info"></i> Average Leave Plan time</span>
+                        <a href="#" data-toggle="modal" data-target="#avg_leave_plan_modal">
+                            <span class="font-weight-bold"><?= number_format($total_average_leave_plan, 2) ?></span>
+                        </a>
+                    </div>
+                    <div class="d-flex justify-content-between mb-3 border-bottom pb-2">
+                        <span><i class="fas fa-user-clock mr-2 text-purple"></i> Late Entries</span>
+                        <a href="#" data-toggle="modal" data-target="#late_entry">
+                            <span class="font-weight-bold text-danger"><?= $late_entries ?></span>
+                        </a>
+                    </div>
+                    <div class="d-flex justify-content-between">
+                        <span><i class="fas fa-walking mr-2 text-danger"></i> Early Exits</span>
+                        <a href="#" data-toggle="modal" data-target="#early_exits">
+                            <span class="font-weight-bold"><?= $early_exits ?></span>
+                                        </a>
+                    </div>
+                </div>
+            </div>
+
+             <!-- Attendance Log Section -->
             <div class="card overflow-hidden mb-4">
                 <div class="p-3 border-bottom">
                     <h6 class="font-weight-bold mb-3">Attendance Log (<?= date('F', mktime(0,0,0,$month,1)) ?>)</h6>
@@ -322,49 +365,6 @@ if ($on_time_score >= 95) {
                     ['controller' => 'Users', 'action' => 'attendancePunchTimeReport'],
                     ['class' => 'btn btn-link btn-block text-teal small font-weight-bold py-3 border-top', 'escape' => false,'target' => '_blank' ]
                 ) ?>
-            </div>
-
-            <!-- Quick Insights List -->
-            <div class="card p-3 mb-4">
-                <h6 class="font-weight-bold mb-4 small text-uppercase tracking-widest text-muted"><i class="fas fa-bolt text-warning mr-2"></i> Quick Insights</h6>
-                <div class="small">
-                    <div class="d-flex justify-content-between mb-3 border-bottom pb-2">
-                        <span><i class="far fa-clock mr-2 text-primary"></i> Avg Office Hours</span>
-                        <a href="#" data-toggle="modal" data-target="#average_hours_modal">
-                            <span class="font-weight-bold"><?= $average_time_display ?> Hr</span>
-                        </a>
-                    </div>
-                    <div class="d-flex justify-content-between mb-3 border-bottom pb-2">
-                        <span><i class="far fa-calendar-times mr-2 text-warning"></i> Leaves Taken</span>
-                        <a href="#" data-toggle="modal" data-target="#leave_modal">
-                            <span class="font-weight-bold"><?= $total_lv ?></span>
-                        </a>
-                    </div>
-                    <div class="d-flex justify-content-between mb-3 border-bottom pb-2">
-                        <span><i class="fas fa-home mr-2 text-info"></i> WFH Days</span>
-                        <a href="#" data-toggle="modal" data-target="#wfh_modal">
-                            <span class="font-weight-bold"><?= $total_wfh ?></span>
-                        </a>
-                    </div>
-                    <div class="d-flex justify-content-between mb-3 border-bottom pb-2">
-                        <span><i class="fas fa-home mr-2 text-info"></i> Average Leave Plan time</span>
-                        <a href="#" data-toggle="modal" data-target="#avg_leave_plan_modal">
-                            <span class="font-weight-bold"><?= number_format($total_average_leave_plan, 2) ?></span>
-                        </a>
-                    </div>
-                    <div class="d-flex justify-content-between mb-3 border-bottom pb-2">
-                        <span><i class="fas fa-user-clock mr-2 text-purple"></i> Late Entries</span>
-                        <a href="#" data-toggle="modal" data-target="#late_entry">
-                            <span class="font-weight-bold text-danger"><?= $late_entries ?></span>
-                        </a>
-                    </div>
-                    <div class="d-flex justify-content-between">
-                        <span><i class="fas fa-walking mr-2 text-danger"></i> Early Exits</span>
-                        <a href="#" data-toggle="modal" data-target="#early_exits">
-                            <span class="font-weight-bold"><?= $early_exits ?></span>
-                                        </a>
-                    </div>
-                </div>
             </div>
 
             <!-- Success Banner -->

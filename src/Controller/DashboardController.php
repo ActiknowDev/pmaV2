@@ -1418,86 +1418,334 @@ class DashboardController extends AppController
         }
     }
 
-    public function getOfficeHours(){
+    public function getOfficeHours()
+{
+    $this->Authorization->skipAuthorization();
+
+    $this->viewBuilder()->disableAutoLayout();
+
+    $conn = ConnectionManager::get('default');
+
+    $empName = trim((string)$this->request->getQuery('emp_name'));
+
+    if (empty($empName)) {
+
+        $this->set([
+            'errorMessage' => 'Employee name is required.'
+        ]);
+
+        return $this->render('get_office_hours');
+    }
+
+    $this->Users = $this->fetchTable('Users');
+
+    $employee = $this->Users
+        ->find()
+        ->select([
+            'id',
+            'name'
+        ])
+        ->where([
+            'name' => $empName,
+            'deleted' => 1,
+            'status' => 1
+        ])
+        ->first();
+
+
+    if (!$employee) {
+
+        $this->set([
+            'errorMessage' => 'Employee not found.'
+        ]);
+
+        return $this->render('get_office_hours');
+    }
+
+
+    $userId   = $employee->id;
+    $userName = $employee->name;
+
+    $month = (int)date('m');
+    $year  = (int)date('Y');
+
+    $daysInMonth = cal_days_in_month(
+        CAL_GREGORIAN,
+        $month,
+        $year
+    );
+
+    $attendanceQuery = "
+        SELECT DISTINCT
+            e.dom AS date,
+            e.intime,
+            e.outtime,
+            TIMEDIFF(e.outtime, e.intime) AS total_time
+
+        FROM emp_punch_time e
+
+        WHERE
+            e.emp = :empName
+            AND MONTH(e.dom) = :month
+            AND YEAR(e.dom) = :year
+
+        ORDER BY e.dom ASC
+    ";
+
+
+    $emp_attendence_list = $conn
+        ->execute(
+            $attendanceQuery,
+            [
+                'empName' => $userName,
+                'month'   => $month,
+                'year'    => $year
+            ]
+        )
+        ->fetchAll('assoc');
+
+    $present_count = count($emp_attendence_list);
+
+    $leaveQuery = "
+        SELECT
+            leave_type,
+            from_date,
+            to_date,
+            status,
+            wfh_type
+
+        FROM leaves
+
+        WHERE
+            created_by = :userId
+
+            AND (
+                (
+                    MONTH(from_date) = :month
+                    AND YEAR(from_date) = :year
+                )
+
+                OR
+
+                (
+                    MONTH(to_date) = :month
+                    AND YEAR(to_date) = :year
+                )
+            )
+
+            AND (
+                status = 'Pending'
+                OR status = 'Approved'
+            )
+    ";
+
+
+    $leaves = $conn
+        ->execute(
+            $leaveQuery,
+            [
+                'userId' => $userId,
+                'month'  => $month,
+                'year'   => $year
+            ]
+        )
+        ->fetchAll('assoc');
+
+    $total_lv  = 0;
+    $total_wfh = 0;
+
+    $monthStart = sprintf(
+        '%04d-%02d-01',
+        $year,
+        $month
+    );
+
+    $monthEnd = date(
+        'Y-m-t',
+        strtotime($monthStart)
+    );
+
+
+    foreach ($leaves as $leave) {
+
+        $fromDate = date(
+            'Y-m-d',
+            strtotime($leave['from_date'])
+        );
+
+        $toDate = date(
+            'Y-m-d',
+            strtotime($leave['to_date'])
+        );
+        $startDate = max(
+            $fromDate,
+            $monthStart
+        );
+
+        $endDate = min(
+            $toDate,
+            $monthEnd
+        );
+
+
+        if ($startDate > $endDate) {
+            continue;
+        }
+
+
+        $current = strtotime($startDate);
+        $end     = strtotime($endDate);
+
+
+        while ($current <= $end) {
+
+            if ($leave['leave_type'] === 'WFH') {
+
+                $total_wfh++;
+
+            } else {
+
+                $total_lv++;
+            }
+
+
+            $current = strtotime(
+                '+1 day',
+                $current
+            );
+        }
+    }
+
+    $late_entries = 0;
+
+    $scheduledInTime = strtotime('10:05:00');
+
+
+    foreach ($emp_attendence_list as $attendance) {
+
+        if (!empty($attendance['intime'])) {
+
+            $actualInTime = strtotime(
+                $attendance['intime']
+            );
+
+            if ($actualInTime > $scheduledInTime) {
+
+                $late_entries++;
+            }
+        }
+    }
+
+    $early_exits = 0;
+
+    $scheduledOutTime = strtotime('18:45:00');
+
+
+    foreach ($emp_attendence_list as $attendance) {
+
+        if (!empty($attendance['outtime'])) {
+
+            $actualOutTime = strtotime(
+                $attendance['outtime']
+            );
+
+            if ($actualOutTime < $scheduledOutTime) {
+
+                $early_exits++;
+            }
+        }
+    }
+
+    $holidayQuery = "
+        SELECT
+            title,
+            start,
+            end
+
+        FROM holidays
+
+        WHERE
+            MONTH(start) = :month
+            AND YEAR(start) = :year
+            AND deleted = 0
+
+        ORDER BY start ASC
+    ";
+
+
+    $holidays = $conn
+        ->execute(
+            $holidayQuery,
+            [
+                'month' => $month,
+                'year'  => $year
+            ]
+        )
+        ->fetchAll('assoc');
+
+    $this->set(compact(
+        'userName',
+        'month',
+        'year',
+        'daysInMonth',
+        'emp_attendence_list',
+        'leaves',
+        'holidays',
+        'present_count',
+        'total_lv',
+        'total_wfh',
+        'late_entries',
+        'early_exits'
+    ));
+    return $this->render('get_office_hours');
+}
+    
+
+    public function getTotalHours($id){
         $this->Authorization->skipAuthorization();
-
+        // $this->viewBuilder()->setLayout('default_new');
+        $this->viewBuilder()->disableAutoLayout();
         $conn = ConnectionManager::get('default');
-
         $session = new \Cake\Http\Session();
         $userSession = $session->read('data');
-
+        $user_id = $id;
         $month = date('m');
         $year  = date('Y');
 
-        $userName = $this->request->getQuery('emp_name');
-    
-        if (empty($userName)) {
-            return $this->response
-                ->withType('application/json')
-                ->withStringBody(json_encode([
-                    'status' => false,
-                    'message' => 'Employee name is required'
-                ]));
-        }
+        $query = "
+        SELECT user_timesheets.id,user_timesheets.milestone_id,user_timesheets.resource_id,sum(user_timesheets.time_used) as time_used,user_timesheets.work_date, project_milestones.title, project_milestones.project_id,projects.project_name,projects.bill,users.name as username,users.id as userid FROM `user_timesheets` LEFT JOIN project_milestones ON user_timesheets.milestone_id=project_milestones.id LEFT JOIN projects ON projects.id=project_milestones.project_id LEFT JOIN users ON users.id=user_timesheets.resource_id WHERE month(work_date)=" .$month. " AND year(work_date)=". $year ." AND user_timesheets.resource_id=" . $user_id . "
+        GROUP BY 
+        projects.project_name, users.name , user_timesheets.resource_id,user_timesheets.id,user_timesheets.milestone_id, user_timesheets.work_date, project_milestones.title, project_milestones.project_id,projects.bill,users.id
+        ";
+        // dd($query);
+        $stmtProduct = $conn->execute($query);
+        $list = $stmtProduct->fetchAll('assoc');
+
+        $this->set(compact('list'));
+    }
+
+    public function getBillableHours($id){
+        $this->Authorization->skipAuthorization();
+        // $this->viewBuilder()->setLayout('default_new');
+        $this->viewBuilder()->disableAutoLayout();
+        $conn = ConnectionManager::get('default');
+        $session = new \Cake\Http\Session();
+        $userSession = $session->read('data');
+        $user_id = $id;
+        $month = date('m');
+        $year  = date('Y');
 
         $query = "
-            SELECT DISTINCT
-                u.emp_id,
-                u.emp_name AS emp,
-                u.manager_name,
-                e.dom AS DATE,
-                e.intime,
-                e.outtime,
-                TIMEDIFF(e.outtime, e.intime) AS total_time,
-                TIMEDIFF(e.intime, '10:00:00') AS Late_by,
-
-                CASE
-                    WHEN e.emp IS NOT NULL THEN 'Present'
-                    ELSE 'Absent'
-                END AS STATUS
-
-            FROM
-            (
-                SELECT
-                    u1.id AS emp_id,
-                    u1.name AS emp_name,
-                    u2.name AS manager_name
-                FROM users u1
-
-                INNER JOIN users u2
-                    ON u1.reporting_manager = u2.id
-
-                WHERE
-                    u1.deleted = 1
-                    AND u1.company_id = 10
-                    AND u1.role = 3
-                    AND u1.status = 1
-            ) AS u
-
-            INNER JOIN emp_punch_time e
-                ON e.emp = u.emp_name
-                AND MONTH(e.dom) = :month
-                AND YEAR(e.dom) = :year
-                AND e.emp = :userName
-
-            ORDER BY e.dom ASC
+        SELECT user_timesheets.id,user_timesheets.milestone_id,user_timesheets.resource_id,sum(user_timesheets.time_used) as time_used,user_timesheets.work_date, project_milestones.title, project_milestones.project_id,projects.project_name,projects.bill,users.name as username,users.id as userid FROM `user_timesheets` LEFT JOIN project_milestones ON user_timesheets.milestone_id=project_milestones.id LEFT JOIN projects ON projects.id=project_milestones.project_id LEFT JOIN users ON users.id=user_timesheets.resource_id WHERE month(work_date)=" .$month. " AND year(work_date)=". $year ." AND user_timesheets.resource_id=" . $user_id . "
+        GROUP BY 
+        projects.project_name, users.name , user_timesheets.resource_id,user_timesheets.id,user_timesheets.milestone_id, user_timesheets.work_date, project_milestones.title, project_milestones.project_id,projects.bill,users.id
         ";
+        // dd($query);
+        $stmtProduct = $conn->execute($query);
+        $list = $stmtProduct->fetchAll('assoc');
 
-        $stmtProduct = $conn->execute($query, [
-            'month'    => $month,
-            'year'     => $year,
-            'userName' => $userName
-        ]);
-
-        $emp_attendence_list = $stmtProduct->fetchAll('assoc');
-        return $this->response
-            ->withType('application/json')
-            ->withStringBody(json_encode([
-                'status' => true,
-                'data' => $emp_attendence_list
-            ]));
+        $this->set(compact('list'));
     }
-    
 
 }
 ?>
