@@ -168,15 +168,15 @@ if ($on_time_score >= 95) {
                     </div> -->
                     <div class="col-md-5 text-center mt-3 mt-md-0 border-left border-white-50">
                         <!-- Changed mb-1 to mb-0 -->
-                        <p class="small font-weight-bold text-uppercase mb-0 tracking-wider">Attendance (%)</p>
+                        <p class="small font-weight-bold text-uppercase mb-0 tracking-wider">Timesheet Filled (%)</p>
                         
                         <!-- Added negative top and bottom margins to squeeze the container -->
                         <div id="perfChart" style="width: 130px; margin: -5px auto -20px auto;"></div>
                         
                         <!-- Kept mt-n3 logic but refined it -->
-                        <p class="small font-weight-bold <?= $status_class ?> mb-0 mt-n1" style="position: relative; z-index: 10;">
+                        <!-- <p class="small font-weight-bold <?= $status_class ?> mb-0 mt-n1" style="position: relative; z-index: 10;">
                             ● <?= $status_label ?>
-                        </p>
+                        </p> -->
                     </div>
                 </div>
             </div>
