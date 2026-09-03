@@ -89,7 +89,7 @@ if ($totalWorkingDays > 0) {
         ($attendanceDays / $totalWorkingDays) * 100;
 }
 
-$on_time_score = round($attendancePercentage);
+$on_time_score = $timesheet_percentage;
 // Determine status label based on new thresholds
 if ($on_time_score >= 95) {
     $status_label = "Excellent";
@@ -398,7 +398,7 @@ if ($on_time_score >= 95) {
                                         foreach($holidays as $h) { if($currentDate == $h['start']) { $holidayData = $h; break; } }
                                     ?>
                                         <?php if ($leaveData): ?>
-                                            <td colspan="2" class="text-center opacity-50 small italic">Leave Record</td>
+                                            <td colspan="2" class="text-center opacity-50 small italic"><?= h($leaveData['leave_type']) === 'WFH' ? 'WFH' : 'Leave Record'  ?></td>
                                             <td><span class="badge-status status-leave"><?= h($leaveData['leave_type']) ?></span></td>
                                         <?php elseif ($holidayData): ?>
                                             <td colspan="2" class="text-center small font-weight-bold text-info"><?= h($holidayData['title']) ?></td>

@@ -409,7 +409,39 @@ class ScoreCardController extends AppController
 		$stmtProduct2 = $conn->execute($query2);
 		$holidays = $stmtProduct2->fetchAll('assoc');
 
-		$this->set(compact('total_project_assign','total_billable_project_assign','total_non_billable_project_assign','total_miles','total_time_slot','user_time_use','billable_user_time_use','emp_details','emp_details_table','emp_list','total_leave','total_lv','total_average_leave_plan','total_wfh_leave','total_wfh','emp_attendence_list','leaves','month','year','late_entries','early_exits','wfh_dates','late_entries_list','early_exits_list','leave_details_list','avg_leave_details','total_project_assigned','time_used','projects','melist1','average_leave_plan','holidays'));
+		// get timesheet filled percentage
+		$last_date_of_month = date(''.$year.'-'.$month.'-t', strtotime(''.$year.'-'.$month.''));
+		$strto = date('Y-m',strtotime($last_date_of_month));
+		$currentDt = date('Y-m');
+		if($strto==$currentDt) {
+			$last_date_of_month = date(''.$year.'-'.$month.'-d');
+		} else {
+			$last_date_of_month = date(''.$year.'-'.$month.'-t', strtotime(''.$year.'-'.$month.''));
+		}
+
+		$queryPer = "
+			SELECT
+				CONCAT(
+					ROUND(
+						Count_Filled_Percentage(
+							'".$last_date_of_month."',
+							SUM(ut.time_used)
+						),
+						2
+					)
+				) AS filled
+			FROM user_timesheets ut
+			WHERE
+				ut.resource_id = ".$userId."
+				AND MONTH(ut.work_date) = ".$month."
+				AND YEAR(ut.work_date) = ".$year."
+		";
+		$stmtPer = $conn->execute($queryPer);
+		$timesheet_percentage = $stmtPer->fetch('assoc');
+
+		$timesheet_percentage = $timesheet_percentage['filled'] ?? 0;
+
+		$this->set(compact('total_project_assign','total_billable_project_assign','total_non_billable_project_assign','total_miles','total_time_slot','user_time_use','billable_user_time_use','emp_details','emp_details_table','emp_list','total_leave','total_lv','total_average_leave_plan','total_wfh_leave','total_wfh','emp_attendence_list','leaves','month','year','late_entries','early_exits','wfh_dates','late_entries_list','early_exits_list','leave_details_list','avg_leave_details','total_project_assigned','time_used','projects','melist1','average_leave_plan','holidays','timesheet_percentage'));
 	}
 }
 ?>
