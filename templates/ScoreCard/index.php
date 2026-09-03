@@ -34,6 +34,62 @@ $average_time_display = ($total_records > 0) ? gmdate('H:i', $total_seconds / $t
 $on_time_count = $present_count - $late_entries;
 $on_time_score = ($present_count > 0) ? round(($on_time_count / $present_count) * 100) : 0;
 
+// calculate attendance percentage
+$totalWorkingDays = 0;
+
+for ($d = 1; $d <= $daysInMonth; $d++) {
+
+    $currentDate = sprintf(
+        '%04d-%02d-%02d',
+        $year,
+        $month,
+        $d
+    );
+
+    $dayOfWeek = date('N', strtotime($currentDate));
+
+    // Weekend skip
+    if ($dayOfWeek >= 6) {
+        continue;
+    }
+
+    // Holiday check
+    $isHoliday = false;
+
+    foreach ($holidays as $holiday) {
+
+        $holidayDate = date(
+            'Y-m-d',
+            strtotime($holiday['start'])
+        );
+
+        if ($holidayDate === $currentDate) {
+            $isHoliday = true;
+            break;
+        }
+    }
+
+    if ($isHoliday) {
+        continue;
+    }
+
+    $totalWorkingDays++;
+}
+
+$attendanceDays = $present_count + $total_wfh;
+
+// var_dump($totalWorkingDays);
+// exit();
+
+$attendancePercentage = 0;
+
+if ($totalWorkingDays > 0) {
+
+    $attendancePercentage =
+        ($attendanceDays / $totalWorkingDays) * 100;
+}
+
+$on_time_score = round($attendancePercentage);
 // Determine status label based on new thresholds
 if ($on_time_score >= 95) {
     $status_label = "Excellent";
@@ -112,7 +168,7 @@ if ($on_time_score >= 95) {
                     </div> -->
                     <div class="col-md-5 text-center mt-3 mt-md-0 border-left border-white-50">
                         <!-- Changed mb-1 to mb-0 -->
-                        <p class="small font-weight-bold text-uppercase mb-0 tracking-wider">On-Time Arrival</p>
+                        <p class="small font-weight-bold text-uppercase mb-0 tracking-wider">Attendance (%)</p>
                         
                         <!-- Added negative top and bottom margins to squeeze the container -->
                         <div id="perfChart" style="width: 130px; margin: -5px auto -20px auto;"></div>

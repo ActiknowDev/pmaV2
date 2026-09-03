@@ -21,6 +21,8 @@ if (!empty($emp_attendence_list)) {
     }
 }
 
+$lastAttendanceDay = (int)date('d');
+
 ?>
 
 <div class="modal-dialog modal-lg">
