@@ -183,7 +183,7 @@ $(document).ready(function () {
         var count = $(this).attr("data-count");
         var val = $(this).val() == "" ? 0 : $(this).val();
         var url = $("#url").val();
-        url = url + "pmaV2/users/allotment/";
+        url = url + "users/allotment/";
         $.ajax({
             url: url + id + "/" + val + "/" + day,
             type: "GET",
@@ -191,14 +191,40 @@ $(document).ready(function () {
 
             $(".hour" + count + "_" + id).attr("data-hrs", val);
 
-            let totalHours = 0;
+            let sum = 0;
 
             $(".hrs_" + id).each(function () {
-                totalHours += Number($(this).val()) || 0;
+                sum += Number($(this).val()) || 0;
             });
 
-            $(".totalmgr_" + id).val(totalHours);
-        },
+            let currentTotal = Number($(".totalmgr_" + id).val()) || 0;
+            let oldHours = Number(hrs) || 0;
+            let newHours = Number(val) || 0;
+
+            if (currentTotal === 0) {
+
+                // First time total calculate hoga
+                $(".totalmgr_" + id).val(sum);
+
+            } else if (oldHours === 0) {
+
+                // Pehle hours 0 the, ab new value add hui
+                let newTotal = currentTotal + newHours;
+
+                $(".totalmgr_" + id).val(newTotal);
+
+            } else {
+
+                // Existing hours update hue
+                // Example:
+                // old = 5
+                // new = 7
+                // difference = +2
+                let newTotal = currentTotal + (newHours - oldHours);
+
+                $(".totalmgr_" + id).val(newTotal);
+            }
+        }
         });
     });
 });
