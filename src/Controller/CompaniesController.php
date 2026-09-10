@@ -815,6 +815,7 @@ class CompaniesController extends AppController
 		$user_id = $userSession['id'];
 		$role = $userSession['role'];
 		$parent_id = $userSession['parent_id'];
+		$hasRole13 = in_array(13, $userSession['role_name']);
 
 		$this->request->getSession()->write('managerId', $user_id);
 		$this->request->getSession()->write('page', 'myproject');
@@ -822,22 +823,47 @@ class CompaniesController extends AppController
 		$parent_id = $userSession['parent_id'];
 		// $user_id = $this->request->getAttribute('identity')->getIdentifier();
 
+		// if ($projectType == 'project-manager') {
+
+		// 	$query = "SELECT p.*,c.client_name,pm.name as project_manager FROM projects p LEFT JOIN users c ON p.client_id = c.id LEFT JOIN users pm ON p.project_manager_id=pm.id WHERE p.deleted=1 AND p.status != 'Completed' AND (p.project_manager_id=$user_id)";
+		// } else if ($projectType == "bde") {
+
+		// 	$query = "SELECT p.*,c.client_name,pm.name as project_manager FROM projects p LEFT JOIN users c ON p.client_id = c.id LEFT JOIN users pm ON p.project_manager_id=pm.id WHERE p.deleted=1 AND p.status != 'Completed' AND (p.bd_id=$user_id)";
+		// } else if ($projectType == "tech-lead") {
+
+		// 	$query = "SELECT p.*,c.client_name,pm.name as project_manager FROM projects p LEFT JOIN users c ON p.client_id = c.id LEFT JOIN users pm ON p.project_manager_id=pm.id WHERE p.deleted=1 AND p.status != 'Completed' AND (p.tech_lead_id=$user_id)";
+		// } else if ($projectType == "resource") {
+
+		// 	$query = "SELECT p.*,c.client_name,pm.name as project_manager FROM projects p LEFT JOIN users c ON p.client_id = c.id LEFT JOIN users pm ON p.project_manager_id=pm.id WHERE p.deleted=1 AND p.status != 'Completed' AND (FIND_IN_SET(" . $user_id . ",resources)!=0)";
+		// } else {
+
+		// 	$query = "SELECT p.*,c.client_name,pm.name as project_manager FROM projects p LEFT JOIN users c ON p.client_id = c.id LEFT JOIN users pm ON p.project_manager_id=pm.id WHERE p.deleted=1 AND p.status != 'Completed' AND (p.project_manager_id=" . $user_id . " OR p.tech_lead_id=" . $user_id . " OR p.bd_id=" . $user_id . " OR FIND_IN_SET(" . $user_id . ",resources)!=0)";
+		// }
 		if ($projectType == 'project-manager') {
-
-			$query = "SELECT p.*,c.client_name,pm.name as project_manager FROM projects p LEFT JOIN users c ON p.client_id = c.id LEFT JOIN users pm ON p.project_manager_id=pm.id WHERE p.deleted=1 AND p.status != 'Completed' AND (p.project_manager_id=$user_id)";
+			$userCondition = "p.project_manager_id = " . $user_id;
 		} else if ($projectType == "bde") {
-
-			$query = "SELECT p.*,c.client_name,pm.name as project_manager FROM projects p LEFT JOIN users c ON p.client_id = c.id LEFT JOIN users pm ON p.project_manager_id=pm.id WHERE p.deleted=1 AND p.status != 'Completed' AND (p.bd_id=$user_id)";
+			$userCondition = "p.bd_id = " . $user_id;
 		} else if ($projectType == "tech-lead") {
-
-			$query = "SELECT p.*,c.client_name,pm.name as project_manager FROM projects p LEFT JOIN users c ON p.client_id = c.id LEFT JOIN users pm ON p.project_manager_id=pm.id WHERE p.deleted=1 AND p.status != 'Completed' AND (p.tech_lead_id=$user_id)";
+			$userCondition = "p.tech_lead_id = " . $user_id;
 		} else if ($projectType == "resource") {
-
-			$query = "SELECT p.*,c.client_name,pm.name as project_manager FROM projects p LEFT JOIN users c ON p.client_id = c.id LEFT JOIN users pm ON p.project_manager_id=pm.id WHERE p.deleted=1 AND p.status != 'Completed' AND (FIND_IN_SET(" . $user_id . ",resources)!=0)";
+			$userCondition = "FIND_IN_SET(" . $user_id . ", resources) != 0";
 		} else {
-
-			$query = "SELECT p.*,c.client_name,pm.name as project_manager FROM projects p LEFT JOIN users c ON p.client_id = c.id LEFT JOIN users pm ON p.project_manager_id=pm.id WHERE p.deleted=1 AND p.status != 'Completed' AND (p.project_manager_id=" . $user_id . " OR p.tech_lead_id=" . $user_id . " OR p.bd_id=" . $user_id . " OR FIND_IN_SET(" . $user_id . ",resources)!=0)";
+			$userCondition = "(p.project_manager_id = " . $user_id .
+				" OR p.tech_lead_id = " . $user_id .
+				" OR p.bd_id = " . $user_id .
+				" OR FIND_IN_SET(" . $user_id . ", resources) != 0)";
 		}
+		// Role 13 can see user's projects + all Expertal projects
+		if ($hasRole13) {
+			$projectCondition = "(" . $userCondition . " OR p.source = 'Expertal')";
+		} else {
+			// Other users cannot see Expertal projects
+			$projectCondition = "(" . $userCondition . " AND (p.source IS NULL OR p.source != 'Expertal'))";
+		}
+
+		$query = "SELECT p.*, c.client_name, pm.name as project_manager	FROM projects p	LEFT JOIN users c ON p.client_id = c.id
+		LEFT JOIN users pm ON p.project_manager_id = pm.id WHERE p.deleted = 1	AND p.status != 'Completed'	AND " . $projectCondition;
+
 		$stmtProduct = $conn->execute($query);
 		$list = $stmtProduct->fetchAll('assoc');
 
@@ -956,14 +982,19 @@ class CompaniesController extends AppController
 		} else
 			$wh = "";
 
+		if ($hasRole13) {
+			$expertalCondition = "";
+		} else {
+    		$expertalCondition = " AND (p.source IS NULL OR p.source != 'Expertal')";
+		}
 		//count total project
-		$query = "SELECT p.id FROM projects p WHERE p.deleted=1" . $wh;
+		$query = "SELECT p.id FROM projects p WHERE p.deleted=1" . $wh . $expertalCondition;
 		$stmtProduct = $conn->execute($query);
 		$list = $stmtProduct->fetchAll('assoc');
 		$count = count($list);
 
 		//count active project
-		$query = "SELECT p.id FROM projects p WHERE p.deleted=1 AND p.active=1" . $wh;
+		$query = "SELECT p.id FROM projects p WHERE p.deleted=1 AND p.active=1" . $wh . $expertalCondition;
 		$stmtProduct = $conn->execute($query);
 		$list = $stmtProduct->fetchAll('assoc');
 		$active = count($list);
@@ -1006,11 +1037,20 @@ class CompaniesController extends AppController
 		} else
 			$wh = "";
 
+		$hasRole13 = in_array(13, $userSession['role_name']);
 		// $user_id = $this->request->getAttribute('identity')->getIdentifier();
 		if ($manager_id) {
-			$query = "SELECT p.*,c.client_name,pm.name as project_manager FROM projects p LEFT JOIN users c ON p.client_id = c.id LEFT JOIN users pm ON p.project_manager_id=pm.id WHERE p.deleted=1 AND p.project_manager_id =" . $manager_id;
+			if ($hasRole13) {
+				$query = "SELECT p.*, c.client_name, pm.name as project_manager FROM projects p LEFT JOIN users c ON p.client_id = c.id LEFT JOIN users pm ON p.project_manager_id = pm.id WHERE p.deleted = 1 AND ( p.project_manager_id = " . $manager_id . " OR p.source = 'Expertal' )";
+			} else {
+				$query = "SELECT p.*,c.client_name,pm.name as project_manager FROM projects p LEFT JOIN users c ON p.client_id = c.id LEFT JOIN users pm ON p.project_manager_id=pm.id WHERE p.deleted=1 AND p.project_manager_id =" . $manager_id;
+			}
 		} else {
-			$query = "SELECT p.*,c.client_name,pm.name as project_manager FROM projects p LEFT JOIN users c ON p.client_id = c.id LEFT JOIN users pm ON p.project_manager_id=pm.id WHERE p.deleted=1" . $wh;
+			if ($hasRole13) {
+				$query = "SELECT p.*, c.client_name, pm.name as project_manager FROM projects p LEFT JOIN users c ON p.client_id = c.id LEFT JOIN users pm ON p.project_manager_id = pm.id WHERE p.deleted = 1" . $wh;
+			} else {
+				$query = "SELECT p.*,c.client_name,pm.name as project_manager FROM projects p LEFT JOIN users c ON p.client_id = c.id LEFT JOIN users pm ON p.project_manager_id=pm.id WHERE p.deleted=1" . $wh;
+			}
 		}
 		$stmtProduct = $conn->execute($query);
 		$list = $stmtProduct->fetchAll('assoc');
@@ -1060,6 +1100,7 @@ class CompaniesController extends AppController
 			$p['amount'] = $amount;
 			$p['paid'] = $paid;
 			$p['status'] = $l['status'];
+			$p['source'] = $l['source'];
 			$p['active'] = $l['active'];
 			$p['overdue'] = $overdue;
 			$p['due'] = $due;
@@ -1129,6 +1170,7 @@ class CompaniesController extends AppController
 		$user_id = $userSession['id'];
 		$role = $userSession['role'];
 		$parent_id = $userSession['parent_id'];
+		$hasRole13 = in_array(13, $userSession['role_name']);
 
 		if ($manager_id == "all-project") $manager_id = null;
 		else if ($manager_id == null) $manager_id = $user_id;
@@ -1147,9 +1189,20 @@ class CompaniesController extends AppController
 
 		// $user_id = $this->request->getAttribute('identity')->getIdentifier();
 		if ($manager_id) {
-			$query = "SELECT p.*,c.client_name,pm.name as project_manager FROM projects p LEFT JOIN users c ON p.client_id = c.id LEFT JOIN users pm ON p.project_manager_id=pm.id WHERE p.deleted=1 AND p.active=1 AND p.project_manager_id =" . $manager_id;
+			if ($hasRole13) {
+				// Role 13 can see manager's projects + all Expertal projects
+				$query = "SELECT p.*,c.client_name,pm.name as project_manager FROM projects p LEFT JOIN users c ON p.client_id = c.id LEFT JOIN users pm ON p.project_manager_id=pm.id WHERE p.deleted = 1 AND p.active = 1 AND ( p.project_manager_id = " . $manager_id . " OR p.source = 'Expertal' )";
+			} else {
+				$query = "SELECT p.*,c.client_name,pm.name as project_manager FROM projects p LEFT JOIN users c ON p.client_id = c.id LEFT JOIN users pm ON p.project_manager_id=pm.id WHERE p.deleted=1 AND p.active=1 AND p.project_manager_id =" . $manager_id;
+			}
 		} else {
-			$query = "SELECT p.*,c.client_name,pm.name as project_manager FROM projects p LEFT JOIN users c ON p.client_id = c.id LEFT JOIN users pm ON p.project_manager_id=pm.id WHERE p.deleted=1 AND p.active=1" . $wh;
+			if ($hasRole13) {
+				// Role 13 sees all active projects, including Expertal
+				$query = "SELECT p.*,c.client_name,pm.name as project_manager FROM projects p LEFT JOIN users c ON p.client_id = c.id
+				LEFT JOIN users pm ON p.project_manager_id=pm.id WHERE p.deleted=1 AND p.active=1" . $wh;
+			} else {
+				$query = "SELECT p.*,c.client_name,pm.name as project_manager FROM projects p LEFT JOIN users c ON p.client_id = c.id LEFT JOIN users pm ON p.project_manager_id=pm.id WHERE p.deleted=1 AND p.active=1" . $wh;
+			}
 		}
 		$stmtProduct = $conn->execute($query);
 		$list = $stmtProduct->fetchAll('assoc');
@@ -1198,6 +1251,7 @@ class CompaniesController extends AppController
 			$p['amount'] = $amount;
 			$p['paid'] = $paid;
 			$p['status'] = $l['status'];
+			$p['source'] = $l['source'];
 			$p['active'] = $l['active'];
 			$p['overdue'] = $overdue;
 			$p['due'] = $due;
@@ -1217,7 +1271,12 @@ class CompaniesController extends AppController
 		$active = count($projects);
 
 		//count total project
-		$query = "SELECT p.id FROM projects p WHERE p.deleted=1" . $wh;
+		// $query = "SELECT p.id FROM projects p WHERE p.deleted=1" . $wh;
+		if ($hasRole13) {
+			$query = "SELECT p.id FROM projects p WHERE p.deleted=1 AND p.active=1" . $wh;
+		} else {
+			$query = "SELECT p.id FROM projects p WHERE p.deleted=1 AND p.active=1 AND (p.source IS NULL OR p.source != 'Expertal')" . $wh;
+		}
 		$stmtProduct = $conn->execute($query);
 		$list = $stmtProduct->fetchAll('assoc');
 		$count = count($list);

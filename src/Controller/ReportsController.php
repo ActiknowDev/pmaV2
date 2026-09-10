@@ -37,8 +37,8 @@ class ReportsController extends AppController
 					SELECT 
 				MONTH(pm.due_date) AS month, 
 				IFNULL(SUM(pm.amount), 0) AS total,
-				ANY_VALUE(p.payment_id) AS payment_id,
-				ANY_VALUE(p.milestone_id) AS milestone_id
+				(p.payment_id) AS payment_id,
+				(p.milestone_id) AS milestone_id
 			FROM project_milestones pm
 			JOIN projects p ON pm.project_id = p.id
 			JOIN users u ON p.client_id = u.id
@@ -91,6 +91,7 @@ class ReportsController extends AppController
         $userSession = $session->read('data');
         $role = $userSession['role'];
 		$roleArray = $userSession['role_name'];
+		$hasRole13 = in_array(13, $roleArray);
 		$validList = [9];
 		$this->routeValidation($roleArray,$validList);
         $parent_id = ($role==1)?$userSession['id']:$userSession['parent_id'];
@@ -124,6 +125,9 @@ class ReportsController extends AppController
 				$whereMgr =($manager_id != '')?" AND p.project_manager_id IN (".$manager_id.")":"";
 				$whereBd = ($bd_id != '')?" AND p.bd_id IN (".$bd_id.")":"";
 				$whereSrc = ($source != '')?" AND p.source='".$source."'":"";
+				if (!$hasRole13) {
+					$whereSrc .= " AND p.source != 'Expertal'";
+				}
 
 				if($month_id)
 				{
@@ -148,7 +152,12 @@ class ReportsController extends AppController
 
 				$month_id =0; $bd_id = 0; $manager_id = 0; $source="Regular";
 				$whereMileMonth = $whereMgr = $whereBd = $wherePaymentMonth = "";
-				$whereSrc = " AND p.source='Regular'";
+				// $whereSrc = " AND p.source='Regular'";
+				if ($hasRole13) { 
+					$source = ""; $whereSrc = ""; 
+				} else { 
+					$source = ""; $whereSrc = " AND p.source != 'Expertal'"; 
+				}
 				
 				$months = array('04'=>'April','05'=>'May','06'=>'June','07'=>'July','08'=>'August','09'=>'September','10'=>'October','11'=>'November','12'=>'December','01'=>'January','02'=>'February','03'=>'March');
 			}
@@ -180,7 +189,7 @@ class ReportsController extends AppController
 			{ 
 				foreach($monthData as $md)
 				{ 
-					$queryMilestone = "SELECT p.id,p.project_name,u.client_name,IF(p.payment_id != '',p.payment_id,0) as payment_id,IF(p.milestone_id != '',p.milestone_id,0) as milestone_id from projects p JOIN users u ON p.client_id=u.id  where p.deleted = 1".$wh." AND p.id=".$md['project_id'].$whereMgr.$whereBd.$whereSrc; 
+					$queryMilestone = "SELECT p.id,p.project_name,u.client_name,p.source,IF(p.payment_id != '',p.payment_id,0) as payment_id,IF(p.milestone_id != '',p.milestone_id,0) as milestone_id from projects p JOIN users u ON p.client_id=u.id  where p.deleted = 1".$wh." AND p.id=".$md['project_id'].$whereMgr.$whereBd.$whereSrc; 
 				    $stmtProMan = $conn->execute($queryMilestone);
 					$monthMile = $stmtProMan->fetchAll('assoc');
 					if(count($monthMile)>0)
@@ -216,6 +225,7 @@ class ReportsController extends AppController
 							$t['project_id'] = $monthMile[0]['id'];
 							$t['project_name'] = $monthMile[0]['project_name'];
 							$t['client_name'] = $monthMile[0]['client_name']; 
+							$t['source'] = $monthMile[0]['source']; 
 							$t['paid'] = 0;
 							//milestone amount
 							$queryPaid = "SELECT IFNULL(SUM(amount),0) as mile_amt FROM project_milestones WHERE MONTH(due_date) = ".$key." AND project_id =".$monthMile[0]['id']." AND (due_date >='".$financial_year_from."' AND due_date <='".$financial_year_to."' AND deleted=0)";
@@ -278,7 +288,7 @@ class ReportsController extends AppController
 			{ 
 				foreach($totalPaidData as $md)
 				{
-					$queryPayment = "SELECT p.id,p.project_name,u.client_name,IF(p.payment_id != '',p.payment_id,0) as payment_id from projects p JOIN users u ON p.client_id=u.id where p.deleted = 1".$wh." AND FIND_IN_SET(".$md['id'].",p.payment_id) != 0".$whereMgr.$whereBd.$whereSrc;
+					$queryPayment = "SELECT p.id,p.project_name,u.client_name,p.source,IF(p.payment_id != '',p.payment_id,0) as payment_id from projects p JOIN users u ON p.client_id=u.id where p.deleted = 1".$wh." AND FIND_IN_SET(".$md['id'].",p.payment_id) != 0".$whereMgr.$whereBd.$whereSrc;
 				    $stmtProMan = $conn->execute($queryPayment);
 					$monthPaid = $stmtProMan->fetchAll('assoc');
 					if(count($monthPaid)>0)
@@ -314,7 +324,7 @@ class ReportsController extends AppController
 			{ 
 				foreach($totalUnPaidData as $md)
 				{
-					$queryPayment = "SELECT p.id,p.project_name,u.client_name from projects p JOIN users u ON p.client_id=u.id where p.deleted = 1".$wh." AND FIND_IN_SET(".$md['id'].",p.payment_id) != 0".$whereMgr.$whereBd.$whereSrc;
+					$queryPayment = "SELECT p.id,p.project_name,u.client_name,p.source from projects p JOIN users u ON p.client_id=u.id where p.deleted = 1".$wh." AND FIND_IN_SET(".$md['id'].",p.payment_id) != 0".$whereMgr.$whereBd.$whereSrc;
 				    $stmtProMan = $conn->execute($queryPayment);
 					$monthUnpaid = $stmtProMan->fetchAll('assoc');
 					if(count($monthUnpaid)>0)
@@ -372,6 +382,7 @@ class ReportsController extends AppController
 					$clientWise[$clientName]['projects'][$projectId] = [
 						'project_id' => $projectId,
 						'project_name' => $project['project_name'],
+						'source' => $project['source'],
 						'months' => []
 					];
 				}
@@ -573,7 +584,7 @@ class ReportsController extends AppController
 			{
 				$pRevenue = $pUnpaid = $pPaid = 0;
 
-				$queryMilestone = "SELECT p.project_name,u.client_name,IF((p.milestone_id != '' or p.milestone_id != NULL),p.milestone_id,0) as milestone_id,IF((p.payment_id != '' or p.payment_id != NULL),p.payment_id,0) as payment_id FROM projects p JOIN users u ON p.client_id=u.id WHERE p.id=".$project;
+				$queryMilestone = "SELECT p.project_name,p.source, u.client_name,IF((p.milestone_id != '' or p.milestone_id != NULL),p.milestone_id,0) as milestone_id,IF((p.payment_id != '' or p.payment_id != NULL),p.payment_id,0) as payment_id FROM projects p JOIN users u ON p.client_id=u.id WHERE p.id=".$project;
 
 				$stmtProMan = $conn->execute($queryMilestone);
 				$prData = $stmtProMan->fetchAll('assoc');
@@ -601,6 +612,7 @@ class ReportsController extends AppController
 
 				    $c['project_name'] = $prData[0]['project_name'];
 				    $c['client_name'] = $prData[0]['client_name'];
+				    $c['source'] = $prData[0]['source'];
 				    $c['revenue'] = $pRevenue;
 				    $c['paid'] = $pPaid;
 				    $c['unpaid'] = $pUnpaid;
@@ -672,7 +684,7 @@ class ReportsController extends AppController
 			{
 				$pRevenue = $pUnpaid = $pPaid = 0;
 
-				$queryMilestone = "SELECT p.project_name,u.client_name,IF((p.milestone_id != '' or p.milestone_id != NULL),p.milestone_id,0) as milestone_id,IF((p.payment_id != '' or p.payment_id != NULL),p.payment_id,0) as payment_id FROM projects p JOIN users u ON p.client_id=u.id WHERE p.id=".$project;
+				$queryMilestone = "SELECT p.project_name,p.source,u.client_name,IF((p.milestone_id != '' or p.milestone_id != NULL),p.milestone_id,0) as milestone_id,IF((p.payment_id != '' or p.payment_id != NULL),p.payment_id,0) as payment_id FROM projects p JOIN users u ON p.client_id=u.id WHERE p.id=".$project;
 
 				$stmtProMan = $conn->execute($queryMilestone);
 				$prData = $stmtProMan->fetchAll('assoc');
@@ -700,6 +712,7 @@ class ReportsController extends AppController
 
 				    $c['project_name'] = $prData[0]['project_name'];
 				    $c['client_name'] = $prData[0]['client_name'];
+				    $c['source'] = $prData[0]['source'];
 				    $c['revenue'] = $pRevenue;
 				    $c['paid'] = $pPaid;
 				    $c['unpaid'] = $pUnpaid;

@@ -122,7 +122,11 @@ $role = $userSession['role'];
                         </thead>
                         <tbody>
                             <?php $i = 1;
-                            foreach ($projects as $p) : ?>
+                            $hasRole13 = in_array(13, $userSession['role_name']);
+                            foreach ($projects as $p) : 
+                                if (!$hasRole13 && $p['source'] === 'Expertal') {
+                                    continue;
+                                }?>
                                 <tr id="tr<?= $p['id'] ?>">
                                     <td><?= $i; ?></td>
                                     <td><?= $this->Html->link(substr($p['project_name'], 0, 20), '/edit-project/' . $p['id'], ['class' => 'link']); ?>

@@ -24,6 +24,10 @@
    }
    }
 </style>
+<?php $session = new \Cake\Http\Session();
+$userSession = $session->read('data');
+$hasRole13 = in_array(13, $userSession['role_name'] ?? []);
+?>
 <section class="page page-dashboard">
    <!-- PAGE-TITLE -->
    <div class="page-title skin-light">
@@ -136,6 +140,7 @@
                            <option value="">Select Type</option>
                            <option value="Regular" <?= ($source == 'Regular') ? 'selected' : ""; ?>>Regular</option>
                            <option value="External" <?= ($source == 'External') ? 'selected' : ""; ?>>External</option>
+                           <option value="Expertal" <?= ($source == 'Expertal') ? 'selected' : ""; ?>>Expertal</option>
                         </select>
                      </div>
                   </div>
@@ -202,7 +207,10 @@
                         </tbody>
                         <tbody class="hide" style="display: none;">
                            <?php if (count($month['projects']) > 0):
-                                 foreach ($month['projects'] as $bp): ?>
+                                 foreach ($month['projects'] as $bp): 
+                                 if (!$hasRole13 && $bp['source'] === 'Expertal') {
+                                       continue;
+                                 }?>
                                  <tr>
                                     <td></td>
 
@@ -245,6 +253,9 @@
                                  $totalRevenue = $totalPaid = $monthlyPaid = $totalUnpaid = 0;
 
                                  foreach ($client['projects'] as $proj) {
+                                    if (!$hasRole13 && $proj['source'] === 'Expertal') {
+                                       continue;
+                                    }
                                     foreach ($proj['months'] as $m) {
                                        $totalRevenue += $m['revenue'];
                                        $totalPaid += $m['paid'];
@@ -274,7 +285,10 @@
 
                                  <!-- ✅ CHILD ROWS -->
                                  <tbody class="hide" style="display: none;">
-                                    <?php foreach ($client['projects'] as $proj): ?>
+                                    <?php foreach ($client['projects'] as $proj): 
+                                       if (!$hasRole13 && $proj['source'] === 'Expertal') {
+                                          continue;
+                                       }?>
 
                                        <?php $first = true; ?>
 
@@ -397,6 +411,9 @@
                               <?php 
                               if (!empty($bd['projects'])):
                                  foreach ($bd['projects'] as $bp): 
+                                    if (!$hasRole13 && $bp['source'] === 'Expertal') {
+                                       continue;
+                                    }
                                     // Skip projects with 0 revenue
                                     if ($bp['revenue'] == 0) continue;
                               ?>
@@ -525,6 +542,9 @@
                               if (!empty($projectManager['projects'])):
                                  foreach ($projectManager['projects'] as $bp):
                                     // Skip project if revenue is 0 or less
+                                    if (!$hasRole13 && $bp['source'] === 'Expertal') {
+                                       continue;
+                                    }
                                     if ($bp['revenue'] <= 0) continue;
                               ?>
                                  <tr>
