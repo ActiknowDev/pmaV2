@@ -37,8 +37,8 @@ class ReportsController extends AppController
 					SELECT 
 				MONTH(pm.due_date) AS month, 
 				IFNULL(SUM(pm.amount), 0) AS total,
-				(p.payment_id) AS payment_id,
-				(p.milestone_id) AS milestone_id
+				ANY_VALUE(p.payment_id) AS payment_id,
+				ANY_VALUE(p.milestone_id) AS milestone_id
 			FROM project_milestones pm
 			JOIN projects p ON pm.project_id = p.id
 			JOIN users u ON p.client_id = u.id
