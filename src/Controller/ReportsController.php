@@ -125,9 +125,9 @@ class ReportsController extends AppController
 				$whereMgr =($manager_id != '')?" AND p.project_manager_id IN (".$manager_id.")":"";
 				$whereBd = ($bd_id != '')?" AND p.bd_id IN (".$bd_id.")":"";
 				$whereSrc = ($source != '')?" AND p.source='".$source."'":"";
-				if (!$hasRole13) {
-					$whereSrc .= " AND p.source != 'Expertal'";
-				}
+				// if (!$hasRole13) {
+				// 	$whereSrc .= " AND p.source != 'Expertal'";
+				// }
 
 				if($month_id)
 				{
@@ -152,12 +152,12 @@ class ReportsController extends AppController
 
 				$month_id =0; $bd_id = 0; $manager_id = 0; $source="Regular";
 				$whereMileMonth = $whereMgr = $whereBd = $wherePaymentMonth = "";
-				// $whereSrc = " AND p.source='Regular'";
-				if ($hasRole13) { 
-					$source = ""; $whereSrc = ""; 
-				} else { 
-					$source = ""; $whereSrc = " AND p.source != 'Expertal'"; 
-				}
+				$whereSrc = "";
+				// if ($hasRole13) { 
+				// 	$source = ""; $whereSrc = ""; 
+				// } else { 
+				// 	$source = ""; $whereSrc = " AND p.source != 'Expertal'"; 
+				// }
 				
 				$months = array('04'=>'April','05'=>'May','06'=>'June','07'=>'July','08'=>'August','09'=>'September','10'=>'October','11'=>'November','12'=>'December','01'=>'January','02'=>'February','03'=>'March');
 			}
