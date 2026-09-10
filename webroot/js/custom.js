@@ -183,7 +183,7 @@ $(document).ready(function () {
         var count = $(this).attr("data-count");
         var val = $(this).val() == "" ? 0 : $(this).val();
         var url = $("#url").val();
-        url = url + "pmaV2/users/allotment/";
+        url = url + "users/allotment/";
         $.ajax({
             url: url + id + "/" + val + "/" + day,
             type: "GET",
