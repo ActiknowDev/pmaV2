@@ -45,6 +45,8 @@
 .clk-dt:hover {
     color: #0056b3 !important;
 }
+
+/* datatables css */
 .dt-buttons {
     display: flex;
     justify-content: end;
@@ -54,6 +56,18 @@
     margin-top: 6px;
     margin-right: 12px;
 	color: green;
+}
+.dt-top {
+    display: flex;
+    align-items: center;
+}
+
+.dt-top .dataTables_filter {
+    margin-left: auto;
+}
+
+.dt-top .dt-buttons {
+    margin-left: 10px;
 }
 </style>
 
@@ -574,7 +588,7 @@ return $decimalHours;
             scrollY: '320px',
             autoWidth: true,
 
-            dom: 'Bfrtip',
+            dom: '<"dt-top"fB>rtip',
 
             buttons: [
                 {
@@ -611,7 +625,7 @@ return $decimalHours;
             scrollY: '320px',
             autoWidth: true,
 
-            dom: 'Bfrtip',
+            dom: '<"dt-top"fB>rtip',
 
             buttons: [
                 {
@@ -644,7 +658,7 @@ return $decimalHours;
             scrollY: '320px',
             autoWidth: true,
 
-            dom: 'Bfrtip',
+            dom: '<"dt-top"fB>rtip',
 
             buttons: [
                 {
@@ -689,7 +703,7 @@ return $decimalHours;
             scrollY: '320px',
             autoWidth: true,
 
-            dom: 'Bfrtip',
+            dom: '<"dt-top"fB>rtip',
 
             buttons: [
                 {
