@@ -45,6 +45,16 @@
 .clk-dt:hover {
     color: #0056b3 !important;
 }
+.dt-buttons {
+    display: flex;
+    justify-content: end;
+}
+.buttons-excel {
+    font-size: 10px;
+    margin-top: 6px;
+    margin-right: 12px;
+	color: green;
+}
 </style>
 
 <?php
@@ -557,41 +567,153 @@ return $decimalHours;
         $('#projectsTable').DataTable({
             ordering: true,
             order: [
-                [3, 'asc']
-            ],
+                    [3, 'desc']
+                ],
             scrollX: true,
             scrollCollapse: false,
             scrollY: '320px',
-            autoWidth: true
+            autoWidth: true,
+
+            dom: 'Bfrtip',
+
+            buttons: [
+                {
+                    extend: 'excelHtml5',
+                    text: '<i class="fa fa-download"></i>',
+                    title: '',
+                    filename: 'active_projects',
+
+                    exportOptions: {
+                        columns: ':visible',
+
+                        format: {
+                            body: function (data, row, column, node) {
+
+                                let text = $(node).text().trim();
+
+                                // table-specific formatting here
+
+                                return text;
+                            }
+                        }
+                    }
+                }
+            ]
         });
 
         $('#milestonesTable').DataTable({
             ordering: true,
             order: [
-                [3, 'desc']
-            ],
-            scrollX: true,
-            scrollCollapse: false,
-            scrollY: '317.5px',
-            autoWidth: true
-        });
-
-        $('#employeeTable').DataTable({
+                    [3, 'desc']
+                ],
             scrollX: true,
             scrollCollapse: false,
             scrollY: '320px',
-            autoWidth: true
+            autoWidth: true,
+
+            dom: 'Bfrtip',
+
+            buttons: [
+                {
+                    extend: 'excelHtml5',
+                    text: '<i class="fa fa-download"></i>',
+                    title: '',
+                    filename: 'pending_milestones',
+
+                    exportOptions: {
+                        columns: ':visible',
+
+                        format: {
+                            body: function (data, row, column, node) {
+
+                                let text = $(node).text().trim();
+
+                                // table-specific formatting here
+
+                                return text;
+                            }
+                        }
+                    }
+                }
+            ]
+        });
+
+       $('#employeeTable').DataTable({
+            scrollX: true,
+            scrollCollapse: false,
+            scrollY: '320px',
+            autoWidth: true,
+
+            dom: 'Bfrtip',
+
+            buttons: [
+                {
+                    extend: 'excelHtml5',
+                    text: '<i class="fa fa-download"></i>',
+                    title: '',
+                    filename: 'employee_report',
+
+                    exportOptions: {
+                        columns: ':visible',
+
+                        format: {
+                            body: function (data, row, column, node) {
+
+                                let text = $(node).text().trim();
+
+                                // Office Hours, Total Hours, Billable Hours
+                                if (column === 1 || column === 2 || column === 3) {
+                                    return text.replace('hrs', '').trim();
+                                }
+
+                                // Occupancy and Availability
+                                if (column === 4 || column === 5) {
+                                    return text.replace('%', '').trim();
+                                }
+
+                                return text;
+                            }
+                        }
+                    }
+                }
+            ]
         });
 
         $('#gitTable').DataTable({
             ordering: true,
             order: [
-                [3, 'desc']
-            ],
+                    [3, 'desc']
+                ],
             scrollX: true,
             scrollCollapse: false,
-            autoWidth: true,
             scrollY: '320px',
+            autoWidth: true,
+
+            dom: 'Bfrtip',
+
+            buttons: [
+                {
+                    extend: 'excelHtml5',
+                    text: '<i class="fa fa-download"></i>',
+                    title: '',
+                    filename: 'git_commits',
+
+                    exportOptions: {
+                        columns: ':visible',
+
+                        format: {
+                            body: function (data, row, column, node) {
+
+                                let text = $(node).text().trim();
+
+                                // table-specific formatting here
+
+                                return text;
+                            }
+                        }
+                    }
+                }
+            ]
         });
 
         let resizeTimer;
