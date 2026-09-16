@@ -154,7 +154,7 @@ class AssetAssignedEntriesController extends AppController
             
             if ($this->AssetAssignedEntries->save($assetAssignedEntry)) {
                 $this->AssetAssignedEntries->AssetDatas->updateAll(
-                    ['free_asset_status' => null], ['id' => $assetAssignedEntry->asset_id]
+                    ['free_asset_status' => 'Assigned'], ['id' => $assetAssignedEntry->asset_id]
                 );
                 $this->Flash->success(__('The asset assigned entry has been saved.'));
                 if ($this->request->getData('redirect_page') === 'list') {
@@ -980,7 +980,7 @@ class AssetAssignedEntriesController extends AppController
 
         } elseif ($type === 'status' && $value !== '') {
             if( $value == 'Assigned'){
-                $assets->where([ 'AssetAssignedEntries.active' => 1, 'AssetDatas.free_asset_status IS' => null ]);
+                $assets->where([ 'AssetAssignedEntries.active' => 1, 'AssetDatas.free_asset_status' => 'Assigned' ]);
             }else{
                 $assets->where(['AssetDatas.free_asset_status LIKE' => '%' . $value . '%' ]);
             }
