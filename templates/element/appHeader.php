@@ -202,7 +202,11 @@ $menu = $session->read('menu');
                         <?= $this->Html->link(
                             'POSH Training',
                             ['controller' => 'Users', 'action' => 'poshTraining'],
-                            ['class' => 'link']
+                            [
+                                'class' => 'link',
+                                'target' => '_blank',
+                                'rel' => 'noopener noreferrer'
+                            ]
                         ); ?>
 
                         <?= $this->Html->link('Logout', '/logout', ['class' => 'link']); ?>
