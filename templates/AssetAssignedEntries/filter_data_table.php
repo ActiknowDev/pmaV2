@@ -3,10 +3,10 @@ foreach ($assigned_entries as $ase) : ?>
 
     <tr>
         <td><?= $i; ?></td>
-        <td><a href="<?= $this->Url->build('/asset-assigned-entries/editAssetData/' . $ase['asset_id']) ?>" class="link"><?= $ase["asset_data"]["product_name"] ?></a></td>
-        <td><a href="#" class="ft-secondary"><?= $ase["asset_data"]["asset_category"]["cat_name"] ?></a>
+        <td><a href="<?= $this->Url->build('/asset-assigned-entries/editAssetData/' . $ase['asset_id']) ?>" class="link"><?= $ase["asset_data"]["product_name"] ?? '' ?></a></td>
+        <td><a href="#" class="ft-secondary"><?= $ase["asset_data"]["asset_category"]["cat_name"] ?? ''; ?></a>
         </td>
-        <td><?= @$ase["user"]["name"] ?></td>
+        <td><?= $ase["user"]["name"] ?></td>
         <td><?= $ase["asset_data"]["serial_number"] ?></td>
         <td><?= $ase["asset_data"]["configuration"] ? $ase["asset_data"]["configuration"] : "--" ?>
         </td>

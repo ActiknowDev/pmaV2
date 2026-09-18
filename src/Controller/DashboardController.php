@@ -678,12 +678,19 @@ class DashboardController extends AppController
 
             $session->write('managerId', $userId);
             $session->write('page', 'myproject');
+            $hasRole13 = in_array(13, $userSession['role_name']);
 
         /*
         * ---------------------------------------------------------
         * PROJECT LIST
         * ---------------------------------------------------------
         */
+        if ($hasRole13) {
+			$projectCondition = "OR p.source = 'Expertal'";
+		} else {
+			// Other users cannot see Expertal projects
+			$projectCondition = "AND (p.source IS NULL OR p.source != 'Expertal')";
+		}
             $projectSql = "
                 SELECT
                     p.*,
@@ -699,6 +706,7 @@ class DashboardController extends AppController
                     AND p.active = 1
                     AND p.project_name NOT LIKE '%Internal Projects%'
                     AND p.project_name NOT LIKE '%General Tasks - Non Billable%'
+                    ".$projectCondition."
                 ORDER BY p.id DESC
             ";
 
@@ -1735,9 +1743,17 @@ class DashboardController extends AppController
         $month = date('m');
         $year  = date('Y');
 
+        $hasRole13 = in_array(13, $userSession['role_name']);
+        if ($hasRole13) {
+			$projectCondition = "OR projects.source = 'Expertal'";
+		} else {
+			// Other users cannot see Expertal projects
+			$projectCondition = "AND (projects.source IS NULL OR projects.source != 'Expertal')";
+        }
+
         $query = "
         SELECT user_timesheets.id,user_timesheets.milestone_id,user_timesheets.resource_id,sum(user_timesheets.time_used) as time_used,user_timesheets.work_date, project_milestones.title, project_milestones.project_id,projects.project_name,projects.bill,users.name as username,users.id as userid FROM `user_timesheets` LEFT JOIN project_milestones ON user_timesheets.milestone_id=project_milestones.id LEFT JOIN projects ON projects.id=project_milestones.project_id LEFT JOIN users ON users.id=user_timesheets.resource_id WHERE month(work_date)=" .$month. " AND year(work_date)=". $year ." AND user_timesheets.resource_id=" . $user_id . "
-        GROUP BY 
+        ".$projectCondition." GROUP BY 
         projects.project_name, users.name , user_timesheets.resource_id,user_timesheets.id,user_timesheets.milestone_id, user_timesheets.work_date, project_milestones.title, project_milestones.project_id,projects.bill,users.id
         ";
         // dd($query);

@@ -207,14 +207,22 @@ $hasRole13 = in_array(13, $userSession['role_name'] ?? []);
                         </tbody>
                         <tbody class="hide" style="display: none;">
                            <?php if (count($month['projects']) > 0):
-                                 foreach ($month['projects'] as $bp): 
-                                 if (!$hasRole13 && $bp['source'] === 'Expertal') {
-                                       continue;
-                                 }?>
+                                 foreach ($month['projects'] as $bp): ?>
                                  <tr>
                                     <td></td>
 
-                                    <td style="padding-left: 1.7rem;"><?= $this->Html->link(substr($bp['project_name'], 0, 20), '/edit-project/' . $bp['project_id'], ['class' => 'link']); ?></td>
+                                    <td style="padding-left: 1.7rem;">
+                                        <?php  if (!$hasRole13 && $bp['source'] === 'Expertal') { ?>
+                                                         <?= substr($bp['project_name'], 0, 20); ?>
+
+                                                   <?php  } else { ?>
+                                                         <?= $this->Html->link(
+                                                            substr($bp['project_name'], 0, 20),
+                                                            '/edit-project/' . $bp['project_id'],
+                                                            ['class' => 'link']
+                                                         ); ?>
+                                                   <?php } ?>
+                                    </td>
                                     <td><?= $bp['client_name'] ?></td>
                                     <td>$<?php echo  number_format($bp['revenue']); ?></td>
                                     <td>$<?php echo  number_format($bp['paid']); ?></td>
@@ -253,9 +261,6 @@ $hasRole13 = in_array(13, $userSession['role_name'] ?? []);
                                  $totalRevenue = $totalPaid = $monthlyPaid = $totalUnpaid = 0;
 
                                  foreach ($client['projects'] as $proj) {
-                                    if (!$hasRole13 && $proj['source'] === 'Expertal') {
-                                       continue;
-                                    }
                                     foreach ($proj['months'] as $m) {
                                        $totalRevenue += $m['revenue'];
                                        $totalPaid += $m['paid'];
@@ -285,10 +290,7 @@ $hasRole13 = in_array(13, $userSession['role_name'] ?? []);
 
                                  <!-- ✅ CHILD ROWS -->
                                  <tbody class="hide" style="display: none;">
-                                    <?php foreach ($client['projects'] as $proj): 
-                                       if (!$hasRole13 && $proj['source'] === 'Expertal') {
-                                          continue;
-                                       }?>
+                                    <?php foreach ($client['projects'] as $proj): ?>
 
                                        <?php $first = true; ?>
 
@@ -299,11 +301,16 @@ $hasRole13 = in_array(13, $userSession['role_name'] ?? []);
                                                 <!-- ✅ Project name only once -->
                                                 <td style="padding-left: 1.7rem;" title="<?= $proj['project_name']; ?>">
                                                    <?php if ($first): ?>
+                                                    <?php  if (!$hasRole13 && $proj['source'] === 'Expertal') { ?>
+                                                         <?= substr($proj['project_name'], 0, 20); ?>
+
+                                                   <?php  } else { ?>
                                                          <?= $this->Html->link(
                                                             substr($proj['project_name'], 0, 20),
                                                             '/edit-project/' . $proj['project_id'],
                                                             ['class' => 'link']
                                                          ); ?>
+                                                   <?php } ?>
                                                    <?php endif; ?>
                                                 </td>
 
@@ -411,9 +418,7 @@ $hasRole13 = in_array(13, $userSession['role_name'] ?? []);
                               <?php 
                               if (!empty($bd['projects'])):
                                  foreach ($bd['projects'] as $bp): 
-                                    if (!$hasRole13 && $bp['source'] === 'Expertal') {
-                                       continue;
-                                    }
+                                    
                                     // Skip projects with 0 revenue
                                     if ($bp['revenue'] == 0) continue;
                               ?>
@@ -542,9 +547,7 @@ $hasRole13 = in_array(13, $userSession['role_name'] ?? []);
                               if (!empty($projectManager['projects'])):
                                  foreach ($projectManager['projects'] as $bp):
                                     // Skip project if revenue is 0 or less
-                                    if (!$hasRole13 && $bp['source'] === 'Expertal') {
-                                       continue;
-                                    }
+                                    
                                     if ($bp['revenue'] <= 0) continue;
                               ?>
                                  <tr>

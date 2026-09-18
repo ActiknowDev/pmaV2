@@ -90,11 +90,11 @@ class AssetDatasController extends AppController
                 return $this->redirect(['controller' => 'AssetAssignedEntries', 'action' => 'index']);
             }
 
-$errors = $assetData->getErrors();
+            $errors = $assetData->getErrors();
 
-echo "<pre>";
-print_r($errors);
-die;
+            // echo "<pre>";
+            // print_r($errors);
+            // die;
             $this->Flash->error(__('The asset data could not be saved. Please, try again.'));
             return $this->redirect(['controller' => 'AssetAssignedEntries', 'action' => 'index']);
         }

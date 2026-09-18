@@ -563,6 +563,7 @@ if ($on_time_score >= 95) {
                                 <th class="fw_500">#</th>
                                 <th class="fw_500">Applied On</th>
                                 <th class="fw_500">Leave From</th>
+                                <th class="fw_500">Leave Type</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -574,6 +575,7 @@ if ($on_time_score >= 95) {
                                          <td><?= $count++ ?></td>
                                         <td><?= date('M d, Y', strtotime($leave['applied_on'])) ?></td>
                                         <td><?= date('M d, Y', strtotime($leave['from_date'])) ?></td>
+                                        <td><?= $leave['leave_type']; ?></td>
                                     </tr>
                                 <?php endforeach; ?>
                             <?php else: ?>
@@ -665,7 +667,7 @@ if ($on_time_score >= 95) {
                                         <td><?= date('M d, Y', strtotime($exit['date'])) ?></td>
                                         <td><?= date('g:i A', strtotime($exit['intime'])) ?></td>
                                         <td><?= date('g:i A', strtotime($exit['outtime'])) ?></td>
-                                        <td><span class="badge bg-danger text-dark"><?= $exit['difference'] ?> early</span></td>
+                                        <td><span class="badge bg-danger text-white"><?= $exit['difference'] ?> early</span></td>
                                     </tr>
                                 <?php endforeach; ?>
                             <?php else: ?>
