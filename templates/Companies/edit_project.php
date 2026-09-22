@@ -326,6 +326,13 @@ if (isset($_GET['month'])) {
                                         </div>
                                     </div>
                                 </div>
+                                <div class="col-md-4">
+                                    <div class="form-group mt-md-4">
+                                        <div class="form-check">
+                                            <h4 class="font-weight-bold text-nowrap" style="font-size:15px">Total MileStone Amount : <?= $total_allpm_amount ?></h4>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                             <div class="d-flex flex-row-reverse">
                                 <div class="form-group float-right" style="margin-top:22px;">
