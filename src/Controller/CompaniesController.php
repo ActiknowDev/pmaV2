@@ -1635,11 +1635,22 @@ class CompaniesController extends AppController
 			if (!empty($pm_amount)) {
 				$total_pm_amount = $pm_amount[0]['t_amount'];
 			}
+
+			$allpm_amount = "SELECT SUM(project_milestones.amount) as t_amount 
+				FROM project_milestones 
+				WHERE project_milestones.project_id = " . $id . " AND project_milestones.deleted = 0";
+
+			$stmtProduct = $conn->execute($allpm_amount);
+			$allpm_amount = $stmtProduct->fetchAll('assoc');
+
+			$total_allpm_amount = !empty($allpm_amount[0]['t_amount']) ? $allpm_amount[0]['t_amount'] : 0;
+			$total_allpm_amount = '$' . number_format($total_allpm_amount, 2);
+
 			// $total_pm_amount=$pm_amount[0]['t_amount'];
 				// dd($pm_amount[0]['t_amount']);
 				// dd($total_pm_amount);
 
-			$this->set(compact('projects', 'miles', 'payments', 'reslist', 'manager', 'techlead', 'bdteam', 'resource', 'resourceList', 'mId', 'page', 'id', 'projectMileDueDate', 'maxExtendDate','total_actual_hours','total_allocated_hours','total_pm_amount'));
+			$this->set(compact('projects', 'miles', 'payments', 'reslist', 'manager', 'techlead', 'bdteam', 'resource', 'resourceList', 'mId', 'page', 'id', 'projectMileDueDate', 'maxExtendDate','total_actual_hours','total_allocated_hours','total_pm_amount','total_allpm_amount'));
 		}
 
 
