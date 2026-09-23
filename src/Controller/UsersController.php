@@ -5157,8 +5157,8 @@ class UsersController extends AppController
 
 		// $this->Authorization->skipAuthorization();
 		// $user = $this->request->getAttribute('identity');
-		// // $url = "http://localhost:3000/posh/?employeeId={$user['id']}&email=" . urlencode($user['email']);
-		// $url = "https://pma.actiknow.com/posh/?employeeId={$user['id']}&email=" . urlencode($user['email']);
+		// $url = "http://localhost:3000/posh/?employeeId={$user['id']}&email=" . urlencode($user['email']) ."&role=" . $user['role_name'];
+		// // $url = "https://pma.actiknow.com/posh/?employeeId={$user['id']}&email=" . urlencode($user['email']) ."&role=" . $user['role_name'];
 
 		// $baseUrl = Router::url('/', true);
 		// // $basePath = $this->request->getAttribute('base');
@@ -5171,7 +5171,7 @@ class UsersController extends AppController
 
 		$this->Authorization->skipAuthorization();
 		$user = $this->request->getAttribute('identity');
-		$url = "https://pma.actiknow.com/posh/?employeeId={$user['id']}&email="	. urlencode($user['email']);
+		$url = "https://pma.actiknow.com/posh/?employeeId={$user['id']}&email="	. urlencode($user['email']) ."&role=" . $user['role_name'];
 
 		return $this->redirect($url);
 
