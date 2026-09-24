@@ -157,7 +157,6 @@ $userSession = $session->read('data');
                                     <?php foreach ($leave_data as $data) : ?>
                                         <tr data-id="<?= $data['uid'] ?>">
                                             <td><?= h('C00' . $data['uid']) ?></td>
-                                            <!-- <td><?= $data['uid'] ?></td> -->
                                             <td><?= $data['name'] ?></td>
                                             <?php foreach ($data['leaves'] as $val) : ?>
                                             <td><?= number_format($val['cl']-$val['sumCL'],2) ?></td>
@@ -317,5 +316,16 @@ $(document).ready(function () {
             $("#leave-error").hide();
         }
     });
+});
+
+$(document).ready(function() {
+    setTimeout(function() {
+        if ($.fn.DataTable.isDataTable('#datatable')) {
+            $('#datatable').DataTable().destroy();
+        }
+        $('#datatable').DataTable({
+            order: [[1, 'asc']]
+        });
+    }, 200);
 });
 </script>
