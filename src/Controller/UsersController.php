@@ -4225,7 +4225,8 @@ class UsersController extends AppController
 						->where(['id' => $data->id])
 						->first();
 					if ($value == 'id') {
-						$userRow = [$data->id];
+						  $userRow = ['C00' . $data->id];
+						// $userRow = [$data->id];
 					}
 					if ($value == 'email') {
 						$userRow = array_merge($userRow, [$data->email]);
@@ -4904,7 +4905,7 @@ class UsersController extends AppController
 
 			// Retrieve leave data
 			// $query1 = "SELECT leave_type, from_date, to_date, status,reason, wfh_type,created_by FROM `leaves` WHERE MONTH(from_date) = '$month' AND YEAR(from_date) = '$year'";
-			$query = "SELECT users.id AS uid, users.email, users.name, users.el AS uel, users.cl AS ucl, users.sl AS usl, users.lwp AS lwp, users.comp_off AS comp_off, SUM(leave_counting.el) AS el, SUM(leave_counting.cl) AS cl, SUM(leave_counting.sl) AS sl, SUM(leave_counting.lwp) AS lwp, SUM(leave_counting.comp_off) AS comp_off, ROUND( ( users.el - SUM(leave_counting.el) ), 1 ) AS tot_el, ( users.cl - SUM(leave_counting.cl) ) AS tot_cl, ( users.sl - SUM(leave_counting.sl) ) AS tot_sl, ( users.lwp - SUM(leave_counting.lwp) ) AS tot_lwp, ( users.comp_off - SUM(leave_counting.comp_off) ) AS tot_comp_off FROM users LEFT JOIN leave_counting ON leave_counting.user_id = users.id WHERE users.deleted = 1 AND users.company_id = 10 AND users.role = 3 AND users.status = 1 GROUP BY users.id";
+			$query = "SELECT users.id AS uid, users.email, users.name, users.el AS uel, users.cl AS ucl, users.sl AS usl, users.lwp AS lwp, users.comp_off AS comp_off, SUM(leave_counting.el) AS el, SUM(leave_counting.cl) AS cl, SUM(leave_counting.sl) AS sl, SUM(leave_counting.lwp) AS lwp, SUM(leave_counting.comp_off) AS comp_off, ROUND( ( users.el - SUM(leave_counting.el) ), 1 ) AS tot_el, ( users.cl - SUM(leave_counting.cl) ) AS tot_cl, ( users.sl - SUM(leave_counting.sl) ) AS tot_sl, ( users.lwp - SUM(leave_counting.lwp) ) AS tot_lwp, ( users.comp_off - SUM(leave_counting.comp_off) ) AS tot_comp_off FROM users LEFT JOIN leave_counting ON leave_counting.user_id = users.id WHERE users.deleted = 1 AND users.company_id = 10 AND users.role = 3 AND users.status = 1 GROUP BY users.id ORDER BY users.name ASC";
 			$stmtProduct = $conn->execute($query);
 			$leaves = $stmtProduct->fetchAll('assoc');
 			// dd($leaves['uid']);
@@ -4932,7 +4933,6 @@ class UsersController extends AppController
 					)
 				);
 			}
-			// dd($leave_data);
 
 			$this->set(compact('month', 'year', 'leaves','leave_data'));
 			} else {

@@ -157,7 +157,8 @@ if ($on_time_score >= 95) {
                             <div class="small">
                                 <div><i class="fas fa-phone mr-2"></i> <?= h($emp_details_table->mobile_no); ?></div>
                                 <div><i class="fas fa-envelope mr-2"></i> <?= h($emp_details->email); ?></div>
-                                <div class="mt-1 opacity-75">Employer ID: <b><?= h($emp_details->id); ?></b></div>
+                                <div class="mt-1 opacity-75">Employer ID: <b><?= h('C00' . $emp_details->id); ?></b></div>
+                                <!-- <div class="mt-1 opacity-75">Employer ID: <b><?= h($emp_details->id); ?></b></div> -->
                             </div>
                         </div>
                     </div>

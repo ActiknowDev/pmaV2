@@ -58,9 +58,12 @@ $userSession = $session->read('data');
                                     <div class="form-group">
                                         <label for="">Employee ID</label>
                                         <div class="adon-group">
+                                               <input type="text" readonly name="emp_id" class="form-control"
+                                                placeholder="" value="<?= h('C00' . @$user_data['id']) ?>">
 
+                                            <!-- 
                                             <input type="text" readonly name="emp_id" class="form-control"
-                                                placeholder="" value="<?= @$user_data['id'] ?>">
+                                                placeholder="" value="<?= @$user_data['id'] ?>"> -->
 
                                         </div>
 
