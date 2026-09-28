@@ -953,18 +953,38 @@ class LeavesController extends AppController
                    }
                 //    dd($cut_leave);
 
-                if ($this->request->getData("leave_type") == "WFH") {
-                    $leaveType = "Work From Home ";
-                  $this->sendApplyLeaveNotic($reportingManagerEmial, $leaveType, $subject, $applyBy, $from_date, $to_date, $email,$reason,$cut_leave);
-                } else {
-                    $leaveType = $this->request->getData('leave_type');
-                   $this->sendApplyLeaveNotic($reportingManagerEmial, $leaveType, $subject, $applyBy, $from_date, $to_date, $email,$reason,$cut_leave);
+                // if ($this->request->getData("leave_type") == "WFH") {
+                //     $leaveType = "Work From Home ";
+                //   $this->sendApplyLeaveNotic($reportingManagerEmial, $leaveType, $subject, $applyBy, $from_date, $to_date, $email,$reason,$cut_leave);
+                // } else {
+                //     $leaveType = $this->request->getData('leave_type');
+                //    $this->sendApplyLeaveNotic($reportingManagerEmial, $leaveType, $subject, $applyBy, $from_date, $to_date, $email,$reason,$cut_leave);
+                // }
+
+                //     // $this->leavecheck($data);
+
+                //     $this->Flash->success(__('The leave has been saved.'));
+                //     return $this->redirect(['action' => 'index']);
+
+                $mailSent = true;
+                try {
+                    if ($this->request->getData("leave_type") == "WFH") {
+                        $leaveType = "Work From Home ";
+                    } else {
+                        $leaveType = $this->request->getData('leave_type');
+                    }
+                    $this->sendApplyLeaveNotic($reportingManagerEmial, $leaveType, $subject, $applyBy, $from_date, $to_date, $email, $reason, $cut_leave);
+                } catch (\Throwable $e) {
+                    $mailSent = false;
                 }
 
-                    // $this->leavecheck($data);
-
+                if ($mailSent) {
                     $this->Flash->success(__('The leave has been saved.'));
-                    return $this->redirect(['action' => 'index']);
+                } else {
+                    $this->Flash->error(__('Your leave has been saved, but the notification email was not sent. Please contact the administrator.'));
+                }
+                return $this->redirect(['action' => 'index']);
+
                 }
               
             }
