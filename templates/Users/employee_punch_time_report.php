@@ -82,7 +82,7 @@ $userSession = $session->read('data');
                 </div>
                 <div class="col-md-1">
                             <a href="<?= $this->Url->build(['controller' => 'Users', 'action' => 'employeePunchTimeReport']) ?>" class="btn btn-sm text-white" style="background-color: #3fd5db; margin-top: 22px;">Clear</a>
-                            <?php if($userSession['email']=='sumit.jhunjhunwala@actiknowbi.com' || $userSession['email']=='himani.duhan@actiknow.com' || $userSession['email']=='arpit.batham@actiknow.com' || $userSession['email']=='pinkey.yadav@actiknowbi.com') { ?>
+                            <?php if($userSession['email']=='sumit.jhunjhunwala@actiknowbi.com' || $userSession['email']=='himani.duhan@actiknow.com' || $userSession['email']=='arpit.batham@actiknow.com' || $userSession['email']=='pinkey.yadav@actiknow.com') { ?>
                             <a href="<?= $this->Url->build(['controller' => 'Users', 'action' => 'exportPunchTimeReport']) ?>" class="btn btn-sm text-white" style="background-color: #3fd5db; margin-top: 22px;">Export</a>
                             <?php } ?>
                         </div>

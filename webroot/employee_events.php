@@ -182,7 +182,8 @@ if ($conn) {
 						$mail->SMTPSecure = 'tls';
 						$mail->SMTPAuth = true;
 						$mail->Username = 'notifications@actiknow.com';
-						$mail->Password = 'zang kfmd pqkp spel';
+						// $mail->Password = 'zang kfmd pqkp spel';
+						$mail->Password = 'tthf wwkz nbgu gdhx';
 						$mail->setFrom('noreply.n-chatbot@actiknow.com', 'Admin Actiknow');
 						$mail->Subject = 'BIRTHDAY WISHES - '.strtoupper($row['name']);
 						$mail->msgHTML($body);

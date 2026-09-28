@@ -105,7 +105,8 @@ if ($conn) {
          $mail->SMTPSecure = 'tls';
          $mail->SMTPAuth = true;
          $mail->Username = 'notifications@actiknow.com';
-         $mail->Password = 'zang kfmd pqkp spel';
+         // $mail->Password = 'zang kfmd pqkp spel';
+         $mail->Password = 'tthf wwkz nbgu gdhx';
          $mail->setFrom('noreply.n-chatbot@actiknow.com', 'Leaves');
          $mail->Subject = 'Leaves Details';
 

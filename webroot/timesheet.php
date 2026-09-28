@@ -56,7 +56,8 @@ if(date('N') != 6 && date('N') != 7)
 						$mail->SMTPSecure = 'tls';
 						$mail->SMTPAuth = true;
 						$mail->Username = 'notifications@actiknow.com';
-						$mail->Password = 'zang kfmd pqkp spel';
+						// $mail->Password = 'zang kfmd pqkp spel';
+						$mail->Password = 'tthf wwkz nbgu gdhx';
 						$mail->setFrom('noreply.n-chatbot@actiknow.com', 'pma');
 						$mail->Subject = 'Timesheet Reminder';
 						$mail->msgHTML($body);

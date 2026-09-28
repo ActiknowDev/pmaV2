@@ -51,7 +51,8 @@ if (date('N') != 6 && date('N') != 7) {
         $mail->SMTPAuth = true;
         //Provide username and password     
         $mail->Username = 'notifications@actiknow.com';
-        $mail->Password = 'zang kfmd pqkp spel';
+        // $mail->Password = 'zang kfmd pqkp spel';
+        $mail->Password = 'tthf wwkz nbgu gdhx';
         //If SMTP requires TLS encryption then set it
         $mail->SMTPSecure = "tls";
         //Set TCP port to connect to

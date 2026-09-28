@@ -241,7 +241,8 @@ if ($conn) {
 						$mail->SMTPSecure = 'tls';
 						$mail->SMTPAuth = true;
 						$mail->Username = 'notifications@actiknow.com';
-						$mail->Password = 'zang kfmd pqkp spel';
+						// $mail->Password = 'zang kfmd pqkp spel';
+						$mail->Password = 'tthf wwkz nbgu gdhx';
 						$mail->setFrom('noreply.n-chatbot@actiknow.com', 'Admin Actiknow');
 						$mail->Subject = 'Congratulations for Completion of '.$yearsSinceJoining.' '.$year_str.' - '.strtoupper($row['name']);
 						$mail->msgHTML($body);
