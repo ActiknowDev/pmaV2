@@ -152,8 +152,9 @@
                                 </thead>
                                 <tbody id="filterLeave">
                                     <?php
-                                    $thirtyDaysAgo = strtotime('-31 days');
-                                    $currentDate = time();
+                                    $previousMonthStart = strtotime(
+                                        date('Y-m-01 00:00:00', strtotime('last month'))
+                                    );
                                     if ($selectStatus != "") {
                                         foreach ($leaved_data as $key) {
                                             // if ($key['status'] == 'cancelled') {
@@ -336,7 +337,7 @@
                                                     class="fa fa-times"></i></a>
 
 
-                                            <?php elseif ($fromDate >= $thirtyDaysAgo && $fromDate <= $currentDate) : ?>
+                                            <?php elseif ($fromDate >= $previousMonthStart) : ?>
                                             <a class="v-btn v-btn-danger btn-sm  cancel-leave"
                                                 data-id="<?= $key['id'] ?>" title="Cancelled"><i
                                                     class="fa fa-times"></i></a>
