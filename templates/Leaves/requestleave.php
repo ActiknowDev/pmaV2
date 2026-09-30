@@ -152,6 +152,8 @@
                                 </thead>
                                 <tbody id="filterLeave">
                                     <?php
+                                    $thirtyDaysAgo = strtotime('-31 days');
+                                    $currentDate = time();
                                     if ($selectStatus != "") {
                                         foreach ($leaved_data as $key) {
                                             // if ($key['status'] == 'cancelled') {
@@ -251,6 +253,7 @@
                                     <?php }
                                     } else {
                                         foreach ($result_data as $key) :
+                                            $fromDate = strtotime($key['from_date']);
                                         ?>
                                     <tr>
                                         <td>
@@ -333,10 +336,12 @@
                                                     class="fa fa-times"></i></a>
 
 
-                                            <?php else : ?>
+                                            <?php elseif ($fromDate >= $thirtyDaysAgo && $fromDate <= $currentDate) : ?>
                                             <a class="v-btn v-btn-danger btn-sm  cancel-leave"
                                                 data-id="<?= $key['id'] ?>" title="Cancelled"><i
                                                     class="fa fa-times"></i></a>
+                                                    <?php else : ?>
+                                                        
                                             <?php
                                                         endif; ?>
                                         </td>
