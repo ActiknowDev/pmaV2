@@ -783,30 +783,6 @@ class UsersController extends AppController
 				// 	)
 				// ";
 
-				// $query = "
-				// 	SELECT 
-				// 		p.id,
-				// 		p.title,
-				// 		p.due_date,
-				// 		pr.client_id
-				// 	FROM project_milestones p
-				// 	JOIN projects pr ON p.project_id = pr.id
-				// 	WHERE p.project_id = " . $l['id'] . "
-				// 	AND p.deleted = 0
-				// 	AND (
-				// 		(
-				// 			YEAR(p.due_date) = YEAR('" . $weekStart . "')
-				// 			AND MONTH(p.due_date) = MONTH('" . $weekStart . "')
-				// 		)
-				// 		OR
-				// 		(
-				// 			YEAR(p.due_date) = YEAR('" . $weekEnd . "')
-				// 			AND MONTH(p.due_date) = MONTH('" . $weekEnd . "')
-				// 		)
-				// 	)
-				// ";
-
-
 				$query = "
 					SELECT 
 						p.id,
@@ -1530,61 +1506,6 @@ class UsersController extends AppController
 				// 	)
 				// ";
 
-			// 	$query = "
-			// 	SELECT 
-			// 		p.id, 
-			// 		p.title, 
-			// 		p.due_date, 
-			// 		pr.client_id
-			// 	FROM 
-			// 		project_milestones p
-			// 	JOIN 
-			// 		projects pr ON p.project_id = pr.id
-			// 	WHERE 
-			// 		p.id IN (" . $l['milestone_id'] . ")
-			// 		AND p.deleted = 0
-			// 		AND (
-			// 			(
-			// 				pr.client_id != '144'
-			// 				AND (
-			// 					(MONTH(p.due_date) = " . $startMonth . " AND YEAR(p.due_date) = " . $startYear . ")
-			// 					OR
-			// 					(MONTH(p.due_date) = " . $endMonth . " AND YEAR(p.due_date) = " . $endYear . ")
-			// 				)
-			// 			)
-			// 			OR (
-			// 				pr.client_id = '144'
-			// 				AND (
-			// 					YEAR(p.due_date) = " . $startYear . "
-			// 					OR YEAR(p.due_date) = " . $endYear . "
-			// 				)
-			// 			)
-			// 		)
-			// ";
-
-			// $query = "
-			// 	SELECT 
-			// 		p.id,
-			// 		p.title,
-			// 		p.due_date,
-			// 		pr.client_id
-			// 	FROM project_milestones p
-			// 	JOIN projects pr ON p.project_id = pr.id
-			// 	WHERE p.project_id = " . $l['id'] . "
-			// 	AND p.deleted = 0
-			// 	AND (
-			// 		(
-			// 			YEAR(p.due_date) = " . $startYear . "
-			// 			AND MONTH(p.due_date) = " . $startMonth . "
-			// 		)
-			// 		OR
-			// 		(
-			// 			YEAR(p.due_date) = " . $endYear . "
-			// 			AND MONTH(p.due_date) = " . $endMonth . "
-			// 		)
-			// 	)
-			// ";
-
 			$query = "
 				SELECT 
 					p.id,
@@ -1778,60 +1699,6 @@ class UsersController extends AppController
 				// 		(MONTH(p.due_date) = " . $startMonth . " AND YEAR(p.due_date) = " . $startYear . ")
 				// 		OR
 				// 		(MONTH(p.due_date) = " . $endMonth . " AND YEAR(p.due_date) = " . $endYear . ")
-				// 	)
-				// ";
-				// $query = "
-				// 	SELECT 
-				// 		p.id, 
-				// 		p.title, 
-				// 		p.due_date, 
-				// 		pr.client_id
-				// 	FROM 
-				// 		project_milestones p
-				// 	JOIN 
-				// 		projects pr ON p.project_id = pr.id
-				// 	WHERE 
-				// 		p.id IN (" . $l['milestone_id'] . ")
-				// 		AND p.deleted = 0
-				// 		AND (
-				// 			(
-				// 				pr.client_id != '144'
-				// 				AND (
-				// 					(MONTH(p.due_date) = " . $startMonth . " AND YEAR(p.due_date) = " . $startYear . ")
-				// 					OR
-				// 					(MONTH(p.due_date) = " . $endMonth . " AND YEAR(p.due_date) = " . $endYear . ")
-				// 				)
-				// 			)
-				// 			OR (
-				// 				pr.client_id = '144'
-				// 				AND (
-				// 					YEAR(p.due_date) = " . $startYear . "
-				// 					OR YEAR(p.due_date) = " . $endYear . "
-				// 				)
-				// 			)
-				// 		)
-				// ";
-
-				// $query = "
-				// 	SELECT 
-				// 		p.id,
-				// 		p.title,
-				// 		p.due_date,
-				// 		pr.client_id
-				// 	FROM project_milestones p
-				// 	JOIN projects pr ON p.project_id = pr.id
-				// 	WHERE p.project_id = " . $l['id'] . "
-				// 	AND p.deleted = 0
-				// 	AND (
-				// 		(
-				// 			YEAR(p.due_date) = " . $startYear . "
-				// 			AND MONTH(p.due_date) = " . $startMonth . "
-				// 		)
-				// 		OR
-				// 		(
-				// 			YEAR(p.due_date) = " . $endYear . "
-				// 			AND MONTH(p.due_date) = " . $endMonth . "
-				// 		)
 				// 	)
 				// ";
 
