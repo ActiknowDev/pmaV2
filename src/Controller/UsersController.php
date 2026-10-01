@@ -756,6 +756,9 @@ class UsersController extends AppController
 		$startMonth = date('m', strtotime($weekStart));
 		$endMonth = date('m', strtotime($weekEnd));
 
+		$startYear = date('Y', strtotime($weekStart));
+		$endYear = date('Y', strtotime($weekEnd));
+
 		foreach ($list as $l) {
 
 			$p['id'] = $l['id'];
@@ -780,6 +783,30 @@ class UsersController extends AppController
 				// 	)
 				// ";
 
+				// $query = "
+				// 	SELECT 
+				// 		p.id,
+				// 		p.title,
+				// 		p.due_date,
+				// 		pr.client_id
+				// 	FROM project_milestones p
+				// 	JOIN projects pr ON p.project_id = pr.id
+				// 	WHERE p.project_id = " . $l['id'] . "
+				// 	AND p.deleted = 0
+				// 	AND (
+				// 		(
+				// 			YEAR(p.due_date) = YEAR('" . $weekStart . "')
+				// 			AND MONTH(p.due_date) = MONTH('" . $weekStart . "')
+				// 		)
+				// 		OR
+				// 		(
+				// 			YEAR(p.due_date) = YEAR('" . $weekEnd . "')
+				// 			AND MONTH(p.due_date) = MONTH('" . $weekEnd . "')
+				// 		)
+				// 	)
+				// ";
+
+
 				$query = "
 					SELECT 
 						p.id,
@@ -788,20 +815,34 @@ class UsersController extends AppController
 						pr.client_id
 					FROM project_milestones p
 					JOIN projects pr ON p.project_id = pr.id
-					WHERE p.project_id = " . $l['id'] . "
+					WHERE p.project_id = " . (int)$l['id'] . "
 					AND p.deleted = 0
 					AND (
 						(
-							YEAR(p.due_date) = YEAR('" . $weekStart . "')
-							AND MONTH(p.due_date) = MONTH('" . $weekStart . "')
+							pr.client_id != '144'
+							AND (
+								(
+									YEAR(p.due_date) = " . (int)$startYear . "
+									AND MONTH(p.due_date) = " . (int)$startMonth . "
+								)
+								OR
+								(
+									YEAR(p.due_date) = " . (int)$endYear . "
+									AND MONTH(p.due_date) = " . (int)$endMonth . "
+								)
+							)
 						)
 						OR
 						(
-							YEAR(p.due_date) = YEAR('" . $weekEnd . "')
-							AND MONTH(p.due_date) = MONTH('" . $weekEnd . "')
+							pr.client_id = '144'
+							AND (
+								YEAR(p.due_date) = " . (int)$startYear . "
+								OR YEAR(p.due_date) = " . (int)$endYear . "
+							)
 						)
 					)
 				";
+
 
 				$stmtProduct = $conn->execute($query);
 				$mlist = $stmtProduct->fetchAll('assoc');
@@ -1521,6 +1562,29 @@ class UsersController extends AppController
 			// 		)
 			// ";
 
+			// $query = "
+			// 	SELECT 
+			// 		p.id,
+			// 		p.title,
+			// 		p.due_date,
+			// 		pr.client_id
+			// 	FROM project_milestones p
+			// 	JOIN projects pr ON p.project_id = pr.id
+			// 	WHERE p.project_id = " . $l['id'] . "
+			// 	AND p.deleted = 0
+			// 	AND (
+			// 		(
+			// 			YEAR(p.due_date) = " . $startYear . "
+			// 			AND MONTH(p.due_date) = " . $startMonth . "
+			// 		)
+			// 		OR
+			// 		(
+			// 			YEAR(p.due_date) = " . $endYear . "
+			// 			AND MONTH(p.due_date) = " . $endMonth . "
+			// 		)
+			// 	)
+			// ";
+
 			$query = "
 				SELECT 
 					p.id,
@@ -1529,21 +1593,34 @@ class UsersController extends AppController
 					pr.client_id
 				FROM project_milestones p
 				JOIN projects pr ON p.project_id = pr.id
-				WHERE p.project_id = " . $l['id'] . "
+				WHERE p.project_id = " . (int)$l['id'] . "
 				AND p.deleted = 0
 				AND (
 					(
-						YEAR(p.due_date) = " . $startYear . "
-						AND MONTH(p.due_date) = " . $startMonth . "
+						pr.client_id != '144'
+						AND (
+							(
+								YEAR(p.due_date) = " . (int)$startYear . "
+								AND MONTH(p.due_date) = " . (int)$startMonth . "
+							)
+							OR
+							(
+								YEAR(p.due_date) = " . (int)$endYear . "
+								AND MONTH(p.due_date) = " . (int)$endMonth . "
+							)
+						)
 					)
 					OR
 					(
-						YEAR(p.due_date) = " . $endYear . "
-						AND MONTH(p.due_date) = " . $endMonth . "
+						pr.client_id = '144'
+						AND (
+							YEAR(p.due_date) = " . (int)$startYear . "
+							OR YEAR(p.due_date) = " . (int)$endYear . "
+						)
 					)
 				)
 			";
-							$stmtProduct = $conn->execute($query);
+				$stmtProduct = $conn->execute($query);
 				$mlist = $stmtProduct->fetchAll('assoc');
 
 				foreach ($mlist as $m) {
@@ -1735,6 +1812,29 @@ class UsersController extends AppController
 				// 		)
 				// ";
 
+				// $query = "
+				// 	SELECT 
+				// 		p.id,
+				// 		p.title,
+				// 		p.due_date,
+				// 		pr.client_id
+				// 	FROM project_milestones p
+				// 	JOIN projects pr ON p.project_id = pr.id
+				// 	WHERE p.project_id = " . $l['id'] . "
+				// 	AND p.deleted = 0
+				// 	AND (
+				// 		(
+				// 			YEAR(p.due_date) = " . $startYear . "
+				// 			AND MONTH(p.due_date) = " . $startMonth . "
+				// 		)
+				// 		OR
+				// 		(
+				// 			YEAR(p.due_date) = " . $endYear . "
+				// 			AND MONTH(p.due_date) = " . $endMonth . "
+				// 		)
+				// 	)
+				// ";
+
 				$query = "
 					SELECT 
 						p.id,
@@ -1743,20 +1843,34 @@ class UsersController extends AppController
 						pr.client_id
 					FROM project_milestones p
 					JOIN projects pr ON p.project_id = pr.id
-					WHERE p.project_id = " . $l['id'] . "
+					WHERE p.project_id = " . (int)$l['id'] . "
 					AND p.deleted = 0
 					AND (
 						(
-							YEAR(p.due_date) = " . $startYear . "
-							AND MONTH(p.due_date) = " . $startMonth . "
+							pr.client_id != '144'
+							AND (
+								(
+									YEAR(p.due_date) = " . (int)$startYear . "
+									AND MONTH(p.due_date) = " . (int)$startMonth . "
+								)
+								OR
+								(
+									YEAR(p.due_date) = " . (int)$endYear . "
+									AND MONTH(p.due_date) = " . (int)$endMonth . "
+								)
+							)
 						)
 						OR
 						(
-							YEAR(p.due_date) = " . $endYear . "
-							AND MONTH(p.due_date) = " . $endMonth . "
+							pr.client_id = '144'
+							AND (
+								YEAR(p.due_date) = " . (int)$startYear . "
+								OR YEAR(p.due_date) = " . (int)$endYear . "
+							)
 						)
 					)
 				";
+
 
 				$stmtProduct = $conn->execute($query);
 				$mlist = $stmtProduct->fetchAll('assoc');
