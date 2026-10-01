@@ -733,9 +733,6 @@ class UsersController extends AppController
 
 	public function timesheet()
 	{
-		// print_r('hi');
-		// die;
-
 		$this->Authorization->skipAuthorization();
 		$this->viewBuilder()->setLayout('default_new');
 		$conn = ConnectionManager::get('default');
@@ -760,8 +757,6 @@ class UsersController extends AppController
 		$endMonth = date('m', strtotime($weekEnd));
 
 		foreach ($list as $l) {
-			// echo "<pre>";
-			// print_r($l);
 
 			$p['id'] = $l['id'];
 			$p['project_name'] = $l['project_name'];
@@ -769,21 +764,41 @@ class UsersController extends AppController
 			$p['miles'] = array();
 			if ($l['milestone_id']) {
 				// $query = "SELECT id,title FROM project_milestones p WHERE p.id IN (" . $l['milestone_id'] . ") AND p.deleted=0 AND status != 'Completed'";
-				$query = "
+				// $query = "
+				// 	SELECT p.id, p.title, p.due_date, pr.client_id
+				// 	FROM project_milestones p
+				// 	JOIN projects pr ON p.project_id = pr.id
+				// 	WHERE p.id IN (" . $l['milestone_id'] . ")
+				// 	AND p.deleted = 0
+				// 	AND p.status != 'Completed'
+				// 	AND (
+				// 		(
+				// 			pr.client_id != '144'
+				// 			AND (MONTH(p.due_date) = " . $startMonth . " OR MONTH(p.due_date) = " . $endMonth . ")
+				// 		)
+				// 		OR pr.client_id = '144'
+				// 	)
+				// ";
+
+				 $query = "
 					SELECT p.id, p.title, p.due_date, pr.client_id
 					FROM project_milestones p
 					JOIN projects pr ON p.project_id = pr.id
 					WHERE p.id IN (" . $l['milestone_id'] . ")
 					AND p.deleted = 0
-					AND p.status != 'Completed'
 					AND (
 						(
-							pr.client_id != '144'
-							AND (MONTH(p.due_date) = " . $startMonth . " OR MONTH(p.due_date) = " . $endMonth . ")
+							YEAR(p.due_date) = YEAR('" . $weekStart . "')
+							AND MONTH(p.due_date) = MONTH('" . $weekStart . "')
 						)
-						OR pr.client_id = '144'
+						OR
+						(
+							YEAR(p.due_date) = YEAR('" . $weekEnd . "')
+							AND MONTH(p.due_date) = MONTH('" . $weekEnd . "')
+						)
 					)
 				";
+
 				$stmtProduct = $conn->execute($query);
 				$mlist = $stmtProduct->fetchAll('assoc');
 
@@ -793,6 +808,8 @@ class UsersController extends AppController
 					$data['title'] = $m['title'];
 
 					$query = "SELECT time_slot FROM project_allocations WHERE milestone_id=" . $m['id'] . " AND resource_id=" . $user_id;
+
+
 					$stmtProduct = $conn->execute($query);
 					$allot = $stmtProduct->fetchAll('assoc');
 
@@ -803,6 +820,7 @@ class UsersController extends AppController
 
 
 					$query = "SELECT IFNULL(SUM(time_used),0) as time_used FROM user_timesheets WHERE milestone_id=" . $m['id'] . " AND resource_id=" . $user_id;
+
 					$stmtProduct = $conn->execute($query);
 					$allot = $stmtProduct->fetchAll('assoc');
 					if (count($allot) > 0)
@@ -812,20 +830,6 @@ class UsersController extends AppController
 
 					$data['mtime'] = $data['tutime'] = $data['wtime'] = $data['thtime'] = $data['ftime'] = $data['stime'] = "";
 					$data['mnotes'] = $data['tunotes'] = $data['wnotes'] = $data['thnotes'] = $data['fnotes'] = $data['snotes'] = "";
-
-					// $n = date('N') - 1;
-					// $data['monday'] = (date('N') == 1) ? date('Y-m-d') : date('Y-m-d', strtotime('-' . $n . 'days'));
-					// $n = date('N') - 2;
-					// $data['tuesday'] = (date('N') == 2) ? date('Y-m-d') : date('Y-m-d', strtotime('-' . $n . 'days'));
-					// $n = date('N') - 3;
-					// $data['wednesday'] = (date('N') == 3) ? date('Y-m-d') : date('Y-m-d', strtotime('-' . $n . 'days'));
-					// $n = date('N') - 4;
-					// $data['thursday'] = (date('N') == 4) ? date('Y-m-d') : date('Y-m-d', strtotime('-' . $n . 'days'));
-					// $n = date('N') - 5;
-					// $data['friday'] = (date('N') == 5) ? date('Y-m-d') : date('Y-m-d', strtotime('-' . $n . 'days'));
-					// $n = date('N') - 6;
-					// $data['saturday'] = (date('N') == 6) ? date('Y-m-d') : date('Y-m-d', strtotime('-' . $n . 'days'));
-
 					$data['monday']    = $weekStart;
 					$data['tuesday']   = date('Y-m-d', strtotime($weekStart . ' +1 day'));
 					$data['wednesday'] = date('Y-m-d', strtotime($weekStart . ' +2 day'));
@@ -891,40 +895,6 @@ class UsersController extends AppController
 			}
 			$projects[] = $p;
 		}
-
-		// $query = "SELECT p.id,p.project_name,p.milestone_id,u.client_name,p.resources FROM projects p JOIN users u ON p.client_id=u.id WHERE p.deleted=1 AND p.status!='Completed' AND p.active=1 AND p.resources!=0";
-
-		// $stmtProduct = $conn->execute($query);
-		// $list = $stmtProduct->fetchAll('assoc');
-		// foreach($list as $l){
-		// 	// $arr[] = $l['project_name'];
-		// 	$arr[] =([
-				
-		// 		'id'=> $l['id'],
-		// 		'project_name'=> $l['project_name'],
-		// 		'milestone_id'=> $l['milestone_id'],
-		// 		'client_name'=> $l['client_name'],
-		// 		'resourse_id' => explode(",",$l['resources'])
-
-		// 	]);
-			
-		// 	// $arr1[]=$arr[0]['resourse_id'];
-			
-		// // die;
-		// }
-		// foreach($arr as $a) {
-		// 	$query1 = "SELECT `u`.`name` AS `username`, `p`.`project_name` AS `pname`, `pm`.`title` AS `mtitle` FROM users u JOIN projects p ON u.id=p.user_id JOIN project_milestones pm ON p.id=pm project_id WHERE p.deleted=1 AND p.status!='Completed' AND p.active=1 AND FIND_IN_SET($arr,resources)!=0";
-
-		// $stmtProduct1 = $conn->execute($query1);
-		// $list1 = $stmtProduct1->fetchAll('assoc');
-
-		// echo "<pre>";
-		// print_r($list1);
-		// }
-		// echo "<pre>";
-		// print_r($projects);
-		// die;
-
 		$pdate = date('Y-m-d', strtotime('last saturday'));
 		$ndate = date('Y-m-d', strtotime('next monday'));
 
