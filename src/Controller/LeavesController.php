@@ -666,10 +666,14 @@ class LeavesController extends AppController
            
             if ($days_count > 0) {
                if($last_leave_day=='Friday' && $current_from_day=='Monday' && $date_diff==4) {
+                    $previousSaturday = date('Y-m-d', strtotime('last saturday', strtotime($from_date)));
+                    $from_date = $previousSaturday;
                     $cut_weekend_leave = 2;
                     $data['weekend']='true';
                   }
-                  elseif($last_leave_mday=='Monday' && $current_from_day=='Friday' && $date_diff==4) {
+                  elseif($last_leave_mday=='Monday' && $current_from_day=='Friday' && abs($date_diff)==4) {
+                      $nextSunday = date('Y-m-d', strtotime('next sunday', strtotime($from_date)));
+                      $to_date = $nextSunday;
                       $cut_weekend_leave = 2;
                       $data['weekend']='true';
                   }
@@ -2409,10 +2413,14 @@ class LeavesController extends AppController
            
             if ($days_count > 0) {
                if($last_leave_day=='Friday' && $current_from_day=='Monday' && $date_diff==4) {
+                    $previousSaturday = date('Y-m-d', strtotime('last saturday', strtotime($from_date)));
+                    $from_date = $previousSaturday;
                     $cut_weekend_leave = 2;
                     $data['weekend']='true';
                   }
-                  elseif($last_leave_mday=='Monday' && $current_from_day=='Friday' && $date_diff==4) {
+                  elseif($last_leave_mday=='Monday' && $current_from_day=='Friday' && abs($date_diff)==4) {
+                      $nextSunday = date('Y-m-d', strtotime('next sunday', strtotime($from_date)));
+                      $to_date = $nextSunday;
                       $cut_weekend_leave = 2;
                       $data['weekend']='true';
                   }
