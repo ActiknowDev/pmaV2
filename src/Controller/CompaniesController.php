@@ -2121,14 +2121,38 @@ class CompaniesController extends AppController
 					$mile->due_date = $due_date;
 					$mile->milestone_month_year = date('F Y', strtotime($due_date));
 					$this->ProjectMilestones->save($mile);
-				} else {
+					} else {
 					$mile1 = $this->ProjectMilestones->newEmptyEntity();
-					$this->ProjectMilestones->patchEntity($mile1, $this->request->getData());
+					$this->ProjectMilestones->patchEntity(
+						$mile1,
+						$this->request->getData()
+					);
+
 					$date = explode('/', $this->request->getData('due_date'));
 					$due_date = $date[2] . '-' . $date[0] . '-' . $date[1];
+
 					$mile1->due_date = $due_date;
 					$mile1->milestone_month_year = date('F Y', strtotime($due_date));
-					$this->ProjectMilestones->save($mile1);
+
+					$result = $this->ProjectMilestones->save($mile1);
+					if ($result && !empty($this->request->getData('project_id'))) {
+						$this->Projects = $this->fetchTable('Projects');
+						$project = $this->Projects->find()
+							->select(['id', 'milestone_id'])
+							->where([
+								'id' => $this->request->getData('project_id')
+							])
+							->first();
+						if ($project) {
+							$mid = empty($project->milestone_id)
+								? $result->id
+								: $project->milestone_id . ',' . $result->id;
+
+							$project->milestone_id = $mid;
+
+							$saveProject = $this->Projects->save($project);
+						}
+					}
 				}
 			} else {
 				// $data="Please ";
