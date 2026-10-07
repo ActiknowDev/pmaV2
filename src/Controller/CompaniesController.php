@@ -2095,12 +2095,14 @@ class CompaniesController extends AppController
 			$date = explode('/', $this->request->getData('due_date'));
 			$due_date = $date[2] . '-' . $date[0] . '-' . $date[1];
 			$mile->due_date = $due_date;
+			$mile->milestone_month_year = date('F Y', strtotime($due_date));
 			$due_date_month=date('m',strtotime($due_date));
 			$current_date=date('Y-m-d');
 			$current_date_month=date('m',strtotime($current_date));
 			// dd('current '. $current_date);
 			// dd($due_date);
 			// dd($current_date_month);
+
 
 			if($due_date_month==$current_date_month){
 				$this->ProjectMilestones->patchEntity($mile, $this->request->getData());
