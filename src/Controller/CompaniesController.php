@@ -2107,6 +2107,7 @@ class CompaniesController extends AppController
 				$date = explode('/', $this->request->getData('due_date'));
 				$due_date = $date[2] . '-' . $date[0] . '-' . $date[1];
 				$mile->due_date = $due_date;
+				$mile->milestone_month_year = date('F Y', strtotime($due_date));
 				$this->ProjectMilestones->save($mile);
 				// dd($result);
 			} elseif($due_date_month>$current_date_month){
@@ -2116,6 +2117,7 @@ class CompaniesController extends AppController
 					$date = explode('/', $this->request->getData('due_date'));
 					$due_date = $date[2] . '-' . $date[0] . '-' . $date[1];
 					$mile->due_date = $due_date;
+					$mile->milestone_month_year = date('F Y', strtotime($due_date));
 					$this->ProjectMilestones->save($mile);
 				} else {
 					$mile1 = $this->ProjectMilestones->newEmptyEntity();
@@ -2123,6 +2125,7 @@ class CompaniesController extends AppController
 					$date = explode('/', $this->request->getData('due_date'));
 					$due_date = $date[2] . '-' . $date[0] . '-' . $date[1];
 					$mile1->due_date = $due_date;
+					$mile1->milestone_month_year = date('F Y', strtotime($due_date));
 					$this->ProjectMilestones->save($mile1);
 				}
 			} else {
