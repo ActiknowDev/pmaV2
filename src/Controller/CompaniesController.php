@@ -1368,7 +1368,11 @@ class CompaniesController extends AppController
 				$resourceid = $l['resources'];
 			}
 			if ($mileid) {
-				$query = "SELECT p.* FROM project_milestones p WHERE p.project_id =" . $id . " AND deleted=0";
+				// $query = "SELECT p.* FROM project_milestones p WHERE p.project_id =" . $id . " AND deleted=0";
+				$query = "SELECT p.* FROM project_milestones p 
+					WHERE p.project_id =" . $id . " 
+					AND deleted=0 
+					ORDER BY p.due_date ASC";
 				$stmtProduct = $conn->execute($query);
 				$list = $stmtProduct->fetchAll('assoc');
 
