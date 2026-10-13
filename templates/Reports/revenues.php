@@ -26,6 +26,8 @@
 </style>
 <?php $session = new \Cake\Http\Session();
 $userSession = $session->read('data');
+
+// dd($userSession);
 $hasRole13 = in_array(13, $userSession['role_name'] ?? []);
 ?>
 <section class="page page-dashboard">
@@ -135,6 +137,31 @@ $hasRole13 = in_array(13, $userSession['role_name'] ?? []);
                   </div>
                   <div class="col-md-3">
                      <div class="form-group">
+                        <label for="source">Type</label>
+
+                        <select name="source" id="source" class="form-control">
+                              <option value="Regular"
+                                 <?= ($source == 'Regular') ? 'selected' : ''; ?>>
+                                 Regular
+                              </option>
+
+                              <option value="External"
+                                 <?= ($source == 'External') ? 'selected' : ''; ?>>
+                                 External
+                              </option>
+
+                              <?php if ($hasRole13): ?> 
+                                 <option value="Expertal" 
+                                    <?= ($source == 'Expertal') ? 'selected' : ''; ?>>
+                                    Expertal
+                                 </option>
+                              <?php endif; ?>
+                        </select>
+                     </div>
+                  </div>
+
+                  <!-- <div class="col-md-3">
+                     <div class="form-group">
                         <label for="">Type</label>
                         <select name="source" class="form-control">
                            <option value="">Select Type</option>
@@ -143,7 +170,7 @@ $hasRole13 = in_array(13, $userSession['role_name'] ?? []);
                            <option value="Expertal" <?= ($source == 'Expertal') ? 'selected' : ""; ?>>Expertal</option>
                         </select>
                      </div>
-                  </div>
+                  </div> -->
 
                </div>
 

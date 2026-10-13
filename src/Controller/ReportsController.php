@@ -118,7 +118,19 @@ class ReportsController extends AppController
 	            $managerData = $this->request->getData('managers'); 
 	            $manager_id = ($managerData != '')?implode(',',$managerData):"";
 
-	            $source = (!empty($this->request->getData('source')))?$this->request->getData('source'):"";
+				$source = $this->request->getData('source'); $allowedSources = ['Regular', 'External', 'Expertal']; 
+				if (!in_array($source, $allowedSources, true)) { $source = 'Regular'; } // Always filter projects by the selected source.
+				//  $whereSrc = " AND p.source = " . $conn->quote($source);
+
+				$allowedSources = ['Regular', 'External', 'Expertal'];
+
+				if (!in_array($source, $allowedSources, true)) {
+					$source = 'Regular';
+				}
+
+				$whereSrc = " AND p.source = '" . $source . "'";
+
+	            // $source = (!empty($this->request->getData('source')))?$this->request->getData('source'):"";
 
 	            $whereMileMonth = ($month_id != '')?" AND month(due_date) IN (".$month_id.")":"";
 				$wherePaymentMonth = ($month_id != '')?" AND month(payment_date) IN (".$month_id.")":"";
@@ -151,8 +163,17 @@ class ReportsController extends AppController
 				
 
 				$month_id =0; $bd_id = 0; $manager_id = 0; $source="Regular";
-				$whereMileMonth = $whereMgr = $whereBd = $wherePaymentMonth = "";
-				$whereSrc = "";
+				$whereMileMonth = ""; $whereMgr = ""; $whereBd = ""; $wherePaymentMonth = ""; // Apply the Regular filter on the initial page load. 
+
+				$allowedSources = ['Regular', 'External', 'Expertal'];
+
+				if (!in_array($source, $allowedSources, true)) {
+					$source = 'Regular';
+				}
+
+				$whereSrc = " AND p.source = '" . $source . "'";
+				// $whereMileMonth = $whereMgr = $whereBd = $wherePaymentMonth = "";
+				// $whereSrc = "";
 				// if ($hasRole13) { 
 				// 	$source = ""; $whereSrc = ""; 
 				// } else { 
