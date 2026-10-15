@@ -1,5 +1,5 @@
 <?php 
-echo "<pre>";print_r($emp_details);die('dd');
+// echo "<pre>";print_r($emp_details);die('dd');
 $session = new \Cake\Http\Session();
 $userSession = $session->read('data');
 
