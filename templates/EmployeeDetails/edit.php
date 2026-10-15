@@ -59,7 +59,7 @@
                                         <div class="adon-group">
 
                                             <input type="text" readonly name="emp_id" class="form-control"
-                                                placeholder="" value="<?= @$user_data['id'] ?>">
+                                                placeholder="" value="<?= @$user_data['employee_id'] ?>">
 
                                         </div>
 

@@ -382,66 +382,257 @@ $(document).ready(function() {
                     });
                 }
             },
+            // //{
+            //     extend: 'pdfHtml5',
+            //     text: 'PDF',
+            //     orientation: 'landscape',
+            //     pageSize: 'A3',
+
+            //     exportOptions: {
+            //         stripHtml: false,
+
+            //         rows: function (idx, data, node) {
+            //             return $(node).css('display') !== 'none';
+            //         },
+
+            //         format: {
+            //             body: function (data, row, column, node) {
+
+            //                 var text = $('<div>').html(data).text().trim();
+
+            //                 text = text.replace(/\s+/g, ' ');
+
+            //                 var inMatch = text.match(/In:\s*([0-9]{2}:[0-9]{2})/i);
+            //                 var outMatch = text.match(/Out:\s*([0-9]{2}:[0-9]{2})/i);
+
+            //                 if (text.includes('Weekend'))
+            //                     return 'W';
+
+            //                 if (text.includes('Absent'))
+            //                     return 'A';
+
+            //                 if (text.includes('Forgot Card'))
+            //                     return 'FC';
+
+            //                 if (text.includes('Holiday'))
+            //                     return 'H';
+
+            //                 if (text.includes('comp_off')) {
+            //                     return 'CO';
+            //                 }
+
+            //                 if (text.includes('Paid Leave'))
+            //                     return 'PL';
+
+            //                 if (text.includes('Casual Leave'))
+            //                     return 'CL';
+
+            //                 if (text.includes('Sick Leave'))
+            //                     return 'SL';
+
+            //                 if (text.includes('WFH'))
+            //                     return 'WFH';
+
+            //                 if (text.includes('LWP'))
+            //                     return 'LWP';
+
+            //                 if (inMatch && outMatch) {
+
+            //                     var inTime = inMatch[1];
+            //                     var outTime = outMatch[1];
+
+            //                     return JSON.stringify({
+            //                         inTime: inTime,
+            //                         outTime: outTime,
+            //                         lateIn: inTime > '10:00',
+            //                         earlyOut: outTime < '18:45',
+            //                         shortLeave: text.includes('Short Leave')
+            //                     });
+            //                 }
+
+            //                 return text;
+            //             }
+            //         }
+            //     },
+
+            //     customize: function (doc) {
+
+            //         doc.content.unshift({
+            //             text: 'Attendance Report - <?= date("F", strtotime($year . "-" . sprintf("%02d",$month) . "-01")) ?> <?= $year ?>',
+            //             alignment: 'center',
+            //             fontSize: 19,
+            //             bold: true,
+            //             margin: [0, 0, 0, 10]
+            //         });
+
+            //         doc.pageMargins = [5, 5, 5, 5];
+
+            //         doc.defaultStyle = {
+            //             fontSize: 10,
+            //             // bold: true,
+            //             color: '#000000'
+            //         };
+
+
+            //         doc.styles.tableHeader = {
+            //             fontSize: 12,
+            //             bold: true,
+            //             alignment: 'center',
+            //             fillColor: '#D9D9D9',
+            //             color: '#000000'
+            //         };
+
+            //         var tableNode = null;
+
+            //         for (var i = 0; i < doc.content.length; i++) {
+            //             if (doc.content[i].table) {
+            //                 tableNode = doc.content[i];
+            //                 break;
+            //             }
+            //         }
+
+            //         if (!tableNode) return;
+
+            //         var table = tableNode.table;
+
+            //         table.headerRows = 1;
+            //         table.keepWithHeaderRows = 1;
+            //         table.dontBreakRows = true;
+
+            //         // Convert headers like 01-06-2025 => 1
+            //         var headers = table.body[0];
+
+            //         for (var i = 1; i < headers.length; i++) {
+
+            //             var txt = headers[i].text || headers[i];
+
+            //             var match = txt.match(/^(\d{2})-/);
+
+            //             if (match) {
+            //                 headers[i].text = parseInt(match[1], 10).toString();
+            //             }
+            //         }
+
+            //         for (var r = 0; r < table.body.length; r++) {
+
+            //             for (var c = 0; c < table.body[r].length; c++) {
+
+            //                 if (typeof table.body[r][c] !== 'object') {
+            //                     table.body[r][c] = {
+            //                         text: table.body[r][c]
+            //                     };
+            //                 }
+
+            //                 if (r === 0) {
+
+            //                     table.body[r][c].bold = true;
+            //                     table.body[r][c].fillColor = '#D9D9D9';
+            //                     table.body[r][c].color = '#000000';
+
+            //                 } else {
+
+            //                     if (c === 0) {
+            //                         table.body[r][c].bold = true;
+            //                         table.body[r][c].fontSize = 11; // or 11 if you want more emphasis
+            //                     }
+
+            //                     table.body[r][c].fillColor = '#FFFFFF';
+            //                     table.body[r][c].color = '#000000';
+
+            //                     try {
+
+            //                         var cellData = JSON.parse(table.body[r][c].text);
+
+            //                         table.body[r][c] = {
+            //                             alignment: 'center',
+            //                             fillColor: '#FFFFFF',
+            //                             color: '#000000',
+            //                             text: [
+            //                                 {
+            //                                     text: cellData.inTime + '\n',
+            //                                     bold: cellData.lateIn,
+            //                                     fontSize: cellData.lateIn ? 12 : 10
+            //                                 },
+            //                                 {
+            //                                     text: cellData.outTime,
+            //                                     bold: cellData.earlyOut,
+            //                                     fontSize: cellData.earlyOut ? 12 : 10
+            //                                 },
+            //                                 {
+            //                                     text: cellData.shortLeave ? '\nSH-L' : '',
+            //                                     bold: false
+            //                                 }
+            //                             ]
+            //                         };
+
+            //                     } catch (e) {
+            //                         // Normal values like A, W, PL, CO etc.
+            //                     }
+            //                 }
+            //             }
+            //         }
+
+            //         // Stretch table
+            //         table.widths = [];
+
+            //         table.widths.push(60);
+
+            //         for (var i = 1; i < table.body[0].length; i++) {
+            //             table.widths.push('*');
+            //         }
+
+            //         tableNode.layout = {
+            //             hLineWidth: function () { return 1; },
+            //             vLineWidth: function () { return 1; },
+            //             hLineColor: function () { return '#000000'; },
+            //             vLineColor: function () { return '#000000'; },
+            //             paddingLeft: function () { return 2; },
+            //             paddingRight: function () { return 2; },
+            //             paddingTop: function () { return 2; },
+            //             paddingBottom: function () { return 2; }
+            //         };
+            //     }
+            // // },
             {
                 extend: 'pdfHtml5',
                 text: 'PDF',
                 orientation: 'landscape',
                 pageSize: 'A3',
-
-                exportOptions: {
+            exportOptions: {
                     stripHtml: false,
-
-                    rows: function (idx, data, node) {
+            rows: function (idx, data, node) {
                         return $(node).css('display') !== 'none';
                     },
-
-                    format: {
+            format: {
                         body: function (data, row, column, node) {
-
-                            var text = $('<div>').html(data).text().trim();
-
+            var text = $('<div>').html(data).text().trim();
                             text = text.replace(/\s+/g, ' ');
-
-                            var inMatch = text.match(/In:\s*([0-9]{2}:[0-9]{2})/i);
+            var inMatch = text.match(/In:\s*([0-9]{2}:[0-9]{2})/i);
                             var outMatch = text.match(/Out:\s*([0-9]{2}:[0-9]{2})/i);
-
-                            if (text.includes('Weekend'))
+            if (text.includes('Weekend'))
                                 return 'W';
-
-                            if (text.includes('Absent'))
+            if (text.includes('Absent'))
                                 return 'A';
-
-                            if (text.includes('Forgot Card'))
+            if (text.includes('Forgot Card'))
                                 return 'FC';
-
-                            if (text.includes('Holiday'))
+            if (text.includes('Holiday'))
                                 return 'H';
-
-                            if (text.includes('comp_off')) {
+            if (text.includes('comp_off'))
                                 return 'CO';
-                            }
-
-                            if (text.includes('Paid Leave'))
+            if (text.includes('Paid Leave'))
                                 return 'PL';
-
-                            if (text.includes('Casual Leave'))
+            if (text.includes('Casual Leave'))
                                 return 'CL';
-
-                            if (text.includes('Sick Leave'))
+            if (text.includes('Sick Leave'))
                                 return 'SL';
-
-                            if (text.includes('WFH'))
+            if (text.includes('WFH'))
                                 return 'WFH';
-
-                            if (text.includes('LWP'))
+            if (text.includes('LWP'))
                                 return 'LWP';
-
                             if (inMatch && outMatch) {
-
-                                var inTime = inMatch[1];
+            var inTime = inMatch[1];
                                 var outTime = outMatch[1];
-
-                                return JSON.stringify({
+            return JSON.stringify({
                                     inTime: inTime,
                                     outTime: outTime,
                                     lateIn: inTime > '10:00',
@@ -449,14 +640,14 @@ $(document).ready(function() {
                                     shortLeave: text.includes('Short Leave')
                                 });
                             }
-
-                            return text;
+            if (text.includes('Short Leave'))
+                                return 'SH-L';
+            return text;
                         }
                     }
                 },
-
                 customize: function (doc) {
-
+            // Report title
                     doc.content.unshift({
                         text: 'Attendance Report - <?= date("F", strtotime($year . "-" . sprintf("%02d",$month) . "-01")) ?> <?= $year ?>',
                         alignment: 'center',
@@ -464,16 +655,13 @@ $(document).ready(function() {
                         bold: true,
                         margin: [0, 0, 0, 10]
                     });
-
+            // Page settings
                     doc.pageMargins = [5, 5, 5, 5];
-
-                    doc.defaultStyle = {
+            doc.defaultStyle = {
                         fontSize: 10,
-                        // bold: true,
                         color: '#000000'
                     };
-
-
+            // Header styling
                     doc.styles.tableHeader = {
                         fontSize: 12,
                         bold: true,
@@ -481,115 +669,156 @@ $(document).ready(function() {
                         fillColor: '#D9D9D9',
                         color: '#000000'
                     };
-
+            // Find attendance table
                     var tableNode = null;
-
-                    for (var i = 0; i < doc.content.length; i++) {
+            for (var i = 0; i < doc.content.length; i++) {
                         if (doc.content[i].table) {
                             tableNode = doc.content[i];
                             break;
                         }
                     }
-
                     if (!tableNode) return;
-
                     var table = tableNode.table;
-
-                    table.headerRows = 1;
+            table.headerRows = 1;
                     table.keepWithHeaderRows = 1;
                     table.dontBreakRows = true;
-
-                    // Convert headers like 01-06-2025 => 1
+            // Convert date headers like 01-06-2025 to 1
                     var headers = table.body[0];
-
                     for (var i = 1; i < headers.length; i++) {
-
-                        var txt = headers[i].text || headers[i];
-
-                        var match = txt.match(/^(\d{2})-/);
-
-                        if (match) {
-                            headers[i].text = parseInt(match[1], 10).toString();
+                        var headerCell = headers[i];
+            var headerText = typeof headerCell === 'object'
+                            ? headerCell.text
+                            : headerCell;
+                        if (typeof headerText === 'string') {
+                            var match = headerText.match(/^(\d{2})-/);
+                            if (match) {
+                                var day = parseInt(match[1], 10).toString();
+            if (typeof headerCell === 'object') {
+                                    headerCell.text = day;
+                                } else {
+                                    headers[i] = day;
+                                }
+                            }
                         }
                     }
-
+            // Style attendance cells
                     for (var r = 0; r < table.body.length; r++) {
-
                         for (var c = 0; c < table.body[r].length; c++) {
-
-                            if (typeof table.body[r][c] !== 'object') {
+            if (typeof table.body[r][c] !== 'object' || table.body[r][c] === null) {
                                 table.body[r][c] = {
                                     text: table.body[r][c]
                                 };
                             }
-
+                            var cell = table.body[r][c];
+            var cellText = typeof cell.text === 'string'
+                                ? cell.text
+                                : '';
+            // Header row
                             if (r === 0) {
-
-                                table.body[r][c].bold = true;
-                                table.body[r][c].fillColor = '#D9D9D9';
-                                table.body[r][c].color = '#000000';
-
-                            } else {
-
-                                if (c === 0) {
-                                    table.body[r][c].bold = true;
-                                    table.body[r][c].fontSize = 11; // or 11 if you want more emphasis
+            cell.bold = true;
+                                cell.fillColor = '#D9D9D9';
+                                cell.color = '#000000';
+                                cell.alignment = 'center';
+            continue;
+                            }
+            // Default body styling
+                            cell.fillColor = '#FFFFFF';
+                            cell.color = '#000000';
+                            cell.alignment = 'center';
+            // Employee name column
+                            if (c === 0) {
+                                cell.bold = true;
+                                cell.fontSize = 11;
+                            }
+            // Parse attendance time information
+                            var cellData = null;
+            try {
+                                if (cellText) {
+                                    cellData = JSON.parse(cellText);
                                 }
-
-                                table.body[r][c].fillColor = '#FFFFFF';
-                                table.body[r][c].color = '#000000';
-
-                                try {
-
-                                    var cellData = JSON.parse(table.body[r][c].text);
-
-                                    table.body[r][c] = {
-                                        alignment: 'center',
-                                        fillColor: '#FFFFFF',
-                                        color: '#000000',
-                                        text: [
-                                            {
-                                                text: cellData.inTime + '\n',
-                                                bold: cellData.lateIn,
-                                                fontSize: cellData.lateIn ? 12 : 10
-                                            },
-                                            {
-                                                text: cellData.outTime,
-                                                bold: cellData.earlyOut,
-                                                fontSize: cellData.earlyOut ? 12 : 10
-                                            },
-                                            {
-                                                text: cellData.shortLeave ? '\nSH-L' : '',
-                                                bold: false
-                                            }
-                                        ]
-                                    };
-
-                                } catch (e) {
-                                    // Normal values like A, W, PL, CO etc.
-                                }
+                            } catch (e) {
+                                cellData = null;
+                            }
+            // Entry and exit time formatting
+                            if (
+                                cellData &&
+                                cellData.inTime &&
+                                cellData.outTime
+                            ) {
+            cell.text = [
+                                    {
+                                        text: cellData.inTime + '\n',
+                                        color: cellData.lateIn ? '#FF0000' : '#000000',
+                                        bold: cellData.lateIn,
+                                        fontSize: cellData.lateIn ? 12 : 10
+                                    },
+                                    {
+                                        text: cellData.outTime,
+                                        color: cellData.earlyOut ? '#FF0000' : '#000000',
+                                        bold: cellData.earlyOut,
+                                        fontSize: cellData.earlyOut ? 12 : 10
+                                    },
+                                    {
+                                        text: cellData.shortLeave ? '\nSH-L' : '',
+                                        color: '#0070C0',
+                                        bold: cellData.shortLeave,
+                                        fontSize: 10
+                                    }
+                                ];
+            continue;
+                            }
+            // Weekend: light blue background
+                            if (cellText === 'W') {
+            cell.fillColor = '#DDEBF7';
+                                cell.color = '#000000';
+                                cell.bold = true;
+                            }
+            // Forgot Card: blue text
+                            else if (cellText === 'FC') {
+            cell.color = '#0070C0';
+                                cell.bold = true;
+                            }
+            // Leave and related attendance codes: blue text
+                            else if (
+                                ['CL', 'SL', 'PL', 'LWP', 'CO', 'SH-L', 'WFH'].includes(cellText)
+                            ) {
+            cell.color = '#0070C0';
+                                cell.bold = true;
                             }
                         }
                     }
-
-                    // Stretch table
+            // Stretch table across the page
                     table.widths = [];
-
                     table.widths.push(60);
-
-                    for (var i = 1; i < table.body[0].length; i++) {
+            for (var i = 1; i < table.body[0].length; i++) {
                         table.widths.push('*');
                     }
-
+            // Table borders and spacing
                     tableNode.layout = {
-                        hLineWidth: function () { return 1; },
-                        vLineWidth: function () { return 1; },
-                        hLineColor: function () { return '#000000'; },
-                        vLineColor: function () { return '#000000'; },
-                        paddingLeft: function () { return 2; },
-                        paddingRight: function () { return 2; },
-                        paddingTop: function () { return 2; },
-                        paddingBottom: function () { return 2; }
+                        hLineWidth: function () {
+                            return 1;
+                        },
+                        vLineWidth: function () {
+                            return 1;
+                        },
+                        hLineColor: function () {
+                            return '#000000';
+                        },
+                        vLineColor: function () {
+                            return '#000000';
+                        },
+                        paddingLeft: function () {
+                            return 2;
+                        },
+                        paddingRight: function () {
+                            return 2;
+                        },
+                        paddingTop: function () {
+                            return 2;
+                        },
+                        paddingBottom: function () {
+                            return 2;
+                        }
                     };
                 }
             },
