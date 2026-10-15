@@ -885,7 +885,20 @@ class EmployeeDetailsController extends AppController
 
       $this->Users->save($usertable);
 
-      $request_data["user_id"] = $usertable->id;
+      // $request_data["user_id"] = $usertable->id;
+        $userId = $usertable->id;
+
+      // Generate employee ID using the user ID
+       $employeeId = 'C' . str_pad((string)$userId, 5, '0', STR_PAD_LEFT);
+
+      // Save employee ID in the employee_id field
+      $usertable->employee_id = $employeeId;
+
+      $this->Users->save($usertable);
+
+      // Keep your existing user_id variable
+      $request_data["user_id"] = $userId;
+
 
       // $my_team_res_tab = TableRegistry::get('MyTeamResources');
       $my_team_res_tab = $this->fetchTable('MyTeamResources');

@@ -156,7 +156,7 @@ $userSession = $session->read('data');
                                     <tbody>
                                     <?php foreach ($leave_data as $data) : ?>
                                         <tr data-id="<?= $data['uid'] ?>">
-                                            <td><?= h('C00' . $data['uid']) ?></td>
+                                            <td><?= $data['employeeId'] ?></td>
                                             <td><?= $data['name'] ?></td>
                                             <?php foreach ($data['leaves'] as $val) : ?>
                                             <td><?= number_format($val['cl']-$val['sumCL'],2) ?></td>

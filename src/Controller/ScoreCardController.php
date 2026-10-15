@@ -93,6 +93,7 @@ class ScoreCardController extends AppController
 
 		$emp_details = $this->Users->find()->where(['id'=>$userId])->first();
 		$userId=$emp_details->id;
+		$employeeId=$emp_details->employee_id;
 		$userName = $emp_details->name;
 
 		$emp_list = $this->Users->find()
