@@ -5172,7 +5172,7 @@ class UsersController extends AppController
 
 		$this->Authorization->skipAuthorization();
 		$user = $this->request->getAttribute('identity');
-		$url = "https://pma.actiknow.com/posh/?employeeId={$user['id']}&email="	. urlencode($user['email']) ."&role=" . $user['role_name'];
+		$url = "https://pma.actiknow.com/posh/?userId={$user['id']}&email="	. urlencode($user['email']) ."&role=" . $user['role_name'];
 
 		return $this->redirect($url);
 
