@@ -4677,7 +4677,7 @@ class UsersController extends AppController
         }
 		
 		// dd($query);
-
+		$list = [];
 		try {
 			$stmtProduct = $conn->execute($query);
 			$list = $stmtProduct->fetchAll('assoc');

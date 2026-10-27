@@ -193,7 +193,8 @@ $role = $userSession['role'];
                                         <p class="fs-11 mb-1">Last Year <span class="fw-semibold">$<?= number_format($last_maintainace_plan->amount) ?></span>
                                         </p>
                                         <?php 
-                                            if($current_maintainace_plan->amount > $last_maintainace_plan->amount)
+                                            $last_amount = $last_maintainace_plan->amount;
+                                            if($current_maintainace_plan->amount > $last_amount)
                                             {
                                                 $icon = '+';
                                                 $class = 'fs_success';
@@ -205,7 +206,9 @@ $role = $userSession['role'];
                                                 $class = 'fs_danger';
                                                 $tag = 'Decrease';
                                             }
-                                            $percent = (($current_maintainace_plan->amount - $last_maintainace_plan->amount) / $last_maintainace_plan->amount) * 100;
+                                            $percent = ($last_amount != 0)
+                                                        ? (($current_maintainace_plan->amount - $last_amount) / $last_amount) * 100
+                                                        : 0;
                                         ?>   
 
                                         <span class="<?= $class ?> fs-10 fw_500">
@@ -230,6 +233,7 @@ $role = $userSession['role'];
                                         <h4 class="fw-bolder mb-2"><?= $current_maintainace_plan->id ?></h4>
                                         <p class="fs-11 mb-1">Last Year <span class="fw-semibold"><?= $last_maintainace_plan->id ?></span></p>
                                         <?php 
+
                                             if($current_maintainace_plan->id > $last_maintainace_plan->id)
                                             {
                                                 $icon = '+';
@@ -242,7 +246,9 @@ $role = $userSession['role'];
                                                 $class = 'fs_danger';
                                                 $tag = 'Decrease';
                                             }
-                                            $percent = (($current_maintainace_plan->id - $last_maintainace_plan->id) / $last_maintainace_plan->id) * 100;
+                                            $percent = ($last_maintainace_plan->id != 0)
+                                                        ? (($current_maintainace_plan->id - $last_maintainace_plan->id) / $last_maintainace_plan->id) * 100
+                                                        : 0;
                                         ?>   
 
                                         <span class="<?= $class ?> fs-10 fw_500">

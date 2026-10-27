@@ -387,11 +387,19 @@ class DashboardController extends AppController
 
         $active_date_beyond_ids = array_column($active_date_beyond, 'id');
 
-        $active_milestone = $this->getProjectMilestoneList(['ProjectMilestones.due_date >' => date('Y-m-d'), 'ProjectMilestones.project_id IN' => $active_project_ids,'ProjectMilestones.deleted' => 0, 'ProjectMilestones.status !=' => 'Completed']); 
+        if (!empty($active_project_ids)) {
+            $active_milestone = $this->getProjectMilestoneList(['ProjectMilestones.due_date >' => date('Y-m-d'), 'ProjectMilestones.project_id IN' => $active_project_ids,'ProjectMilestones.deleted' => 0, 'ProjectMilestones.status !=' => 'Completed']); 
+        } else {
+            $active_milestone = [];
+        }
 
-        $active_beyond_milstone = $this->getProjectMilestoneList(['ProjectMilestones.due_date <' => date('Y-m-d'),'ProjectMilestones.project_id IN' => $active_date_beyond_ids,'ProjectMilestones.deleted' => 0, 'ProjectMilestones.status !=' => 'Completed']);
-
-        $project_allocation = $this->ProjectMilestones->find()
+        if (!empty($active_date_beyond_ids)) {
+            $active_beyond_milstone = $this->getProjectMilestoneList(['ProjectMilestones.due_date <' => date('Y-m-d'),'ProjectMilestones.project_id IN' => $active_date_beyond_ids,'ProjectMilestones.deleted' => 0, 'ProjectMilestones.status !=' => 'Completed']);
+        } else {
+            $active_beyond_milstone = [];
+        }
+        if (!empty($active_project_ids)) {
+            $project_allocation = $this->ProjectMilestones->find()
                                 ->select([
                                             'title' => 'ProjectMilestones.title',
                                             'deadline' => 'ProjectMilestones.due_date',
@@ -412,7 +420,10 @@ class DashboardController extends AppController
                                             ]
                                 ])
                                 ->where(['ProjectMilestones.project_id IN' => $active_project_ids, 'ProjectMilestones.due_date <' => date('Y-m-d'),'ProjectMilestones.due_date >=' => date('Y-m-').'01', 'ProjectMilestones.deleted' => 0])
-                                ->toArray();   
+                                ->toArray();  
+        } else {
+            $project_allocation = [];
+        } 
 
           // Milestone by status 
           $milestone_chart = $this->ProjectMilestones->find()
