@@ -1,6 +1,6 @@
 <style>
     .email-column {
-    max-width: 200px;
+    max-width: 150px;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -84,7 +84,7 @@
                                     <td><?= $i; ?></td>
                                     <td>
                                         <a href="#" data-toggle="modal" data-target="#edit_client"
-                                            class="icon icon-sm ft-primary " title="Edit Client"
+                                            class="ft-primary " title="Edit Client"
                                             onclick="passValue('<?php echo $client->id ?>')"><?= $client->client_name; ?></a>
                                     </td>
                                     <!-- <td><?= $client->client_name; ?></td> -->
