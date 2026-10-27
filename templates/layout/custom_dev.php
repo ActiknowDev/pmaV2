@@ -45,7 +45,9 @@
         var baseUrl = '<?= $this->Url->build('/', ['fullBase' => true]); ?>';
         var TOKEN = '<?= $this->request->getAttribute("csrfToken"); ?>'
     </script>
-    <!-- <?php echo $this->Html->script(array('jquery-3.4.1.js', 'popper.min.js', 'bootstrap.min.js', 'jquery-ui.js', 'jquery.dataTables.min.js', 'dataTables.bootstrap4.min.js', 'jquery.multiselect.js', 'custom.js')); ?> -->
+    <!-- <?php// echo $this->Html->script(array('jquery-3.4.1.js', 'popper.min.js', 'bootstrap.min.js', 'jquery-ui.js', 'jquery.dataTables.min.js', 'dataTables.bootstrap4.min.js', 'jquery.multiselect.js', 'custom.js')); ?> -->
+
+    <?php echo $this->Html->script(array('popper.min.js', 'bootstrap.min.js', 'jquery-ui.js', 'jquery.dataTables.min.js', 'dataTables.bootstrap4.min.js', 'jquery.multiselect.js', 'custom.js')); ?>
 
     <script src="https://cdn.datatables.net/buttons/1.6.4/js/dataTables.buttons.min.js"></script>
 

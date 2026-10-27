@@ -1,9 +1,9 @@
 <!-- start events calender -->
-<link rel="stylesheet" href="fullcalendar/fullcalendar.min.css" />
-<link rel="stylesheet" href="fullcalendar/menual.css" />
-<script src="fullcalendar/lib/jquery.min.js"></script>
-<script src="fullcalendar/lib/moment.min.js"></script>
-<script src="fullcalendar/fullcalendar.min.js"></script>
+<link rel="stylesheet" href="/pmaV2/fullcalendar/fullcalendar.min.css" />
+<link rel="stylesheet" href="/pmaV2/fullcalendar/menual.css" />
+<script src="/pmaV2/fullcalendar/lib/jquery.min.js"></script>
+<script src="/pmaV2/fullcalendar/lib/moment.min.js"></script>
+<script src="/pmaV2/fullcalendar/fullcalendar.min.js"></script>
 <script>
 
     $(document).ready(function () {

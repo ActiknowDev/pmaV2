@@ -2,6 +2,16 @@
 $userSession = $session->read('data');
 $menu = $session->read('menu');
 ?>
+<style>
+    .app-header .nav-links>li,
+    .app-header .nav-links>.account-setting {
+        flex-shrink: 0;
+        white-space: nowrap;
+    }
+    .app-header .account-setting>ul {
+        padding: 0;
+    }
+</style>
 <div class="app-header">
     <nav class="bg-base">
         <input type="checkbox" id="check">
