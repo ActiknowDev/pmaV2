@@ -1,3 +1,11 @@
+<style>
+    .email-column {
+    max-width: 200px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+</style>
 <section class="page page-dashboard">
     <!-- PAGE-TITLE -->
     <div class="page-title skin-light">
@@ -62,7 +70,7 @@
                                     <th>Client Name</th>
                                     <th>Company Name</th>
                                     <th>Email ID</th>
-                                    <th>Phone Number</th>
+                                    <!-- <th>Phone Number</th> -->
                                     <th>Location</th>
                                     <th>Pt.o Contact</th>
                                     <th>Status</th>
@@ -76,15 +84,17 @@
                                     <td><?= $i; ?></td>
                                     <td>
                                         <a href="#" data-toggle="modal" data-target="#edit_client"
-                                            class="ft-primary " title="Edit Client"
+                                            class="icon icon-sm ft-primary " title="Edit Client"
                                             onclick="passValue('<?php echo $client->id ?>')"><?= $client->client_name; ?></a>
                                     </td>
                                     <!-- <td><?= $client->client_name; ?></td> -->
                                     <td><?php echo $client->company_name; ?></td>
-                                    <td><?php echo $client->email; ?></td>
-
-                                    <td><?= ($client->country_code == '') ? '+91' : $client->country_code; ?>-<?php echo $client->contact_no ?>
+                                    <td class="email-column" title="<?php echo htmlspecialchars($client->email); ?>">
+                                        <?php echo htmlspecialchars($client->email); ?>
                                     </td>
+
+                                    <!-- <td><?//= ($client->country_code == '') ? '+91' : $client->country_code; ?>-<?php //echo $client->contact_no ?>
+                                    </td> -->
                                     <td><?php echo $client->location; ?></td>
 
                                     <!-- POCName is a custom helper -->
