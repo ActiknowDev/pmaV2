@@ -1979,6 +1979,29 @@ class CompaniesController extends AppController
 			} 
 			// Save the copied milestone 
 			if ($SavedMilestone = $this->ProjectMilestones->save($newMilestone)) { 
+
+				// Update projects table milestone_id
+				$project = $this->Projects->get($SavedMilestone->project_id);
+				$existingMilestoneIds = [];
+
+				if (!empty($project->milestone_id)) {
+					$existingMilestoneIds = array_filter(
+						array_map('trim', explode(',', $project->milestone_id))
+					);
+				}
+
+				// Append newly created milestone ID
+				if (!in_array((string)$SavedMilestone->id, $existingMilestoneIds, true)) {
+
+					$existingMilestoneIds[] = $SavedMilestone->id;
+
+				}
+
+				$project->milestone_id = implode(',', $existingMilestoneIds);
+
+				$this->Projects->save($project);
+
+
 				$user_data = $this->getuserdata(); 
 				// Log the copied milestone 
 				$this->milestonelog( $SavedMilestone->project_id, $SavedMilestone->id, $user_data["id"], "Copied" ); 
