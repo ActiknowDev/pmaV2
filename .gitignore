@@ -52,3 +52,5 @@ nbproject/*
 # yarn
 yarn-debug.log
 yarn-error.log
+/webroot/leavecron.log
+/webroot/timesheet_cron_logs.log
