@@ -881,23 +881,52 @@ class EmployeeDetailsController extends AppController
           }
       }
       unset($request_data['user_image']);
+
       $usertable = $this->Users->patchEntity($user, $request_data);
 
-      $this->Users->save($usertable);
+      // First save: MySQL generates the user ID
+      if (!$this->Users->save($usertable)) {
+          debug($usertable->getErrors());
+          exit;
+      }
 
-      // $request_data["user_id"] = $usertable->id;
-        $userId = $usertable->id;
+      $userId = $usertable->id;
 
-      // Generate employee ID using the user ID
-       $employeeId = 'C' . str_pad((string)$userId, 5, '0', STR_PAD_LEFT);
+      // Generate employee ID using auto-incremented user ID
+      $employeeId = 'C' . str_pad(
+          (string)$userId,
+          5,
+          '0',
+          STR_PAD_LEFT
+      );
 
-      // Save employee ID in the employee_id field
+      // Update employee_id
       $usertable->employee_id = $employeeId;
 
-      $this->Users->save($usertable);
+      if (!$this->Users->save($usertable)) {
+          debug($usertable->getErrors());
+          exit;
+      }
 
-      // Keep your existing user_id variable
+      // Keep existing user_id
       $request_data["user_id"] = $userId;
+      // $usertable = $this->Users->patchEntity($user, $request_data);
+
+      // $this->Users->save($usertable);
+
+      // // $request_data["user_id"] = $usertable->id;
+      //   $userId = $usertable->id;
+
+      // // Generate employee ID using the user ID
+      //  $employeeId = 'C' . str_pad((string)$userId, 5, '0', STR_PAD_LEFT);
+
+      // // Save employee ID in the employee_id field
+      // $usertable->employee_id = $employeeId;
+
+      // $this->Users->save($usertable);
+
+      // // Keep your existing user_id variable
+      // $request_data["user_id"] = $userId;
 
 
       // $my_team_res_tab = TableRegistry::get('MyTeamResources');
