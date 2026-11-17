@@ -882,9 +882,14 @@ class EmployeeDetailsController extends AppController
       }
       unset($request_data['user_image']);
 
-      $usertable = $this->Users->patchEntity($user, $request_data);
+     $usertable = $this->Users->patchEntity($user, $request_data);
 
-      // First save: MySQL generates the user ID
+      // For new employee, initially employee_id will be NULL
+      if (empty($request_data['user_id'])) {
+          $usertable->employee_id = null;
+      }
+
+      // First save: Generate AUTO_INCREMENT user ID
       if (!$this->Users->save($usertable)) {
           debug($usertable->getErrors());
           exit;
@@ -892,24 +897,25 @@ class EmployeeDetailsController extends AppController
 
       $userId = $usertable->id;
 
-      // Generate employee ID using auto-incremented user ID
-      $employeeId = 'C' . str_pad(
-          (string)$userId,
-          5,
-          '0',
-          STR_PAD_LEFT
-      );
+      // Generate employee ID using auto-increment ID
+      if (empty($request_data['user_id'])) {
 
-      // Update employee_id
-      $usertable->employee_id = $employeeId;
+          $employeeId = 'C' . str_pad(
+              (string)$userId,
+              5,
+              '0',
+              STR_PAD_LEFT
+          );
 
-      if (!$this->Users->save($usertable)) {
-          debug($usertable->getErrors());
-          exit;
+          $usertable->employee_id = $employeeId;
+
+          if (!$this->Users->save($usertable)) {
+              debug($usertable->getErrors());
+              exit;
+          }
       }
 
-      // Keep existing user_id
-      $request_data["user_id"] = $userId;
+      $request_data['user_id'] = $userId;
       // $usertable = $this->Users->patchEntity($user, $request_data);
 
       // $this->Users->save($usertable);
