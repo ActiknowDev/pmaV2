@@ -143,6 +143,10 @@ $userSession = $session->read('data');
                         <table id="datatable" style="width:100%; height: 45vh;" class="table table-default table-striped block table-bordered table-responsive">
                         <thead>
                             <tr style="position: sticky; top: 0; z-index: 15;">
+                                <th>
+                                    <input type="checkbox" id="selectAllEmployees">
+                                </th>
+
                                 <?php foreach ($headers as $header) : ?>
                                     <th><?= $header ?></th>
                                 <?php endforeach; ?>
@@ -155,6 +159,13 @@ $userSession = $session->read('data');
                                 echo "<style>tbody > .$employeeClass ~ .$employeeClass { display: none; }</style>";
                                 ?>
                                 <tr class="<?= $employeeClass ?>">
+                                    <td>
+                                        <input
+                                            type="checkbox"
+                                            class="employee-export-checkbox"
+                                            value="<?= h($row['id']) ?>"
+                                        >
+                                    </td>
                                     <td class="emp-name"><?= $row['name'] ?></td>
                                     <?php for ($day = 1; $day <= $daysInMonth; $day++) : ?>
                                         <td>
